@@ -22,11 +22,16 @@ public class Ball : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && returned)
+        Kick();
+    }
+
+    void Kick()
+    {
+        if (Input.GetMouseButtonDown(0) && returned)
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit))
             {
                 if (hit.transform.name == "Soccer Ball")
                 {
@@ -43,28 +48,26 @@ public class Ball : MonoBehaviour
 
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
-            //if (distance.x > dragdistance || distance.y > dragdistance)
-            //{
-                Vector3 force = (distance / ((endtime - starttime) / 0.3f));
-                toKick = false;
+            Vector3 force = (distance / ((endtime - starttime) / 0.3f));
+            toKick = false;
 
-                Debug.Log("Before Clamp: " + force);
+            Debug.Log("Before Clamp: " + force);
 
-                force.x = Mathf.Clamp(force.x, -800, 800);
-                force.y = Mathf.Clamp(force.y, 0, 850);
-                //force.z = Mathf.Clamp(force.z, 0, 800);
+            force.x = Mathf.Clamp(force.x, -800, 800);
+            force.y = Mathf.Clamp(force.y, 0, 850);
+            force.z = 1350;
 
-                force.z = 1350;
-                Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
-                Debug.Log("After Clamp: " + force);
-                //this is changed by Joel Torres
-                StartCoroutine(KickAnimation(ballForce));
-                //gameObject.GetComponent<Rigidbody>().AddForce(ballForce);
-                returned = false;
-                StartCoroutine(ReturnBall());
-            //}
+            Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
+            Debug.Log("After Clamp: " + force);
+            //this is changed by Joel Torres
+            StartCoroutine(KickAnimation(ballForce));
+            returned = false;
+            StartCoroutine(ReturnBall());
+
         }
     }
+
+    
 
     IEnumerator ReturnBall()
     {
