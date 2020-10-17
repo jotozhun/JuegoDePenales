@@ -85,4 +85,12 @@ public class Ball : MonoBehaviour
         yield return new WaitForSeconds(0.55f);
         gameObject.GetComponent<Rigidbody>().AddForce(ballForce);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("GoalBound"))
+        {
+            GameManager.instance.MarkGoalToPlayer(player.id);
+        }
+    }
 }

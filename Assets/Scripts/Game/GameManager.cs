@@ -12,19 +12,21 @@ public class GameManager : MonoBehaviour
     public PlayerController[] players;
     public TextMeshProUGUI player1Nickname;
     public TextMeshProUGUI player2Nickname;
-    public TextMeshProUGUI player1ScoreUI;
-    public TextMeshProUGUI player2ScoreUI;
+    public TextMeshProUGUI[] playerScoresUI;
 
-    private int player1Score;
-    private int player2Score;
+    private int[] scores;
 
     private void Awake()
     {
         instance = this;
     }
-
+    private void Start()
+    {
+        scores = new int[2];
+    }
     public void MarkGoalToPlayer(int id)
     {
-
+        scores[id]++;
+        playerScoresUI[id].text = scores[id].ToString();
     }
 }
