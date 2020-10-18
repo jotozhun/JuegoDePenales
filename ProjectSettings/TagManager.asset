@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GoalBound
   - Ball
+  - MissedGoalBound
   layers:
   - Default
   - TransparentFX

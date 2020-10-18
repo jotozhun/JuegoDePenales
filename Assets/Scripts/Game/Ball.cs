@@ -6,6 +6,10 @@ public class Ball : MonoBehaviour
 {
     public Camera cam;
     public PlayerController player;
+    [Header("Audio Effects")]
+    public AudioSource kickSound;
+    public AudioSource missedGoalSound;
+    public AudioSource celebrationGoalSound;
 
     Vector3 firstpos, lastpos;
     Vector3 startpos;
@@ -83,6 +87,7 @@ public class Ball : MonoBehaviour
     {
         player.KickBall();
         yield return new WaitForSeconds(0.55f);
+        kickSound.Play();
         gameObject.GetComponent<Rigidbody>().AddForce(ballForce);
     }
 
@@ -91,6 +96,13 @@ public class Ball : MonoBehaviour
         if(other.CompareTag("GoalBound"))
         {
             GameManager.instance.MarkGoalToPlayer(player.id);
+            celebrationGoalSound.Play();
+            missedGoalSound.Stop();
+        }else if(other.CompareTag("MissedGoalBound"))
+        {
+            GameManager.instance.MarkGoalMissedToPlayer();
+            missedGoalSound.Play();
+            celebrationGoalSound.Stop();
         }
     }
 }
