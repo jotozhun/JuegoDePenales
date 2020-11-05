@@ -7,7 +7,7 @@ using Photon.Realtime;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     public static NetworkManager instance;
-    public int maxPlayers = 2;
+    public int maxPlayers;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -16,6 +16,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
+            maxPlayers = 2;
             instance = this;
             DontDestroyOnLoad(this);
         }

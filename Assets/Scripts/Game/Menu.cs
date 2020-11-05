@@ -44,7 +44,7 @@ public class Menu : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
-            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameScene");
+            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Game");
         }
     }
 
