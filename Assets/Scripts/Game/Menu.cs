@@ -14,6 +14,7 @@ public class Menu : MonoBehaviourPunCallbacks
 
     [Header("Main Screen")]
     public TMP_InputField playerName;
+    public TMP_InputField roomName;
     public Button playButton;
 
     [Header("Waiting Room")]
@@ -28,7 +29,8 @@ public class Menu : MonoBehaviourPunCallbacks
     public void OnPlayButton()
     {
         playButton.interactable = false;
-        NetworkManager.instance.CreateRoom();
+        if(roomName.text != "")
+            NetworkManager.instance.CreateRoom(roomName.text);
     }
 
     public override void OnCreatedRoom()

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using TMPro;
+using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    public Button playButton;
     public static NetworkManager instance;
     public int maxPlayers;
     private void Awake()
@@ -30,22 +33,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
+        playButton.interactable = true;
     }
 
-    public void CreateRoom()
+    public void CreateRoom(string roomName)
     {
-        if (PhotonNetwork.CountOfRooms > 0)
-        {
-            PhotonNetwork.JoinRandomRoom();
-        }
-        else
-        {
-            RoomOptions options = new RoomOptions();
+        RoomOptions options = new RoomOptions();
 
-            options.MaxPlayers = (byte)maxPlayers;
+        options.MaxPlayers = (byte)maxPlayers;
 
-            PhotonNetwork.JoinOrCreateRoom("room", options, null, null);
-        }
+        PhotonNetwork.JoinOrCreateRoom(roomName, options, null, null);
     }
 
     [PunRPC]

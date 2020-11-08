@@ -12,8 +12,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager instance;
 
     [Header("Players Info")]
-    public TextMeshProUGUI player1Nickname;
-    public TextMeshProUGUI player2Nickname;
+    public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
 
     [Header("Players")]
@@ -54,13 +53,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         playersInGame++;
 
-        if(playersInGame == PhotonNetwork.PlayerList.Length)
+        if(PhotonNetwork.IsMasterClient && playersInGame == PhotonNetwork.PlayerList.Length)
         {
-            SpawnPlayer();
+            photonView.RPC("SpawnPlayers", RpcTarget.All);
         }
     }
 
-    void SpawnPlayer()
+    [PunRPC]
+    void SpawnPlayers()
     {
         GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, Vector3.one, Quaternion.identity);
 
@@ -89,13 +89,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         StartCoroutine(DeactivateMissedGoalBounds());
     }
 
-    //[PunRPC]
+    [PunRPC]
     public void SwitchPositions()
     {
         foreach(PlayerController player in players)
         {
-            if (!player.hasToChange)
-                return;
             if(player.isGoalKeeper)
             {
                 spawnAsKicker(player);
@@ -104,7 +102,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 spawnAsGoalKeeper(player);
             }
-            player.hasToChange = false;
         }
     }
 
@@ -129,7 +126,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DeactivateBounds();
         missedGoalAnim.SetTrigger("missedgoal");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
         ActivateBounds();
     }
 
@@ -137,7 +134,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DeactivateBounds();
         goalAnim.SetTrigger("goal");
-        yield return new WaitForSeconds(2.8f);
+        yield return new WaitForSeconds(4.8f);
         ActivateBounds();
     }
 
@@ -153,7 +150,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    void ActivateBounds()
+    public void ActivateBounds()
     {
         foreach (GameObject missedGoalBound in missedGoalBounds)
         {

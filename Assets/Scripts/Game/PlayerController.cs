@@ -38,21 +38,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
         id = player.ActorNumber;
         Debug.Log("Player id: " + id);
         GameManager.instance.players[id - 1] = this;
+        GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
 
-        // give the kicker the ball
-        if(PhotonNetwork.IsMasterClient)
-        {
+        if (id == 1)
             GameManager.instance.spawnAsKicker(this);
-            GameManager.instance.player1Nickname.text = photonPlayer.NickName;
-        }else
-        {
+        else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
-            GameManager.instance.player2Nickname.text = photonPlayer.NickName;
-        }
 
-        if(!photonView.IsMine)
+        if(photonView.IsMine)
         {
-            cam.gameObject.SetActive(false);
+            cam.gameObject.SetActive(true);
         }
     }
 
@@ -61,14 +56,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         anim = playerModel.GetComponent<Animator>();
         ballScript = ball.GetComponent<Ball>();
         ballRigBody = ball.GetComponent<Rigidbody>();
-        startpos = ball.transform.position;
+        startpos = new Vector3(0.88f, -1.565f, 1.79f);
     }
 
     private void Update()
     {
         if(!isGoalKeeper)
         {
-            photonView.RPC("Kick", RpcTarget.AllBuffered);
+            photonView.RPC("Kick", RpcTarget.All);
         }
         if(isGoalKeeper)
         {
@@ -120,14 +115,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator ReturnBall()
     {
         yield return new WaitForSeconds(3);
-        ball.transform.position = startpos;
+        ball.transform.localPosition = startpos;
         ball.transform.localRotation = Quaternion.identity;
         ballRigBody.velocity = Vector3.zero;
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
-        //GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
         this.hasToChange = true;
-        GameManager.instance.SwitchPositions();
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)
