@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -18,10 +19,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public GameObject ball;
 
     //Player components
-    private Animator anim;
+    public Animator anim;
     [HideInInspector]
     public Player photonPlayer;
     public bool hasToChange;
+    //GoalKeeper settings
+    private Vector3 playerModelStartPos;
+    private Quaternion playerModelStartRot;
+    private Vector3 firstCoverPos, lastCoverPos;
+    private Rigidbody playerRig;
+    public bool canCover;
+    public bool canJump;
     //Ball components
     private Ball ballScript;
     private Rigidbody ballRigBody;
@@ -53,11 +61,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        hasToChange = true;
         anim = playerModel.GetComponent<Animator>();
         ballScript = ball.GetComponent<Ball>();
         ballRigBody = ball.GetComponent<Rigidbody>();
         startpos = new Vector3(0.88f, -1.565f, 1.79f);
+        playerModelStartPos = playerModel.transform.localPosition;
+        playerModelStartRot = playerModel.transform.localRotation;
+        playerRig = playerModel.GetComponent<Rigidbody>();
     }
+    
 
     private void Update()
     {
@@ -67,10 +80,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         if(isGoalKeeper)
         {
-
+            photonView.RPC("TryCover", RpcTarget.All);
         }
     }
-
+    // Playability
     [PunRPC]
     public void Kick()
     {
@@ -87,6 +100,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     toKick = true;
                 }
             }
+            
         }
         if (Input.GetMouseButtonUp(0) && toKick)
         {
@@ -111,6 +125,43 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
+    [PunRPC]
+    void TryCover()
+    {
+        if(Input.GetMouseButtonDown(0) && canCover)
+        {
+            firstCoverPos = Input.mousePosition;
+            canJump = true;
+            
+        }
+        if(Input.GetMouseButtonUp(0) && canJump)
+        {
+            canCover = false;
+            canJump = false;
+            lastCoverPos = Input.mousePosition;
+
+            Vector3 distance = lastCoverPos - firstCoverPos;
+            StartCoroutine(GetPlayerSet(distance));
+        }
+    }
+
+    IEnumerator GetPlayerSet(Vector3 distance)
+    {
+        if (distance.x < 0 && distance.y > 0)
+            anim.SetTrigger("jumpLeft");
+        else if (distance.x > 0 && distance.y > 0)
+            anim.SetTrigger("jumpRight");
+        else if (distance.x < 0 && distance.y < 0)
+            anim.SetTrigger("throwLeft");
+        else if (distance.x > 0 && distance.y < 0)
+            anim.SetTrigger("throwRight");
+        yield return new WaitForSeconds(3);
+        if (this.isGoalKeeper)
+            canCover = true;
+        //playerRig.velocity = Vector3.zero;
+        //playerModel.transform.localPosition = playerModelStartPos;
+        //playerModel.transform.localRotation = playerModelStartRot;
+    }
     //Testing coroutines
     IEnumerator ReturnBall()
     {
@@ -121,7 +172,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
         GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
-        this.hasToChange = true;
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)
@@ -129,6 +179,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         anim.SetTrigger("kick");
         yield return new WaitForSeconds(0.55f);
         GameManager.instance.kickSound.Play();
+        
         ballRigBody.AddForce(ballForce);
     }
 }

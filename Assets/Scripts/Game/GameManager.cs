@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         foreach(PlayerController player in players)
         {
+            player.hasToChange = true;
             if(player.isGoalKeeper)
             {
                 spawnAsKicker(player);
@@ -108,14 +109,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void spawnAsGoalKeeper(PlayerController player)
     {
         player.isGoalKeeper = true;
+        //player.anim.SetBool("isGoalKeeper", true);
         player.gameObject.transform.position = goalKeeperSpawn.position;
         player.gameObject.transform.rotation = goalKeeperSpawn.rotation;
         player.ball.SetActive(false);
+        player.canCover = true;
     }
 
     public void spawnAsKicker(PlayerController player)
     {
         player.isGoalKeeper = false;
+        player.canCover = false;
+        //player.anim.SetBool("isGoalKeeper", false);
         player.gameObject.transform.position = kickerSpawn.position;
         player.gameObject.transform.rotation = kickerSpawn.rotation;
         player.ball.SetActive(true);

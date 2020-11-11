@@ -193,7 +193,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048221035869564738}
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 30.97, y: 2, z: 0.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -244,7 +244,10 @@ MonoBehaviour:
   playerModel: {fileID: 2048221036135990341}
   cam: {fileID: 2048221035395219228}
   ball: {fileID: 2047935535310785260}
+  anim: {fileID: 0}
   hasToChange: 0
+  canCover: 0
+  canJump: 0
 --- !u!114 &2048221035869564742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +279,7 @@ GameObject:
   - component: {fileID: 2048221036135990351}
   - component: {fileID: 5599582195545781187}
   - component: {fileID: 6141656373542298014}
+  - component: {fileID: 949979051401787026}
   m_Layer: 0
   m_Name: PlayerModel
   m_TagString: Player
@@ -291,8 +295,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048221036135990341}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.52, y: -0.933, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.52, y: -0.3, z: 0}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_Children: []
   m_Father: {fileID: 2048221035869564737}
   m_RootOrder: 0
@@ -349,10 +353,10 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048221036135990341}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: dc5f29378f83331459031190afb0a86e, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.65
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -411,6 +415,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 6141656373542298014}
+  - {fileID: 949979051401787026}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -430,11 +435,39 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: kick
+  - Type: 9
+    SynchronizeType: 2
+    Name: jumpLeft
+  - Type: 9
+    SynchronizeType: 2
+    Name: jumpRight
+  - Type: 9
+    SynchronizeType: 2
+    Name: throwLeft
+  - Type: 9
+    SynchronizeType: 2
+    Name: throwRight
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
+--- !u!114 &949979051401787026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048221036135990341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1001 &2048221036031321664
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -505,11 +538,6 @@ PrefabInstance:
     - target: {fileID: 4935240531098310, guid: ec3e8f3ed27e2244caaedaf589590a03, type: 3}
       propertyPath: m_LocalScale.z
       value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 23737651838244920, guid: ec3e8f3ed27e2244caaedaf589590a03,
-        type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec3e8f3ed27e2244caaedaf589590a03, type: 3}

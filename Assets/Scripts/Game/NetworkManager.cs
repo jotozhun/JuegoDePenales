@@ -21,6 +21,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             maxPlayers = 2;
             instance = this;
+            Screen.orientation = ScreenOrientation.Portrait;
             DontDestroyOnLoad(this);
         }
     }
@@ -49,5 +50,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void ChangeScene(string sceneName)
     {
         PhotonNetwork.LoadLevel(sceneName);
+        Screen.orientation = ScreenOrientation.Landscape;
     }
 }
