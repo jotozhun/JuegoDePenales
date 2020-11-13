@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private int[] scores;
 
+    [Header("Timer")]
+    public GameObject time;
+    private Timer timScript;
+
     private void Awake()
     {
         instance = this;
@@ -46,6 +50,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
+        timScript = time.GetComponent<Timer>();
     }
 
     [PunRPC]
@@ -68,6 +73,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         //initialize the player
         playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+
+        Timer timerScript = playerObj.GetComponent<Timer>();
+
+        timerScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
 
     //Goal and missed Goals
@@ -98,10 +107,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             if(player.isGoalKeeper)
             {
                 spawnAsKicker(player);
+                
             }
             else
             {
                 spawnAsGoalKeeper(player);
+                
             }
         }
     }
@@ -114,6 +125,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.gameObject.transform.rotation = goalKeeperSpawn.rotation;
         player.ball.SetActive(false);
         player.canCover = true;
+        timScript.R();
     }
 
     public void spawnAsKicker(PlayerController player)
@@ -124,6 +136,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.gameObject.transform.position = kickerSpawn.position;
         player.gameObject.transform.rotation = kickerSpawn.rotation;
         player.ball.SetActive(true);
+        timScript.R();
     }
     
     //Goal Bounds

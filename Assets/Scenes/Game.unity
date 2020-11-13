@@ -751,6 +751,7 @@ MonoBehaviour:
   missedGoalSound: {fileID: 1863002085}
   celebrationGoalSound: {fileID: 853477687}
   kickSound: {fileID: 654961359}
+  time: {fileID: 2030189438}
 --- !u!114 &430216123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,7 +831,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 10
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -899,13 +900,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 434498979}
-    characterCount: 2
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -5187,6 +5188,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2030189439}
+  - component: {fileID: 2030189440}
   m_Layer: 5
   m_Name: Timers
   m_TagString: Untagged
@@ -5214,6 +5216,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2030189440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030189438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2af566fff82d064419e908accb3ee74c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seconds: 10
+  sec: 10
+  textTime: {fileID: 434498979}
+  player: {fileID: 2048221035869564736, guid: 4d6f2447ca7359a4c980e5c3b7a20f68, type: 3}
 --- !u!1 &2050801836
 GameObject:
   m_ObjectHideFlags: 0
