@@ -117,7 +117,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
             force.z = 1350;
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
-            
+
+            GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
             StartCoroutine(KickAnimation(ballForce));
             ballReturned = false;
             StartCoroutine(ReturnBall());
@@ -171,7 +172,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballRigBody.velocity = Vector3.zero;
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
-        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
+        //GameManager.instance.restartTime();
+        bool change = GameManager.instance.activateSwitch();
+        if (change == true)
+        {
+            GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        }
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)
