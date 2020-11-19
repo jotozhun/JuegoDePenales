@@ -3,7 +3,37 @@ guid: b40106ef59d7b7a4c9d4ad4a8cacd20e
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01___Default
+    second: {fileID: 2100000, guid: 1979a85d3498e684faf1d6812fc756f4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Scene_-_Root.001
+    second: {fileID: 2100000, guid: aa6ea89c0d45b524d9b2e88f04208405, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shoes06.004
+    second: {fileID: 2100000, guid: 770ed802ea72e4346bacafd5ebdd65cc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: aiStandardSurface1.003
+    second: {fileID: 2100000, guid: fd024d470d2826e448669327fd806812, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: old_caucasian_male.004
+    second: {fileID: 2100000, guid: 9f72c48aad407dc4181a5803ce7dd6e4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wire_154154229
+    second: {fileID: 2100000, guid: 493c85985c6aae046880f60cf09b64b1, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
