@@ -47,6 +47,16 @@ MonoBehaviour:
   - Kick
   - SpawnPlayers
   - TryCover
+  - R
+  - Start
+  - StartTime
+  - StopTime
+  - DecreaseKicks
+  - Restart
+  - RestartKicks
+  - activateSwitch
+  - restartTime
+  - stopTime
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

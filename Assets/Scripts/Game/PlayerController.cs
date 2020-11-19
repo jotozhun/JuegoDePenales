@@ -39,6 +39,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool toKick; 
     private bool ballReturned = true;
 
+    /*[Header("Timer")]
+    public GameObject time;
+    private Timer timScript;*/
+    //public string playerPrefabLocation;
+
     [PunRPC]
     public void Initialize(Player player)
     {
@@ -69,6 +74,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         playerModelStartPos = playerModel.transform.localPosition;
         playerModelStartRot = playerModel.transform.localRotation;
         playerRig = playerModel.GetComponent<Rigidbody>();
+        //timScript = time.GetComponent<Timer>();
     }
     
 
@@ -117,11 +123,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
             force.z = 1350;
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
-            
+            //timScript.StopTime();
+            GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
+            //GameManager.instance.stopTime();
             StartCoroutine(KickAnimation(ballForce));
             ballReturned = false;
             StartCoroutine(ReturnBall());
-
+            //GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, Vector3.one, Quaternion.identity);
+            //Timer timerScript = playerObj.GetComponent<Timer>();
+            //timerScript.photonView.RPC("StopTime", RpcTarget.All, PhotonNetwork.LocalPlayer);
+            //timerScript.StopTime();
         }
     }
 
@@ -141,8 +152,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
             lastCoverPos = Input.mousePosition;
 
             Vector3 distance = lastCoverPos - firstCoverPos;
+            //timScript.StopTime();
             StartCoroutine(GetPlayerSet(distance));
+            /*GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, Vector3.one, Quaternion.identity);
+            Timer timerScript = playerObj.GetComponent<Timer>();
+            timerScript.StopTime();*/
         }
+
     }
 
     IEnumerator GetPlayerSet(Vector3 distance)
@@ -171,7 +187,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballRigBody.velocity = Vector3.zero;
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
-        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
+        //GameManager.instance.restartTime();
+        bool change = GameManager.instance.activateSwitch();
+        if (change==true)
+        {
+            GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        }
+        //GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)

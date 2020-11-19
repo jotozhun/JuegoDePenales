@@ -37,6 +37,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private int[] scores;
 
+    [Header("Timer")]
+    public GameObject time;
+    private Timer timScript;
+
+    [Header("Kicks")]
+    public GameObject kick;
+    private CountKicks kickScipt;
+
     private void Awake()
     {
         instance = this;
@@ -46,6 +54,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
+        timScript = time.GetComponent<Timer>();
+        kickScipt = kick.GetComponent<CountKicks>();
     }
 
     [PunRPC]
@@ -68,25 +78,41 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         //initialize the player
         playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+
+        Timer timerScript = playerObj.GetComponent<Timer>();
+
+        timerScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
+
+        CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
+
+        kcikScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
 
     //Goal and missed Goals
     [PunRPC]
     public void MarkGoalToPlayer(int id)
     {
+        //timScript.StopTime();
+        kickScipt.DecreaseKicks();
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
         celebrationGoalSound.Play();
         missedGoalSound.Stop();
         StartCoroutine(DeactivateGoalBounds());
+        /*timScript.R();
+        timScript.StartTime();*/
     }
 
     [PunRPC]
     public void MarkGoalMissedToPlayer()
     {
+        //timScript.StopTime();
+        kickScipt.DecreaseKicks();
         celebrationGoalSound.Stop();
         missedGoalSound.Play();
         StartCoroutine(DeactivateMissedGoalBounds());
+        /*timScript.R();
+        timScript.StartTime();*/
     }
 
     [PunRPC]
@@ -98,32 +124,53 @@ public class GameManager : MonoBehaviourPunCallbacks
             if(player.isGoalKeeper)
             {
                 spawnAsKicker(player);
+                
             }
             else
             {
                 spawnAsGoalKeeper(player);
+                
             }
         }
     }
 
     public void spawnAsGoalKeeper(PlayerController player)
     {
+        
         player.isGoalKeeper = true;
         //player.anim.SetBool("isGoalKeeper", true);
         player.gameObject.transform.position = goalKeeperSpawn.position;
         player.gameObject.transform.rotation = goalKeeperSpawn.rotation;
         player.ball.SetActive(false);
         player.canCover = true;
+        timScript.R();
+        timScript.StartTime();
+        kickScipt.RestartKicks();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            timScript.keeper = true;
+        }
+            
+        
     }
 
     public void spawnAsKicker(PlayerController player)
     {
+        
         player.isGoalKeeper = false;
         player.canCover = false;
         //player.anim.SetBool("isGoalKeeper", false);
         player.gameObject.transform.position = kickerSpawn.position;
         player.gameObject.transform.rotation = kickerSpawn.rotation;
         player.ball.SetActive(true);
+        timScript.R();
+        timScript.StartTime();
+        kickScipt.RestartKicks();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            timScript.keeper = false;
+        }
+        
     }
     
     //Goal Bounds
@@ -165,5 +212,28 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             goalBound.SetActive(true);
         }
+    }
+
+    [PunRPC]
+    public void stopTime()
+    {
+        timScript.StopTime();
+    }
+
+    [PunRPC]
+    public bool activateSwitch()
+    {
+        if (kickScipt.numKicks == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    [PunRPC]
+    public void restartTime()
+    {
+        timScript.R();
+        timScript.StartTime();
     }
 }
