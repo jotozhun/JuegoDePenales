@@ -15,11 +15,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
 
-    [Header("Players")]
-    public string playerPrefabLocation;
-    public Transform goalKeeperSpawn;
-    public Transform kickerSpawn;
-    public PlayerController[] players;
     private int playersInGame;
 
     [Header("Game Settings")]
@@ -30,19 +25,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Animator goalAnim;
     public Animator missedGoalAnim;
 
-    [Header("Audio Effects")]
-    public AudioSource missedGoalSound;
-    public AudioSource celebrationGoalSound;
-    public AudioSource kickSound;
 
     private int[] scores;
 
-    [Header("Timer")]
-    public GameObject time;
     private Timer timScript;
 
-    [Header("Kicks")]
-    public GameObject kick;
     private CountKicks kickScipt;
 
     private void Awake()
@@ -51,11 +38,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        players = new PlayerController[PhotonNetwork.PlayerList.Length];
+        GameUI.instance.players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
-        timScript = time.GetComponent<Timer>();
-        kickScipt = kick.GetComponent<CountKicks>();
+        timScript = GameUI.instance.time.GetComponent<Timer>();
+        kickScipt = GameUI.instance.kick.GetComponent<CountKicks>();
     }
 
     [PunRPC]
@@ -72,7 +59,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void SpawnPlayers()
     {
-        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, Vector3.one, Quaternion.identity);
+        GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
 
         PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
@@ -95,8 +82,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         kickScipt.DecreaseKicks();
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
-        celebrationGoalSound.Play();
-        missedGoalSound.Stop();
+        GameUI.instance.celebrationGoalSound.Play();
+        GameUI.instance.missedGoalSound.Stop();
         StartCoroutine(DeactivateGoalBounds());
     }
 
@@ -104,15 +91,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void MarkGoalMissedToPlayer()
     {
         kickScipt.DecreaseKicks();
-        celebrationGoalSound.Stop();
-        missedGoalSound.Play();
+        GameUI.instance.celebrationGoalSound.Stop();
+        GameUI.instance.missedGoalSound.Play();
         StartCoroutine(DeactivateMissedGoalBounds());
     }
 
     [PunRPC]
     public void SwitchPositions()
     {
-        foreach(PlayerController player in players)
+        foreach(PlayerController player in GameUI.instance.players)
         {
             player.hasToChange = true;
             if(player.isGoalKeeper)
@@ -130,8 +117,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         player.isGoalKeeper = true;
         //player.anim.SetBool("isGoalKeeper", true);
-        player.gameObject.transform.position = goalKeeperSpawn.position;
-        player.gameObject.transform.rotation = goalKeeperSpawn.rotation;
+        player.gameObject.transform.position = GameUI.instance.goalKeeperSpawn.position;
+        player.gameObject.transform.rotation = GameUI.instance.goalKeeperSpawn.rotation;
         player.ball.SetActive(false);
         player.canCover = true;
         timScript.R();
@@ -148,8 +135,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = false;
         player.canCover = false;
         //player.anim.SetBool("isGoalKeeper", false);
-        player.gameObject.transform.position = kickerSpawn.position;
-        player.gameObject.transform.rotation = kickerSpawn.rotation;
+        player.gameObject.transform.position = GameUI.instance.kickerSpawn.position;
+        player.gameObject.transform.rotation = GameUI.instance.kickerSpawn.rotation;
         player.ball.SetActive(true);
         timScript.R();
         timScript.StartTime();

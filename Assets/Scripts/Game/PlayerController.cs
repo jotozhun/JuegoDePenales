@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         photonPlayer = player;
         id = player.ActorNumber;
         Debug.Log("Player id: " + id);
-        GameManager.instance.players[id - 1] = this;
+        GameUI.instance.players[id - 1] = this;
         GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
 
         if (id == 1)
@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         playerModelStartPos = playerModel.transform.localPosition;
         playerModelStartRot = playerModel.transform.localRotation;
         playerRig = playerModel.GetComponent<Rigidbody>();
+        Physics2D.gravity = new Vector2(0f, -7.51f);
     }
     
 
@@ -112,9 +113,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
             Vector3 force = (distance / ((endtime - starttime) / 0.3f));
             toKick = false;
 
-            force.x = Mathf.Clamp(force.x, -800, 800);
-            force.y = Mathf.Clamp(force.y, 0, 850);
-            force.z = 1350;
+            force.x = Mathf.Clamp(force.x, -980, 980);
+            force.y = Mathf.Clamp(force.y, 0, 950);
+            //force.z = 1350;
+            force.z = 850;
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
@@ -185,7 +187,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         anim.SetTrigger("kick");
         yield return new WaitForSeconds(0.55f);
-        GameManager.instance.kickSound.Play();
+        GameUI.instance.kickSound.Play();
         
         ballRigBody.AddForce(ballForce);
     }
