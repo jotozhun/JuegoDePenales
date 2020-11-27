@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
             GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
-            GameManager.instance.photonView.RPC("keeperCover", RpcTarget.AllBuffered, true);
+            GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, true);
             StartCoroutine(KickAnimation(ballForce));
             ballReturned = false;
             StartCoroutine(ReturnBall());
@@ -203,6 +203,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballReturned = true;
         GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
         //GameManager.instance.restartTime();
+        if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
+        {
+            GameManager.instance.photonView.RPC("keeperCovered", RpcTarget.AllBuffered);
+        }
+        GameManager.instance.markGoal = false;
+        GameManager.instance.missGoal = false;
         bool change = GameManager.instance.activateSwitch();
         if (change == true)
         {
@@ -226,6 +232,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator PlayerCoverBall()
     {
         yield return new WaitForSeconds(1.5f);
-        GameManager.instance.photonView.RPC("keeperCover", RpcTarget.AllBuffered, false);
+        GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, false);
     }
 }

@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Timer timScript;
 
     private CountKicks kickScipt;
+    public bool markGoal;
+    public bool missGoal;
 
     private void Awake()
     {
@@ -38,6 +40,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
+        markGoal = false;
+        missGoal = false;
         GameUI.instance.players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
@@ -79,6 +83,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalToPlayer(int id)
     {
+        markGoal = true;
         Physics2D.gravity = new Vector2(0f, -7.51f);
         kickScipt.DecreaseKicks();
         scores[id]++;
@@ -91,6 +96,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalMissedToPlayer()
     {
+        missGoal = true;
         Physics2D.gravity = new Vector2(0f, -7.51f);
         kickScipt.DecreaseKicks();
         GameUI.instance.celebrationGoalSound.Stop();
@@ -101,7 +107,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SwitchPositions()
     {
-        foreach(PlayerController player in GameUI.instance.players)
+        markGoal = false;
+        missGoal = false;
+        foreach (PlayerController player in GameUI.instance.players)
         {
             player.hasToChange = true;
             if(player.isGoalKeeper)
@@ -215,7 +223,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void keeperCover(bool cover)
+    public void keeperCanCover(bool cover)
     {
         foreach (PlayerController player in GameUI.instance.players)
         {
@@ -224,5 +232,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 player.playerCanCover = cover;
             }
         }
+    }
+
+    [PunRPC]
+    public void keeperCovered()
+    {
+        kickScipt.DecreaseKicks();
     }
 }
