@@ -248,6 +248,7 @@ MonoBehaviour:
   hasToChange: 0
   canCover: 0
   canJump: 0
+  playerCanCover: 0
 --- !u!114 &2048221035869564742
 MonoBehaviour:
   m_ObjectHideFlags: 0

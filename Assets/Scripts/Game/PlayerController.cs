@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private float starttime, endtime;
     private bool toKick; 
     private bool ballReturned = true;
+    private Vector3 WindSpeed;
+    public bool playerCanCover;
 
     [PunRPC]
     public void Initialize(Player player)
@@ -79,7 +81,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             photonView.RPC("Kick", RpcTarget.All);
         }
-        if(isGoalKeeper)
+        if(isGoalKeeper && playerCanCover)
         {
             photonView.RPC("TryCover", RpcTarget.All);
         }
@@ -112,32 +114,56 @@ public class PlayerController : MonoBehaviourPunCallbacks
             distance.z = distance.magnitude;
             Vector3 force = (distance / ((endtime - starttime) / 0.3f));
             toKick = false;
+            /*
+            if (distance.x < 0 && distance.y > 300)
+            {
+                //anim.SetTrigger("jumpLeft");
+                WindSpeed = new Vector3(0, 0, -600);
 
-            force.x = Mathf.Clamp(force.x, -980, 980);
-            force.y = Mathf.Clamp(force.y, 0, 950);
+                //Physics2D.gravity = new Vector2(15f, -7.51f);
+                Debug.Log("jumpleft");
+                Debug.Log(WindSpeed);
+            }
+            else if (distance.x > 0 && distance.y > 300)
+            {
+                //anim.SetTrigger("jumpRight");
+                WindSpeed = new Vector3(0, 0, 600);
+                //Physics2D.gravity = new Vector2(-15f, -7.51f);
+                Debug.Log("jumpRight");
+                Debug.Log(WindSpeed);
+            }
+            else if (distance.x < 0 && distance.y < 300)
+                WindSpeed = new Vector3(0, 0, -600);
+            else if (distance.x > 0 && distance.y < 300)
+                WindSpeed = new Vector3(0, 0, 600);
+
+            */
+            force.x = Mathf.Clamp(force.x, -880, 880);
+            force.y = Mathf.Clamp(force.y, 0, 900);
             //force.z = 1350;
-            force.z = 850;
+            force.z = 830;
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
             GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
+            GameManager.instance.photonView.RPC("keeperCover", RpcTarget.AllBuffered, true);
             StartCoroutine(KickAnimation(ballForce));
             ballReturned = false;
             StartCoroutine(ReturnBall());
-
+            StartCoroutine(PlayerCoverBall());
         }
     }
 
     [PunRPC]
-    void TryCover()
+    public void TryCover()
     {
-        if(Input.GetMouseButtonDown(0) && canCover)
+        if (Input.GetMouseButtonDown(0) && canCover)
         {
             firstCoverPos = Input.mousePosition;
             canJump = true;
-            
+
         }
-        if(Input.GetMouseButtonUp(0) && canJump)
+        if (Input.GetMouseButtonUp(0) && canJump)
         {
             canCover = false;
             canJump = false;
@@ -145,7 +171,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 distance = lastCoverPos - firstCoverPos;
             StartCoroutine(GetPlayerSet(distance));
-        }
+         }
+        
     }
 
     IEnumerator GetPlayerSet(Vector3 distance)
@@ -158,7 +185,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             anim.SetTrigger("throwLeft");
         else if (distance.x > 0 && distance.y < 0)
             anim.SetTrigger("throwRight");
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(0.5f);
         if (this.isGoalKeeper)
             canCover = true;
         //playerRig.velocity = Vector3.zero;
@@ -181,14 +208,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
         }
+        WindSpeed = new Vector3(0, 0, 0);
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)
     {
+        
         anim.SetTrigger("kick");
         yield return new WaitForSeconds(0.55f);
         GameUI.instance.kickSound.Play();
-        
         ballRigBody.AddForce(ballForce);
+        yield return new WaitForSeconds(0.50f);
+        Debug.Log(WindSpeed);
+        ballRigBody.AddRelativeForce(WindSpeed);
+    }
+
+    IEnumerator PlayerCoverBall()
+    {
+        yield return new WaitForSeconds(1.5f);
+        GameManager.instance.photonView.RPC("keeperCover", RpcTarget.AllBuffered, false);
     }
 }

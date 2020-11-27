@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalToPlayer(int id)
     {
+        Physics2D.gravity = new Vector2(0f, -7.51f);
         kickScipt.DecreaseKicks();
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
@@ -90,6 +91,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalMissedToPlayer()
     {
+        Physics2D.gravity = new Vector2(0f, -7.51f);
         kickScipt.DecreaseKicks();
         GameUI.instance.celebrationGoalSound.Stop();
         GameUI.instance.missedGoalSound.Play();
@@ -132,6 +134,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void spawnAsKicker(PlayerController player)
     {
+        player.playerCanCover = false;
         player.isGoalKeeper = false;
         player.canCover = false;
         //player.anim.SetBool("isGoalKeeper", false);
@@ -209,5 +212,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         timScript.R();
         timScript.StartTime();
+    }
+
+    [PunRPC]
+    public void keeperCover(bool cover)
+    {
+        foreach (PlayerController player in GameUI.instance.players)
+        {
+            if (player.isGoalKeeper)
+            {
+                player.playerCanCover = cover;
+            }
+        }
     }
 }
