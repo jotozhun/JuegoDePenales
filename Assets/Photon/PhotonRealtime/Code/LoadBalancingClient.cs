@@ -997,11 +997,28 @@ namespace Photon.Realtime
 
             this.IsUsingNameServer = true;
 
+            if (this.State == ClientState.Authenticating)
+            {
+                if (this.LoadBalancingPeer.DebugOut >= DebugLevel.INFO)
+                {
+                    this.DebugReturn(DebugLevel.INFO, "ConnectToRegionMaster() will skip calling authenticate, as the current state is 'Authenticating'. Just wait for the result.");
+                }
+                return true;
+            }
+
             if (this.State == ClientState.ConnectedToNameServer)
             {
                 this.CloudRegion = region;
-                return this.CallAuthenticate();
+
+                bool authenticating = this.CallAuthenticate();
+                if (authenticating)
+                {
+                    this.State = ClientState.Authenticating;
+                }
+
+                return authenticating;
             }
+
 
             this.LoadBalancingPeer.Disconnect();
 

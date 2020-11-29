@@ -2189,10 +2189,15 @@ namespace Photon.Realtime
         /// <summary>
         /// Transform this object into string.
         /// </summary>
-        /// <returns>string representation of this object.</returns>
+        /// <returns>String info about this object's values.</returns>
         public override string ToString()
         {
-            return string.Format("AuthenticationValues Type: {3} UserId: {0}, GetParameters: {1} Token available: {2}", this.UserId, this.AuthGetParameters, !string.IsNullOrEmpty(this.Token), this.AuthType);
+            return string.Format("AuthenticationValues = AuthType: {0} UserId: {1}{2}{3}{4}",
+                                 this.AuthType,
+                                 this.UserId,
+                                 string.IsNullOrEmpty(this.AuthGetParameters) ? " GetParameters: yes" : "",
+                                 this.AuthPostData == null ? "" : " PostData: yes",
+                                 string.IsNullOrEmpty(this.Token) ? "" : " Token: yes");
         }
 
         /// <summary>
