@@ -96,8 +96,8 @@ public class RegistroController : MonoBehaviour
 
     IEnumerator RegisterClient(WWWForm form)
     {
-        // using (UnityWebRequest webRequest = UnityWebRequest.Post("http://oscarp.pythonanywhere.com/api/rest-auth/register/", form))
-        using (UnityWebRequest webRequest = UnityWebRequest.Post("http://127.0.0.1:8000/api/rest-auth/register/", form))
+        // using (UnityWebRequest webRequest = UnityWebRequest.Post("http://127.0.0.1:8000/api/rest-auth/register/", form))
+        using (UnityWebRequest webRequest = UnityWebRequest.Post("http://oscarp.pythonanywhere.com/api/rest-auth/register/", form))
         {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
