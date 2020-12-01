@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 4d346df3262081e419de49cf86aa9093
+=======
+<<<<<<< HEAD:Assets/FacebookSDK.meta
+guid: 998704f74a9be984d8c661eb21445ceb
+=======
+guid: 325284421737b3c4dbcacb6f67db2d68
+>>>>>>> f2d4642a6a97d3e09d54a814e267a5aa2b088b9e:Assets/Radio/imagenes/gifts.meta
+>>>>>>> f2d4642a6a97d3e09d54a814e267a5aa2b088b9e
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
