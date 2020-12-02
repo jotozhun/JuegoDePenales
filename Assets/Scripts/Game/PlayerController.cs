@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             */
             force.x = Mathf.Clamp(force.x, -880, 880);
-            force.y = Mathf.Clamp(force.y, 0, 900);
+            force.y = Mathf.Clamp(force.y, 0, 890);
             //force.z = 1350;
             force.z = 830;
 
@@ -195,7 +195,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     //Testing coroutines
     IEnumerator ReturnBall()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(3.2f);
         ball.transform.localPosition = startpos;
         ball.transform.localRotation = Quaternion.identity;
         ballRigBody.velocity = Vector3.zero;
@@ -205,7 +205,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         //GameManager.instance.restartTime();
         if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
         {
-            GameManager.instance.photonView.RPC("keeperCovered", RpcTarget.AllBuffered);
+            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
         }
         GameManager.instance.markGoal = false;
         GameManager.instance.missGoal = false;
@@ -231,7 +231,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator PlayerCoverBall()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1.1f);
         GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, false);
     }
 }
