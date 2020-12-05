@@ -82,5 +82,6 @@ public class Horario
 public class Emisora
 {
     public int id;
-    public string nombre;
+    public string nombre, slug, frecuencia_dial, tipo, url_streaming, sitio_web, direccion, descripcion, ciudad, provincia, logotipo;
+
 }
