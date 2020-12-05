@@ -233,4 +233,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
     }
+
+
 }
