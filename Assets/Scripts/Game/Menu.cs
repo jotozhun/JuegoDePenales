@@ -9,10 +9,14 @@ using TMPro;
 public class Menu : MonoBehaviourPunCallbacks
 {
     [Header("Screens")]
-    public GameObject mainScreen;
+    public GameObject gameScreen;
     public GameObject waitingScreen;
+    public GameObject loginScreen;
+    public GameObject playerScreen;
+    public GameObject estadisticsScreen;
+    public GameObject tournamentScreen;
 
-    [Header("Main Screen")]
+    [Header("Game Screen")]
     public TMP_InputField playerName;
     public TMP_InputField roomName;
     public Button playButton;
@@ -20,6 +24,22 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Waiting Room")]
     public Button cancelButton;
 
+    [Header("Login Screen")]
+    public TMP_InputField playerPassword;
+    public Button loginButton;
+
+    [Header("Player Screen")]
+    public Button playGameButton;
+    public Button tournamentButton;
+    public Button estadisticsButton;
+    public Button exitButton;
+
+    [Header("Estadistics Screen")]
+    public Button backEstadisticsButton;
+
+    [Header("Tournament Screen")]
+    public Button registerButton;
+    public Button backTournaButton;
 
     // MAIN SCREEN
     public void OnPlayerNameChanged()
@@ -36,7 +56,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         playButton.interactable = true;
-        mainScreen.SetActive(false);
+        gameScreen.SetActive(false);
         waitingScreen.SetActive(true);
     }
 
@@ -60,7 +80,88 @@ public class Menu : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         cancelButton.interactable = true;
-        mainScreen.SetActive(true);
+        gameScreen.SetActive(true);
         waitingScreen.SetActive(false);
     }
+
+    // LOGIN SCREEN
+    public void OnLoginButton()
+    {
+        loginButton.interactable = false;
+        loginScreen.SetActive(false);
+        playerScreen.SetActive(true);
+
+        ActivateAllButtonPlayerScreen();
+    }
+
+    // PLAYER SCREEN
+    public void OnPlayGameButton()
+    {
+        DesactivateAllButtonPlayerScreen();
+
+        playerScreen.SetActive(false);
+        gameScreen.SetActive(true);
+        playButton.interactable = true;
+    }
+    public void OnTournamentButton()
+    {
+        DesactivateAllButtonPlayerScreen();
+
+        playerScreen.SetActive(false);
+        tournamentScreen.SetActive(true);
+        backTournaButton.interactable = true;
+    }
+    public void OnEstadisticButton()
+    {
+        DesactivateAllButtonPlayerScreen();
+
+        playerScreen.SetActive(false);
+        estadisticsScreen.SetActive(true);
+        backEstadisticsButton.interactable = true;
+    }
+    public void OnExitButton()
+    {
+        DesactivateAllButtonPlayerScreen();
+
+        playerScreen.SetActive(false);
+        loginScreen.SetActive(true);
+        loginButton.interactable = true;
+    }
+
+    // ESTADISTICS SCREEN
+    public void OnBackEstadisticButton()
+    {
+        backEstadisticsButton.interactable = false;
+        estadisticsScreen.SetActive(false);
+        playerScreen.SetActive(true);
+
+        ActivateAllButtonPlayerScreen();
+    }
+
+    // TOURNAMENT SCREEN
+    public void OnBackTournamentButton()
+    {
+        backTournaButton.interactable = false;
+        tournamentScreen.SetActive(false);
+        playerScreen.SetActive(true);
+
+        ActivateAllButtonPlayerScreen();
+    }
+
+    public void ActivateAllButtonPlayerScreen()
+    {
+        playGameButton.interactable = true;
+        tournamentButton.interactable = true;
+        estadisticsButton.interactable = true;
+        exitButton.interactable = true;
+    }
+
+    public void DesactivateAllButtonPlayerScreen()
+    {
+        playGameButton.interactable = false;
+        tournamentButton.interactable = false;
+        estadisticsButton.interactable = false;
+        exitButton.interactable = false;
+    }
+
 }
