@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
@@ -135,6 +135,7 @@ public class RegistroController : MonoBehaviour
                 mensajeTxtmp.text = "Registro exitoso" ;
                 loadingImage.SetActive(false);
                 mensajeTxtmp.gameObject.SetActive(true);
+                 SceneManager.LoadScene("Radio/scenes/RadioScene");
                 //TODO redireccionar a otra pagina cuando se haya creado la cuenta
             }
         }

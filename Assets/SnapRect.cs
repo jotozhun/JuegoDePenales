@@ -12,16 +12,15 @@ public class SnapRect : MonoBehaviour
     float distance;
     float oldpos;
     int currentPos;
-
     public Button next;
     public Button back;
 
     void Start()
     {
-        distance = 0.5f; // 1f / (content.childCount -1) = 1/3-2= 0.5
+        distance = 1f / (content.childCount -1); // 1f / (content.childCount -1) = 1/3-2= 0.5
         pos = new float[3];
 
-        for (int i = 0; i < 3 ; i++) // content.childCount = elementos de mi objeto
+        for (int i = 0; i < content.childCount ; i++) // content.childCount = elementos de mi objeto
         {
             pos[i] = distance * i;
         }
@@ -62,30 +61,28 @@ public class SnapRect : MonoBehaviour
 
     IEnumerator nextbtn()
     {
-        while ((scrollbar.value < pos[currentPos + 1] - 0.2f))
-        {
-            if(scrollbar.value > 0.9f)
+        if(currentPos != pos.Length -1){
+            while ((scrollbar.value < pos[currentPos + 1] - 0.2f))
             {
-                scrollbar.value = 0;
-                currentPos = 0;
-            }
-            else
-            {
-                scrollbar.value = Mathf.Lerp(scrollbar.value, pos[currentPos + 1], 0.3f);
-            }
+                {
+                    scrollbar.value = Mathf.Lerp(scrollbar.value, pos[currentPos + 1], 0.3f);
+                }
             
+            }
+            oldpos = scrollbar.value;
+            yield return null;
         }
-        oldpos = scrollbar.value;
-        yield return null;
     }
 
     IEnumerator backbtn()
     {
-        while ((scrollbar.value > pos[currentPos - 1] + 0.2f) && scrollbar.value > 0)
-        {
-            scrollbar.value = Mathf.Lerp(scrollbar.value, pos[currentPos - 1], 0.3f);
+        if(currentPos != 0 ){
+            while (scrollbar.value > pos[currentPos - 1] + 0.2f)
+            {
+                scrollbar.value = Mathf.Lerp(scrollbar.value, pos[currentPos - 1], 0.3f);
+            }
+            oldpos = scrollbar.value;
+            yield return null;
         }
-        oldpos = scrollbar.value;
-        yield return null;
     }
 }

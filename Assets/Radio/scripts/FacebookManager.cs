@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Firebase.Auth;
+using System.Collections.Generic;
 using UnityEngine;
 using Facebook.Unity;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class FacebookManager : MonoBehaviour
 {
     public Button btnLogin, btnLogout, btnName;
+    Firebase.Auth.FirebaseAuth auth;
 
     private void Awake()
     {
@@ -58,9 +61,10 @@ public class FacebookManager : MonoBehaviour
             var aToken = Facebook.Unity.AccessToken.CurrentAccessToken;
             // Print current access token's User ID
             Debug.Log(aToken.UserId);
+            SignInFirebase(aToken);
             // Print current access token's granted permissions
-            foreach (string perm in aToken.Permissions)
-                Debug.Log(perm);
+            foreach (string perm in aToken.Permissions) Debug.Log(perm);
+            SceneManager.LoadScene("Radio/scenes/RadioScene");
         }
         else
         {
@@ -70,6 +74,24 @@ public class FacebookManager : MonoBehaviour
     public void FacebookLogout()
     {
         FB.LogOut();
+    }
+
+    public void SignInFirebase(AccessToken accessToken){
+      Firebase.Auth.Credential credential = Firebase.Auth.FacebookAuthProvider.GetCredential(accessToken.TokenString);
+      auth.SignInWithCredentialAsync(credential).ContinueWith(task => {
+          if (task.IsCanceled) {
+            Debug.LogError("SignInWithCredentialAsync was canceled.");
+            return;
+          }
+          if (task.IsFaulted) {
+            Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+            return;
+          }
+
+          Firebase.Auth.FirebaseUser newUser = task.Result;
+          Debug.LogFormat("User signed in successfully: {0} ({1})",
+              newUser.DisplayName, newUser.UserId);
+      });
     }
 
     public void GetName()
@@ -94,5 +116,4 @@ public class FacebookManager : MonoBehaviour
         btnLogout.onClick.AddListener(() => FacebookLogout());
         btnName.onClick.AddListener(() => GetName());
     }
-
 }

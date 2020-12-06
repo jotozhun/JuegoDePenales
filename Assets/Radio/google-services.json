@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "953018759873",
+    "firebase_url": "https://estacion-radial-d68df.firebaseio.com",
+    "project_id": "estacion-radial-d68df",
+    "storage_bucket": "estacion-radial-d68df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953018759873:android:c97fee8ff1dffc0aa17240",
+        "android_client_info": {
+          "package_name": "Software2.PruebaGame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953018759873-0gp0t72m9sgmstp7cnbm38n82hsq6pn8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "Software2.PruebaGame",
+            "certificate_hash": "7b7ef535e29ad6d79c02c264d00cd8d39b119e61"
+          }
+        },
+        {
+          "client_id": "953018759873-ug42dfrur4q66noasbrocbkoa2jjk7gv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmVIvHm2ICnX-bm-l7wJpN7DVswus7h-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953018759873-ug42dfrur4q66noasbrocbkoa2jjk7gv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

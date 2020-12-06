@@ -31,14 +31,14 @@ public class RadioController : MonoBehaviour
     int idEmisora = 13; //id en la base de datos de la emisora que se quiere obtener los segmentos actuales
 
     void Awake() {
-        StartCoroutine(GetRequest(DisplaySegments));
-        StartCoroutine(GetEmisoras());
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        StartCoroutine(GetRequest(DisplaySegments));
+        StartCoroutine(GetEmisoras());
     }
 
     // Update is called once per frame
