@@ -68,7 +68,8 @@ public class RegistroController : MonoBehaviour
         bool isValidLastPassword = checkPassword();
         bool isValidPassword2 = checkPassword2();
         bool isValidFechNac = checkFechNac();
-        if ( isValidUser && isValidLastPassword && isValidPassword2 && isValidFechNac)
+        bool isValidNumTelef = checkNumTelef();
+        if ( isValidUser && isValidLastPassword && isValidPassword2 && isValidFechNac && isValidNumTelef)
         {
             string nombresInput = nombresTxtmp.text;
             string apellidosInput = apellidosTxtmp.text;
@@ -97,7 +98,7 @@ public class RegistroController : MonoBehaviour
     IEnumerator RegisterClient(WWWForm form)
     {
         // using (UnityWebRequest webRequest = UnityWebRequest.Post("http://127.0.0.1:8000/api/rest-auth/register/", form))
-        using (UnityWebRequest webRequest = UnityWebRequest.Post("http://oscarp.pythonanywhere.com/api/rest-auth/register/", form))
+        using (UnityWebRequest webRequest = UnityWebRequest.Post("https://oscarp.pythonanywhere.com/api/rest-auth/register/", form))
         {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
@@ -270,24 +271,24 @@ public class RegistroController : MonoBehaviour
             contrasenaTxtmpError.gameObject.SetActive(true);
             return false;
         }
-        var hasNumber = new Regex(@"[0-9]+");
-        var hasUpperChar = new Regex(@"[A-Z]+");
-        var hasMinimum8Chars = new Regex(@".{8,}");
-        if (!hasNumber.IsMatch(contrasenaTxtmp.text))
+        var hasNumber = new Regex(@"[0-9]+");//quitado por orden del cliente
+        var hasUpperChar = new Regex(@"[A-Z]+");//quitado por orden del cliente
+        var hasMinimum6Chars = new Regex(@".{6,}");
+        // if (!hasNumber.IsMatch(contrasenaTxtmp.text))
+        // {
+        //     contrasenaTxtmpError.text = "Contraseña debe contener al menos un número";
+        //     contrasenaTxtmpError.gameObject.SetActive(true);
+        //     return false;
+        // }
+        // if (!hasUpperChar.IsMatch(contrasenaTxtmp.text))
+        // {
+        //     contrasenaTxtmpError.text = "Contraseña debe contener al menos una mayúscula";
+        //     contrasenaTxtmpError.gameObject.SetActive(true);
+        //     return false;
+        // }
+        if (!hasMinimum6Chars.IsMatch(contrasenaTxtmp.text))
         {
-            contrasenaTxtmpError.text = "Contraseña debe contener al menos un número";
-            contrasenaTxtmpError.gameObject.SetActive(true);
-            return false;
-        }
-        if (!hasUpperChar.IsMatch(contrasenaTxtmp.text))
-        {
-            contrasenaTxtmpError.text = "Contraseña debe contener al menos una mayúscula";
-            contrasenaTxtmpError.gameObject.SetActive(true);
-            return false;
-        }
-        if (!hasMinimum8Chars.IsMatch(contrasenaTxtmp.text))
-        {
-            contrasenaTxtmpError.text = "Contraseña debe contener al menos 8 caracteres";
+            contrasenaTxtmpError.text = "Contraseña debe contener al menos 6 caracteres";
             contrasenaTxtmpError.gameObject.SetActive(true);
             return false;
         }
@@ -334,6 +335,24 @@ public class RegistroController : MonoBehaviour
             fechNacTxtmpError.gameObject.SetActive(true);
             return false;
         }
+        if (!(int.TryParse(dia, out _)))
+        {
+            fechNacTxtmpError.text = "Campo Día tiene que ser un valor numérico";
+            fechNacTxtmpError.gameObject.SetActive(true);
+            return false;
+        }
+        if (!(int.TryParse(mes, out _)))
+        {
+            fechNacTxtmpError.text = "Campo Mes tiene que ser un valor numérico";
+            fechNacTxtmpError.gameObject.SetActive(true);
+            return false;
+        }
+        if (!(int.TryParse(anio, out _)))
+        {
+            fechNacTxtmpError.text = "Campo Año tiene que ser un valor numérico";
+            fechNacTxtmpError.gameObject.SetActive(true);
+            return false;
+        }
         if (!(int.Parse(dia)>=1 && int.Parse(dia)<=31))
         {
             fechNacTxtmpError.text = "Campo Día inválido";
@@ -343,6 +362,12 @@ public class RegistroController : MonoBehaviour
         if (!(int.Parse(mes)>=1 && int.Parse(mes)<=12))
         {
             fechNacTxtmpError.text = "Campo Mes inválido";
+            fechNacTxtmpError.gameObject.SetActive(true);
+            return false;
+        }
+        if (!(int.Parse(anio)>=1900))
+        {
+            fechNacTxtmpError.text = "Campo Año inválido";
             fechNacTxtmpError.gameObject.SetActive(true);
             return false;
         }
@@ -357,11 +382,29 @@ public class RegistroController : MonoBehaviour
         int comparacion = DateTime.Compare(fechNacTime, currentTime);    //<0 -> fechNacTime<currentTime
         if (!(comparacion<0))
         {
-            fechNacTxtmpError.text = "Fecha no puede ser mayor que la fecha actual";
+            fechNacTxtmpError.text = "Fecha es mayor que la fecha actual";
             fechNacTxtmpError.gameObject.SetActive(true);
             return false;
         }
         fechNacTxtmpError.gameObject.SetActive(false);
         return true;
     }
+
+        private bool checkNumTelef(){
+            if (string.IsNullOrEmpty(numCelularTxtmp.text))
+            {
+                numCelularTxtmpError.text = "Campo Número celular no puede estar vacío";
+                numCelularTxtmpError.gameObject.SetActive(true);
+                return false;
+            }
+            if (!(int.TryParse(numCelularTxtmp.text, out _)))
+            {
+                numCelularTxtmpError.text = "Campo Número celular tiene que ser un valor numérico";
+                numCelularTxtmpError.gameObject.SetActive(true);
+                return false;
+            }
+            numCelularTxtmpError.gameObject.SetActive(false);
+            return true;
+        }
+
 }
