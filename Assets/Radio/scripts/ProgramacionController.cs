@@ -172,8 +172,8 @@ public class ProgramacionController : MonoBehaviour
             segmentItem.transform.Find("horario").GetComponent<TextMeshProUGUI>().text = horarioFormat;
             segmentItem.transform.Find("programaBtn").GetComponent<Button>().onClick.AddListener(() => {
                 idSegmento = idActual;
-                StartCoroutine(GetSegmento(MostrarSegmento));
-                StartCoroutine(GetLocutores(MostrarLocutores));
+                StartCoroutine(GetSegmento(MostrarSegmento));   //Mostrar información del segmento que seleccionó
+                StartCoroutine(GetLocutores(MostrarLocutores)); //Mostrar locutores del segmento que seleccionó
                 InfoSegmentoContainer.SetActive(true);
                 EmisoraContainer.SetActive(false);
             });
