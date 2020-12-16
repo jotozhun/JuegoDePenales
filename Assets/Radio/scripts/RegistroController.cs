@@ -94,7 +94,7 @@ public class RegistroController : MonoBehaviour
 
 
 	}
-
+    //Registro de una nueva cuenta
     IEnumerator RegisterClient(WWWForm form)
     {
         // using (UnityWebRequest webRequest = UnityWebRequest.Post("http://127.0.0.1:8000/api/rest-auth/register/", form))
