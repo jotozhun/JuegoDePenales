@@ -52,7 +52,7 @@ public class RadioController : MonoBehaviour
     IEnumerator GetRequest(Action<SegmentoModel> onSuccess)
     {
         // using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("http://127.0.0.1:8000/api/emisoras/{0}/segmentos/today?format=json", idEmisora)))
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("http://oscarp.pythonanywhere.com/api/emisoras/{0}/segmentos/today?format=json", idEmisora)))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("https://oscarp.pythonanywhere.com/api/emisoras/{0}/segmentos/today?format=json", idEmisora)))
         {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
@@ -73,7 +73,7 @@ public class RadioController : MonoBehaviour
 
     IEnumerator GetEmisoras()
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get("http://oscarp.pythonanywhere.com/api/emisoras/"))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://oscarp.pythonanywhere.com/api/emisoras/"))
         {
             yield return webRequest.SendWebRequest();
             
