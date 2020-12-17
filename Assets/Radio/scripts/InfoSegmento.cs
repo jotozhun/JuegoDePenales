@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using TMPro;
 using System;
 using UnityEngine.Networking;
@@ -42,7 +41,7 @@ public class InfoSegmento : MonoBehaviour
     IEnumerator GetSegmento(Action<Segmento> onSuccess)
     {
         //TODO hacer un endpoint para solo consultar por un segmento por su id, con este endpoint se obtienen todos los segmentos
-        using (UnityWebRequest webRequest = UnityWebRequest.Get("http://oscarp.pythonanywhere.com/api/segmentos/"))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://oscarp.pythonanywhere.com/api/segmentos/"))
         {
             yield return webRequest.SendWebRequest();
             
@@ -91,7 +90,7 @@ public class InfoSegmento : MonoBehaviour
     IEnumerator GetLocutores(Action<LocutoresModel> onSuccess)
     {
         //TODO hacer un endpoint para solo consultar por un segmento por su id, con este endpoint se obtienen todos los segmentos
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("http://oscarp.pythonanywhere.com/api/segmentos/{0}/locutores", idSegmento)))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("https://oscarp.pythonanywhere.com/api/segmentos/{0}/locutores", idSegmento)))
         {
             yield return webRequest.SendWebRequest();
             
