@@ -164,4 +164,12 @@ public class Menu : MonoBehaviourPunCallbacks
         exitButton.interactable = false;
     }
 
+    public void OnBackToPlayerScreen()
+    {
+        gameScreen.SetActive(false);
+        playerScreen.SetActive(true);
+        ActivateAllButtonPlayerScreen();
+    }
+
+
 }
