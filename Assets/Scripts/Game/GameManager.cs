@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public bool markGoal;
     public bool missGoal;
 
+    public int numberKicks;            //Change the number kicks of players
+
     private void Awake()
     {
         instance = this;
@@ -85,7 +87,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         markGoal = true;
         //Physics2D.gravity = new Vector2(0f, -7.51f);
-        kickScipt.DecreaseKicks();
+        //kickScipt.DecreaseKicks();
+        numberKicks++;
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
         GameUI.instance.celebrationGoalSound.Play();
@@ -98,7 +101,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         missGoal = true;
         //Physics2D.gravity = new Vector2(0f, -7.51f);
-        kickScipt.DecreaseKicks();
+        //kickScipt.DecreaseKicks();
+        numberKicks++;
         GameUI.instance.celebrationGoalSound.Stop();
         GameUI.instance.missedGoalSound.Play();
         StartCoroutine(DeactivateMissedGoalBounds());
@@ -133,7 +137,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.canCover = true;
         timScript.R();
         timScript.StartTime();
-        kickScipt.RestartKicks();
+        //kickScipt.RestartKicks();
         if (PhotonNetwork.IsMasterClient)
         {
             timScript.keeper = true;
@@ -151,7 +155,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.ball.SetActive(true);
         timScript.R();
         timScript.StartTime();
-        kickScipt.RestartKicks();
+        //kickScipt.RestartKicks();
         if (PhotonNetwork.IsMasterClient)
         {
             timScript.keeper = false;
@@ -213,6 +217,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             return true;
         }
         return false;
+    }
+    
+    [PunRPC]
+    public void decreaseKicksCount()
+    {
+        kickScipt.DecreaseKicks();
     }
 
     [PunRPC]

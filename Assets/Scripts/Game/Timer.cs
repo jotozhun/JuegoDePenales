@@ -40,13 +40,26 @@ public class Timer : MonoBehaviourPunCallbacks
 
             if (PhotonNetwork.IsMasterClient && keeper == true)
             {
-                GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id + 1);
-                //photonView.RPC("SpawnPlayers", RpcTarget.All);
+                //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id + 1);
+                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
+                if (GameManager.instance.numberKicks % 2 == 0)
+                {
+                    GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
+                    //GameManager.instance.decreaseKicksCount();
+                }
+                GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
             }
             else if (PhotonNetwork.IsMasterClient && keeper == false)
             {
-                Debug.Log("Not Master player");
-                GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id);
+                //Debug.Log("Not Master player");
+                //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id);
+                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
+                if (GameManager.instance.numberKicks % 2 == 0)
+                {
+                    GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
+                    //GameManager.instance.decreaseKicksCount();
+                }
+                GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
             }
 
             bool change = GameManager.instance.activateSwitch();

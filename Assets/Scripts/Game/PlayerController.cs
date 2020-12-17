@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool ballReturned = true;
     private Vector3 WindSpeed;
     public bool playerCanCover;
+    
 
     [PunRPC]
     public void Initialize(Player player)
@@ -202,6 +203,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
         GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
+        //Debug.Log(GameManager.instance.numberKicks);
         //GameManager.instance.restartTime();
         if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
         {
@@ -209,11 +211,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         GameManager.instance.markGoal = false;
         GameManager.instance.missGoal = false;
-        bool change = GameManager.instance.activateSwitch();
-        if (change == true)
+        //bool change = GameManager.instance.activateSwitch();
+        /*if (change == true)
         {
             GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        }*/
+        if (GameManager.instance.numberKicks%2 == 0)
+        {
+            Debug.Log("DecrementarKicks");
+            GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
+            //GameManager.instance.decreaseKicksCount();
         }
+        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
         WindSpeed = new Vector3(0, 0, 0);
     }
 
