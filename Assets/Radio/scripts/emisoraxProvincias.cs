@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.Networking;
 using System;
 
 using UnityEngine.UI;
 
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class emisoraxProvincias : MonoBehaviour
 {
@@ -33,7 +33,7 @@ public class emisoraxProvincias : MonoBehaviour
     {
         int idEmisora = 13; //id en la base de datos de la emisora que se quiere obtener los emisoras actuales
         // using (UnityWebRequest webRequest = UnityWebRequest.Get(String.Format("http://127.0.0.1:8000/api/emisoras/{0}/segmentos/today?format=json", idEmisora)))
-        using (UnityWebRequest webRequest = UnityWebRequest.Get("http://oscarp.pythonanywhere.com/api/emisoras"))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://oscarp.pythonanywhere.com/api/emisoras"))
         {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
@@ -67,13 +67,15 @@ public class emisoraxProvincias : MonoBehaviour
             segmentItem.SetActive(true);
             segmentItem.transform.SetParent(segmentPrefab.transform.parent, false);
             segmentItem.transform.Find("emisora").GetComponent<TextMeshProUGUI>().text = info.emisoras[i].nombre;
+            int id = info.emisoras[i].id;
             segmentItem.transform.Find("frecuencia").GetComponent<TextMeshProUGUI>().text = info.emisoras[i].frecuencia_dial + " " + info.emisoras[i].tipo;
-           
-            //segmentItem.transform.Find("programaBtn").GetComponent<Button>().onClick.AddListener(() => {
-                
-            //});
-        
-          
+
+            segmentItem.transform.Find("emisorabtn").GetComponent<Button>().onClick.AddListener(() => {
+                idSegmento = id;
+                SceneManager.LoadScene("Radio/scenes/emisoraInfoScene");
+            });
+
+
             // TODO: ACTIVAR EL OBJETO FAVORITO DE LOS QUE EL USUARIO TIENE COMO FAVORITOS
         }
 
