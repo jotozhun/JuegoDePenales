@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Animator missedGoalAnim;
 
 
-    private int[] scores;
+    public int[] scores;
 
     private Timer timScript;
 
@@ -212,6 +212,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public bool activateSwitch()
     {
+        //Debug.Log("kicks:" + kickScipt.numKicks);
         if (kickScipt.numKicks == 0)
         {
             return true;
@@ -223,6 +224,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void decreaseKicksCount()
     {
         kickScipt.DecreaseKicks();
+    }
+
+    [PunRPC]
+    public void restartKicksCount()
+    {
+        kickScipt.RestartKicks();
     }
 
     [PunRPC]
@@ -242,6 +249,17 @@ public class GameManager : MonoBehaviourPunCallbacks
                 player.playerCanCover = cover;
             }
         }
+    }
+
+    [PunRPC]
+    public bool DrawGame()
+    {
+        //Debug.Log(scores[0]);
+        //Debug.Log(scores[1]);
+        if (scores[0] == scores[1])
+            return true;
+        return false;
+
     }
 
 

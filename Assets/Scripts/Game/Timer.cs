@@ -12,7 +12,7 @@ public class Timer : MonoBehaviourPunCallbacks
     public float seconds;
     public float sec;
     public TextMeshProUGUI textTime;
-    public PlayerController player;
+    private PlayerController playerScript;
     public bool keeper;
     public bool stopTime;
 
@@ -21,6 +21,7 @@ public class Timer : MonoBehaviourPunCallbacks
     public void Start()
     {
         sec = seconds + 1;
+        playerScript = GameUI.instance.playerObject.GetComponent<PlayerController>();
     }
 
     void Update()
@@ -37,36 +38,29 @@ public class Timer : MonoBehaviourPunCallbacks
 
         if (sec < 0.0)
         {
-
             if (PhotonNetwork.IsMasterClient && keeper == true)
             {
                 //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id + 1);
                 GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
-                if (GameManager.instance.numberKicks % 2 == 0)
-                {
-                    GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
-                    //GameManager.instance.decreaseKicksCount();
-                }
-                GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+                playerScript.checkRestartDecreaseKicks();
             }
             else if (PhotonNetwork.IsMasterClient && keeper == false)
             {
-                //Debug.Log("Not Master player");
                 //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id);
                 GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
-                if (GameManager.instance.numberKicks % 2 == 0)
-                {
-                    GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
-                    //GameManager.instance.decreaseKicksCount();
-                }
-                GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+                playerScript.checkRestartDecreaseKicks();
             }
+            /*
+            if (change == draw)
+            {
+                GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
 
-            bool change = GameManager.instance.activateSwitch();
+            }
+            GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
             if (change == true)
             {
                 GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
-            }
+            }*/
             R();
         }
     }
@@ -91,4 +85,5 @@ public class Timer : MonoBehaviourPunCallbacks
         stopTime = false;
         //enabled = true;
     }
+
 }

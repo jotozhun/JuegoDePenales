@@ -5,6 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
+using UnityEngine.UI;
 
 public class GameUI : MonoBehaviourPunCallbacks
 {
@@ -16,6 +17,7 @@ public class GameUI : MonoBehaviourPunCallbacks
     public Transform goalKeeperSpawn;
     public Transform kickerSpawn;
     public PlayerController[] players;
+    public PlayerController playerObject;
     //public int playersInGame;
 
     [Header("Audio Effects")]

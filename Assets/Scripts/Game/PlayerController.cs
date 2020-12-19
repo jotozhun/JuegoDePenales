@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         Debug.Log("Player id: " + id);
         GameUI.instance.players[id - 1] = this;
         GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
-
+        //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
             GameManager.instance.spawnAsKicker(this);
         else if (id == 2)
@@ -216,12 +216,20 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
         }*/
-        if (GameManager.instance.numberKicks%2 == 0)
+        /*if (GameManager.instance.numberKicks%2 == 0)
         {
-            Debug.Log("DecrementarKicks");
+            //Debug.Log("DecrementarKicks");
             GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
             //GameManager.instance.decreaseKicksCount();
         }
+        bool change = GameManager.instance.activateSwitch();
+        bool draw = GameManager.instance.DrawGame();
+        if (change == true && draw == true)
+        {
+            GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
+        }*/
+        checkRestartDecreaseKicks();
+
         GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
         WindSpeed = new Vector3(0, 0, 0);
     }
@@ -242,5 +250,19 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(1.1f);
         GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, false);
+    }
+
+    [PunRPC]
+    public void checkRestartDecreaseKicks()
+    {
+        if (GameManager.instance.numberKicks % 2 == 0)
+            GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
+        bool zeroKicks = GameManager.instance.activateSwitch();
+        bool draw = GameManager.instance.DrawGame();
+        if (zeroKicks == true && draw == true)
+            GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
+        else if (zeroKicks == true && draw == false)
+            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
+        
     }
 }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1583687369}
-  m_IndirectSpecularColor: {r: 0.43758515, g: 0.48543382, b: 0.56571066, a: 1}
+  m_IndirectSpecularColor: {r: 0.43758568, g: 0.48543435, b: 0.56571126, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -445,6 +445,14 @@ MonoBehaviour:
   kickerSpawn: {fileID: 1099209738}
   players:
   - {fileID: 0}
+  playerObject: {fileID: 2048221035869564736, guid: 4d6f2447ca7359a4c980e5c3b7a20f68,
+    type: 3}
+  playersName: []
+  playerFinalScore:
+  - {fileID: 0}
+  - {fileID: 0}
+  resultScreen: {fileID: 0}
+  backResult: {fileID: 0}
   missedGoalSound: {fileID: 1863002085}
   celebrationGoalSound: {fileID: 853477687}
   kickSound: {fileID: 654961359}
@@ -952,8 +960,10 @@ MonoBehaviour:
   - {fileID: 87467064}
   goalAnim: {fileID: 1211908462}
   missedGoalAnim: {fileID: 1739824779}
+  scores: 
   markGoal: 0
   missGoal: 0
+  numberKicks: 0
 --- !u!114 &430216123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8275,7 +8285,6 @@ MonoBehaviour:
   seconds: 10
   sec: 10
   textTime: {fileID: 434498979}
-  player: {fileID: 2048221035869564736, guid: 4d6f2447ca7359a4c980e5c3b7a20f68, type: 3}
   keeper: 0
   stopTime: 0
 --- !u!114 &2030189441
