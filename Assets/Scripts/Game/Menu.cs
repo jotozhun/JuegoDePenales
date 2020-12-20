@@ -12,9 +12,11 @@ public class Menu : MonoBehaviourPunCallbacks
     public GameObject gameScreen;
     public GameObject waitingScreen;
     public GameObject loginScreen;
+    public GameObject signUpScreen;
     public GameObject playerScreen;
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
+    public GameObject resultsScreen;
 
     [Header("Game Screen")]
     public TMP_InputField playerName;
@@ -28,6 +30,15 @@ public class Menu : MonoBehaviourPunCallbacks
     public TMP_InputField playerPassword;
     public Button loginButton;
 
+    [Header("SignUp Screen")]
+    public TMP_InputField registerNameInput;
+    public TMP_InputField registerUsernameInput;
+    public TMP_InputField registerEmailInput;
+    public TMP_InputField registerPasswordInput;
+    public TextMeshProUGUI registerStatusText;
+    public Button registerAccountButton;
+    public Button toLoginScreenButton;
+
     [Header("Player Screen")]
     public Button playGameButton;
     public Button tournamentButton;
@@ -40,6 +51,20 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Tournament Screen")]
     public Button registerButton;
     public Button backTournaButton;
+
+    public void SetScreen(GameObject screen)
+    {
+        gameScreen.SetActive(false);
+        waitingScreen.SetActive(false);
+        loginScreen.SetActive(false);
+        signUpScreen.SetActive(false);
+        playerScreen.SetActive(false);
+        estadisticsScreen.SetActive(false);
+        tournamentScreen.SetActive(false);
+        resultsScreen.SetActive(false);
+
+        screen.SetActive(true);
+    }
 
     // MAIN SCREEN
     public void OnPlayerNameChanged()
@@ -94,6 +119,36 @@ public class Menu : MonoBehaviourPunCallbacks
         ActivateAllButtonPlayerScreen();
     }
 
+    // SIGN UP SCREEN
+
+    public void OnRegisterButtonUI()
+    {
+        bool regName = isFieldEmpty(registerNameInput);
+        bool regUsername = isFieldEmpty(registerUsernameInput);
+        bool regEmail = isFieldEmpty(registerEmailInput);
+        bool regPass = isFieldEmpty(registerPasswordInput);
+        bool areFieldsEmpty = regName && regUsername && regEmail && regPass;
+
+        if (areFieldsEmpty)
+        {
+            registerStatusText.text = "Por favor, complete todos los campos!";
+            registerStatusText.color = Color.red;
+        }
+        else
+        {
+            StartCoroutine(NetworkManager.instance.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
+        }
+    }
+
+    bool isFieldEmpty(TMP_InputField field)
+    {
+        return field.text == "";
+    }
+
+    public void trimInputs(TMP_InputField input)
+    {
+        input.text = input.text.Trim();
+    }
     // PLAYER SCREEN
     public void OnPlayGameButton()
     {
