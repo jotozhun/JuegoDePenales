@@ -9,14 +9,18 @@ public class SnapRect : MonoBehaviour
     public Transform content;
     public Scrollbar scrollbar;
     public float[] pos;
+    public float contadorTiempo;
     float distance;
     float oldpos;
     int currentPos;
     public Button next;
     public Button back;
+    bool ejecutarBackBtn;
+    bool ejecutarNextBtn = true;
 
     void Start()
     {
+        
         distance = 1f / (content.childCount -1); // 1f / (content.childCount -1) = 1/3-2= 0.5
         pos = new float[3];
 
@@ -32,19 +36,27 @@ public class SnapRect : MonoBehaviour
         back.onClick.AddListener(() => {
             StartCoroutine(backbtn());
         });
+
+        if(contadorTiempo > 1.0){
+            StartCoroutine(nextbtn());
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        contadorTiempo += Time.deltaTime;
+         if(contadorTiempo > 3f && ejecutarNextBtn){
+            StartCoroutine(nextbtn());
+            contadorTiempo = 0;
+         }else if(contadorTiempo > 3f && ejecutarBackBtn){
+            StartCoroutine(backbtn());
+            contadorTiempo = 0;
+         }
+
         if (Input.GetMouseButton(0))
         {
             oldpos = scrollbar.value;
-            Debug.Log("El oldpos es:"+ oldpos);
-            Debug.Log("El currentpos es:" + currentPos);
-            Debug.Log("La distancia es: " + distance);
-            Debug.Log("El childcount :" + content.childCount);
-            Debug.Log("el valor del scroll:" + scrollbar.value);
         }
         else
         {
@@ -71,6 +83,10 @@ public class SnapRect : MonoBehaviour
             }
             oldpos = scrollbar.value;
             yield return null;
+        }else{
+            StartCoroutine(backbtn());
+            ejecutarBackBtn = true;
+            ejecutarNextBtn = false;
         }
     }
 
@@ -83,6 +99,11 @@ public class SnapRect : MonoBehaviour
             }
             oldpos = scrollbar.value;
             yield return null;
+        }else{
+            ejecutarBackBtn = false;
+            ejecutarNextBtn = true;
         }
     }
+
+
 }
