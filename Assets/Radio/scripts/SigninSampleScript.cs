@@ -89,6 +89,7 @@ public class SigninSampleScript : MonoBehaviour
         }
         else
         {
+            guardarInformacionUsuario(task.Result.Email,task.Result.DisplayName,"true");
             AddToInformation("Welcome: " + task.Result.DisplayName + "!");
             AddToInformation("Email = " + task.Result.Email);
             AddToInformation("Google ID Token = " + task.Result.IdToken);
@@ -123,7 +124,6 @@ public class SigninSampleScript : MonoBehaviour
         GoogleSignIn.Configuration.UseGameSignIn = false;
         GoogleSignIn.Configuration.RequestIdToken = true;
         AddToInformation("Calling SignIn Silently");
-
         GoogleSignIn.DefaultInstance.SignInSilently().ContinueWith(OnAuthenticationFinished);
     }
 
@@ -139,4 +139,10 @@ public class SigninSampleScript : MonoBehaviour
     }
 
     private void AddToInformation(string str) { infoText.text += "\n" + str; }
+
+    public void guardarInformacionUsuario(string email, string name, string inicioSesion){
+        PlayerPrefs.SetString("email",email);
+        PlayerPrefs.SetString("name",name);
+        PlayerPrefs.SetString("inicioSesion",inicioSesion);
+    }
 }
