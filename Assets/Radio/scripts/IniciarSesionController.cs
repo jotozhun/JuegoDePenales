@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 using System;
 
 
@@ -14,11 +15,16 @@ using System;
 public class IniciarSesionController : MonoBehaviour
 {
 
+    public Button btnIniciarSesion;
     public Button btnOlvidoPassword;
     public Button btnRecuperarPassword;
     public Button btnCancelar;
     public Button btnRegresarLogin;
 
+    public InputField usuario;
+    public InputField password;
+    public Text errorIniciarSesion;
+   
     public GameObject loginPage;
     public GameObject recoverPasswordPage;
     public GameObject recoverPasswordDonePage;
@@ -40,11 +46,47 @@ public class IniciarSesionController : MonoBehaviour
         btnRecuperarPassword.onClick.AddListener(recuperarPasswordOnClick);
         btnCancelar.onClick.AddListener(cancelarOnClick);
         btnRegresarLogin.onClick.AddListener(regresarLoginOnClick);
+        btnIniciarSesion.onClick.AddListener(recuperarDatosUsuario);
     }
 
     void Update()
     {
         
+    }
+
+    void recuperarDatosUsuario(){
+        string usuarioInput = usuario.text;
+        string passwordInput = password.text;
+        WWWForm form = new WWWForm();
+
+        if(!String.IsNullOrEmpty(usuarioInput) && !String.IsNullOrEmpty(passwordInput)){
+            form.AddField("username", usuarioInput);
+            form.AddField("password", passwordInput);
+            StartCoroutine(autenticarUsuario(form)); 
+        }else{
+            errorIniciarSesion.text = "Complete todos los campos";
+        }
+          
+
+    }
+
+    IEnumerator autenticarUsuario(WWWForm form)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Post("https://oscarp.pythonanywhere.com/api/autenticar/", form))
+        {
+            // Request and wait for the desired page.
+            yield return webRequest.SendWebRequest();
+            if (webRequest.isNetworkError || webRequest.isHttpError)
+            {
+                Debug.Log("Resultado: " + ": Error: " + webRequest.downloadHandler.text);
+                errorIniciarSesion.text = "Usuario o contraseña incorrectos";
+            }
+            else
+            {
+               SceneManager.LoadScene("Radio/scenes/RadioScene");
+               
+            }
+        }
     }
 
     void olvidoPasswordOnClick(){
