@@ -27,8 +27,11 @@ public class Menu : MonoBehaviourPunCallbacks
     public Button cancelButton;
 
     [Header("Login Screen")]
+    public TMP_InputField userNameInput;
     public TMP_InputField playerPassword;
+    public TextMeshProUGUI loginStatusText;
     public Button loginButton;
+    public Button toRegisterScreenButton;
 
     [Header("SignUp Screen")]
     public TMP_InputField registerNameInput;
@@ -47,6 +50,12 @@ public class Menu : MonoBehaviourPunCallbacks
 
     [Header("Estadistics Screen")]
     public Button backEstadisticsButton;
+    public TextMeshProUGUI total_partidos;
+    public TextMeshProUGUI partidos_ganados;
+    public TextMeshProUGUI partidos_perdidos;
+    public TextMeshProUGUI goles_anotados;
+    public TextMeshProUGUI goles_recibidos;
+    public TextMeshProUGUI goles_atajados;
 
     [Header("Tournament Screen")]
     public Button registerButton;
@@ -110,13 +119,22 @@ public class Menu : MonoBehaviourPunCallbacks
     }
 
     // LOGIN SCREEN
-    public void OnLoginButton()
-    {
-        loginButton.interactable = false;
-        loginScreen.SetActive(false);
-        playerScreen.SetActive(true);
 
-        ActivateAllButtonPlayerScreen();
+    public void OnLoginButtonUI()
+    {
+        bool logName = isFieldEmpty(userNameInput);
+        bool logPass = isFieldEmpty(playerPassword);
+        bool areFieldsEmpty = logName || logPass;
+
+        if (areFieldsEmpty)
+        {
+            loginStatusText.text = "Por favor, complete todos los campos!";
+            loginStatusText.color = Color.red;
+        }
+        else
+        {
+            StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
+        }
     }
 
     // SIGN UP SCREEN
@@ -127,7 +145,7 @@ public class Menu : MonoBehaviourPunCallbacks
         bool regUsername = isFieldEmpty(registerUsernameInput);
         bool regEmail = isFieldEmpty(registerEmailInput);
         bool regPass = isFieldEmpty(registerPasswordInput);
-        bool areFieldsEmpty = regName && regUsername && regEmail && regPass;
+        bool areFieldsEmpty = regName || regUsername || regEmail || regPass;
 
         if (areFieldsEmpty)
         {
@@ -150,9 +168,20 @@ public class Menu : MonoBehaviourPunCallbacks
         input.text = input.text.Trim();
     }
     // PLAYER SCREEN
+    public void OnEstadisticButtonUI()
+    {
+        NetworkManager.UserInfo info = NetworkManager.instance.userInfo;
+        total_partidos.text = info.total_partidos.ToString();
+        partidos_ganados.text = info.partidos_ganados.ToString();
+        partidos_perdidos.text = info.partidos_perdidos.ToString();
+        goles_anotados.text = info.goles_anotados.ToString();
+        goles_recibidos.text = info.goles_recibidos.ToString();
+        goles_atajados.text = info.goles_atajados.ToString();
+        SetScreen(estadisticsScreen);
+    }
+
     public void OnPlayGameButton()
     {
-        DesactivateAllButtonPlayerScreen();
 
         playerScreen.SetActive(false);
         gameScreen.SetActive(true);
@@ -160,23 +189,13 @@ public class Menu : MonoBehaviourPunCallbacks
     }
     public void OnTournamentButton()
     {
-        DesactivateAllButtonPlayerScreen();
 
         playerScreen.SetActive(false);
         tournamentScreen.SetActive(true);
         backTournaButton.interactable = true;
     }
-    public void OnEstadisticButton()
-    {
-        DesactivateAllButtonPlayerScreen();
-
-        playerScreen.SetActive(false);
-        estadisticsScreen.SetActive(true);
-        backEstadisticsButton.interactable = true;
-    }
     public void OnExitButton()
     {
-        DesactivateAllButtonPlayerScreen();
 
         playerScreen.SetActive(false);
         loginScreen.SetActive(true);
@@ -209,14 +228,6 @@ public class Menu : MonoBehaviourPunCallbacks
         tournamentButton.interactable = true;
         estadisticsButton.interactable = true;
         exitButton.interactable = true;
-    }
-
-    public void DesactivateAllButtonPlayerScreen()
-    {
-        playGameButton.interactable = false;
-        tournamentButton.interactable = false;
-        estadisticsButton.interactable = false;
-        exitButton.interactable = false;
     }
 
     public void OnBackToPlayerScreen()
