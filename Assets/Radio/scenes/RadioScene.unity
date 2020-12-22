@@ -1423,6 +1423,7 @@ MonoBehaviour:
   contentProvincias: {fileID: 197423315}
   contentSegments: {fileID: 110241805}
   contentEmisoras: {fileID: 1930805508}
+  idEmisora: 13
 --- !u!1 &637449372
 GameObject:
   m_ObjectHideFlags: 0
@@ -2940,6 +2941,7 @@ MonoBehaviour:
   content: {fileID: 781516412}
   scrollbar: {fileID: 1364614503}
   pos: []
+  contadorTiempo: 0
   next: {fileID: 1456898677}
   back: {fileID: 175696352}
 --- !u!114 &1174710136
@@ -4342,7 +4344,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Radio/scenes/emisoraxProvinciaScene
+          m_StringArgument: Radio/scenes/emisoraInfoScene
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,

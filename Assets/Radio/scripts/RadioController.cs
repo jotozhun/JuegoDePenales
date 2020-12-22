@@ -16,6 +16,7 @@ public class RadioController : MonoBehaviour
     public GameObject emisoraPrefab;
 
     private List<GameObject> segmentObjects = new List<GameObject>();
+    private List<Emisora> emisoraObjects = new List<Emisora>();
     public List<Emisora> emisoras;
     public List<string> provincias;
 
@@ -24,11 +25,13 @@ public class RadioController : MonoBehaviour
     public RectTransform contentProvincias; 
     public RectTransform contentSegments; 
     public RectTransform contentEmisoras; 
-    private float scroll_pos = 0;
-    float[] pos;
+    private float scroll_pos_provincias = 0;
+    private float scroll_pos_emisoras = 0;
+    float[] arregloPosEmi;
+    float[] arregloPosProv;
     private int posProvincia = 0;
     private int posEmisora = 0;
-    int idEmisora = 13; //id en la base de datos de la emisora que se quiere obtener los segmentos actuales
+    public int idEmisora = 13; //id en la base de datos de la emisora que se quiere obtener los segmentos actuales
 
     void Awake() {
         
@@ -45,8 +48,8 @@ public class RadioController : MonoBehaviour
     void Update()
     {
         currentSegmentTransmiting();
-        Swiper(contentProvincias, scrollbarProvincias, ref posProvincia, onChangeProvincia);/*paso por referencia*/
-        Swiper(contentEmisoras, scrollbarEmisoras, ref posEmisora, onChangeEmisora);/*paso por referencia*/
+        Swiper(contentProvincias, scrollbarProvincias, ref posProvincia, ref scroll_pos_provincias, ref arregloPosProv, onChangeProvincia);/*paso por referencia*/
+        Swiper(contentEmisoras, scrollbarEmisoras, ref posEmisora, ref scroll_pos_emisoras, ref arregloPosEmi, onChangeEmisora);/*paso por referencia*/
     }
 
     IEnumerator GetRequest(Action<SegmentoModel> onSuccess)
@@ -122,8 +125,12 @@ public class RadioController : MonoBehaviour
                 emisoraItem.transform.Find("NombreRadio").GetComponent<Text>().text = emisoras[i].nombre;
                 emisoraItem.transform.Find("emisora").GetComponent<Text>().text = emisoras[i].frecuencia_dial+" "+emisoras[i].tipo;
                 emisoraItem.SetActive(true);
-                
+                emisoraObjects.Add(emisoras[i]);
             }
+        }
+        if (emisoraObjects.Count != 0)
+        {
+            idEmisora = emisoraObjects[0].id;
         }
     }
 
@@ -201,15 +208,29 @@ public class RadioController : MonoBehaviour
     }
 
     public void onChangeEmisora(){
-        idEmisora = emisoras[posEmisora].id;
+        // Debug.Log("cambio de emis");
+        // Debug.Log("posEmisora: "+posEmisora);
+        if (emisoraObjects.Count != 0)
+        {
+            idEmisora = emisoraObjects[posEmisora].id;
+        }
         segmentObjects.Clear();
         destroyAllChildrens(contentSegments);
         StartCoroutine(GetRequest(DisplaySegments));
     }
 
     public void onChangeProvincia(){
+        // Debug.Log("cambio de prov");
+        emisoraObjects.Clear();
+        segmentObjects.Clear();
         destroyAllChildrens(contentEmisoras);
+        destroyAllChildrens(contentSegments);
         displayEmisoras();
+        if (emisoraObjects.Count != 0)
+        {
+            idEmisora = emisoraObjects[0].id;
+        }
+        StartCoroutine(GetRequest(DisplaySegments));
     }
 
     public void destroyAllChildrens(RectTransform content){
@@ -219,7 +240,7 @@ public class RadioController : MonoBehaviour
         }
     }
 
-    public void Swiper(RectTransform content, GameObject scroll, ref int posicion, Action funcion){
+    public void Swiper(RectTransform content, GameObject scroll, ref int posicion, ref float scroll_pos, ref float[] pos,  Action funcion){
         pos = new float[content.transform.childCount];
         float distance = 1f / (pos.Length - 1f);
         for (int i = 0; i < pos.Length; i++)
