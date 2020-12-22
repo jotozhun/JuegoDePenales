@@ -1734,7 +1734,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Emisoras
+  m_Text: Encuestas
 --- !u!222 &821024171
 CanvasRenderer:
   m_ObjectHideFlags: 0
