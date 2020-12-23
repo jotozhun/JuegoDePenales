@@ -203,14 +203,6 @@ public class Menu : MonoBehaviourPunCallbacks
     }
 
     // ESTADISTICS SCREEN
-    public void OnBackEstadisticButton()
-    {
-        backEstadisticsButton.interactable = false;
-        estadisticsScreen.SetActive(false);
-        playerScreen.SetActive(true);
-
-        ActivateAllButtonPlayerScreen();
-    }
 
     // TOURNAMENT SCREEN
     public void OnBackTournamentButton()
@@ -218,23 +210,12 @@ public class Menu : MonoBehaviourPunCallbacks
         backTournaButton.interactable = false;
         tournamentScreen.SetActive(false);
         playerScreen.SetActive(true);
-
-        ActivateAllButtonPlayerScreen();
-    }
-
-    public void ActivateAllButtonPlayerScreen()
-    {
-        playGameButton.interactable = true;
-        tournamentButton.interactable = true;
-        estadisticsButton.interactable = true;
-        exitButton.interactable = true;
     }
 
     public void OnBackToPlayerScreen()
     {
         gameScreen.SetActive(false);
         playerScreen.SetActive(true);
-        ActivateAllButtonPlayerScreen();
     }
 
 

@@ -6,6 +6,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -108,20 +109,27 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             else
             {
                 string resp = webRequest.downloadHandler.text;
-                status.text = resp;
-                status.color = Color.green;
-                if (!status.text.Contains("Error"))
+                if (!resp.Contains("Error"))
                 {
                     userInfo = JsonUtility.FromJson<UserInfo>(resp);
-                    Debug.Log(userInfo.nombre);
-                    yield return new WaitForSeconds(2);
-                    loginScreen.SetActive(false);
-                    playerScreen.SetActive(true);
+                    status.text = "Bienvenido " + userInfo.username + "!";
+                    status.color = Color.green;
+                    if (!userInfo.isadmin)
+                    {
+                        yield return new WaitForSeconds(2);
+                        loginScreen.SetActive(false);
+                        playerScreen.SetActive(true);
+                    }
+                }
+                else
+                {
+                    status.text = resp;
+                    status.color = Color.red;
                 }
             }
         }
     }
-
+    
     public class UserInfo
     {
         public int id_user;
@@ -139,5 +147,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         public int goles_atajados;
         public int goles_recibidos;
         public int posicion_ranking;
+    }
+
+    public class TorneoInfo
+    {
+        public int id_torneo;
+        public string nombre_torneo;
+        public DateTime fecha_inicio;
+        public DateTime fecha_fin;
+        public int num_participantes;
+        public int num_goles;
+        public int tiempo_espera;
+        public int tiempo_patear;
+        public int num_grupos;
     }
 }
