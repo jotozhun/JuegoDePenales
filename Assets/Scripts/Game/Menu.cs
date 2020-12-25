@@ -17,6 +17,8 @@ public class Menu : MonoBehaviourPunCallbacks
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
     public GameObject resultsScreen;
+    public GameObject adminScreen;
+    public GameObject torneoAdministracionScreen;
 
     [Header("Game Screen")]
     public TMP_InputField playerName;
@@ -71,6 +73,8 @@ public class Menu : MonoBehaviourPunCallbacks
         estadisticsScreen.SetActive(false);
         tournamentScreen.SetActive(false);
         resultsScreen.SetActive(false);
+        adminScreen.SetActive(false);
+        torneoAdministracionScreen.SetActive(false);
 
         screen.SetActive(true);
     }

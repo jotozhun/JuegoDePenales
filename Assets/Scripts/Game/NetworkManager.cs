@@ -17,11 +17,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Estadisticas")]
     public UserInfo userInfo;
 
+    [Header("Torneo")]
+    public Button signInTournaButton;
+    public TorneoInfo torneoInfo;
+    public PremioInfoList premiosInfo;
+
+    [Header("Admin")]
+    public Button crearTorneoButton;
+    public Button configurarTorneoButton;
+
+    [Header("Player")]
+    public Button administradorButton;
+
     public Button playButton;
     public static NetworkManager instance;
     public int maxPlayers;
     string regUri = "http://localhost/JuegoPenales/registerUser.php";
     string logUri = "http://localhost/JuegoPenales/loginUser.php";
+    string torneoInfoUri = "http://localhost/JuegoPenales/isTorneo.php";
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -114,17 +127,54 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     userInfo = JsonUtility.FromJson<UserInfo>(resp);
                     status.text = "Bienvenido " + userInfo.username + "!";
                     status.color = Color.green;
-                    if (!userInfo.isadmin)
-                    {
-                        yield return new WaitForSeconds(2);
-                        loginScreen.SetActive(false);
-                        playerScreen.SetActive(true);
+                    yield return new WaitForSeconds(2);
+                    if (userInfo.isadmin)
+                    { 
+                        administradorButton.gameObject.SetActive(true);
                     }
+                    else
+                    {
+                        administradorButton.gameObject.SetActive(false);
+                    }
+                    loginScreen.SetActive(false);
+                    playerScreen.SetActive(true);
+                    status.text = "";
+                    StartCoroutine(GetTorneoInfo());
                 }
                 else
                 {
                     status.text = resp;
                     status.color = Color.red;
+                }
+            }
+        }
+    }
+
+    public IEnumerator GetTorneoInfo()
+    {
+        using(UnityWebRequest webRequest = UnityWebRequest.Get(torneoInfoUri))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if(webRequest.isNetworkError)
+            {
+                Debug.Log(webRequest.error);
+            }
+            else
+            {
+                string resp = webRequest.downloadHandler.text;
+                if (!resp.Contains("Error"))
+                {
+                    torneoInfo = JsonUtility.FromJson<TorneoInfo>(resp);
+                    if (!userInfo.isadmin)
+                    {
+                        signInTournaButton.interactable = true;
+                    }
+                    configurarTorneoButton.interactable = true;
+                }
+                else
+                {
+                    crearTorneoButton.interactable = true;
                 }
             }
         }
@@ -160,5 +210,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         public int tiempo_espera;
         public int tiempo_patear;
         public int num_grupos;
+    }
+
+    public class PremioInfo
+    {
+        public int id_premio;
+        public int id_torneo;
+        public string titulo;
+        public string sponsor;
+        public string descripcion;
+        public int posicion;
+    }
+
+    public class PremioInfoList
+    {
+        public List<PremioInfo> premiosInfo;
     }
 }
