@@ -13,7 +13,9 @@ public class GameUIPractice : MonoBehaviour
     public static GameUIPractice instance;
 
     [Header("Players")]
-    public string playerPrefabLocation;
+    public GameObject playerPrefabLocation;
+    public GameObject stadiumPrefabLocation;
+    //public GameObject groundPrefabLocation;
     public Transform goalKeeperSpawn;
     public Transform kickerSpawn;
     public PlayerControllerPractice[] players;

@@ -48,10 +48,8 @@ public class PlayerControllerPractice : MonoBehaviour
         //GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         GameUIPractice.instance.players[0] = this;
-        GameManagerPractice.instance.spawnAsKicker();
+        GameManagerPractice.instance.spawnAsKicker(this);
         cam.gameObject.SetActive(true);
-        Debug.Log("CamaraAtiva");
-
     }
 
     private void Start()
@@ -89,7 +87,7 @@ public class PlayerControllerPractice : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.name == "Soccer Ball" && hit.transform.GetComponent<BallPractice>().player.id == id)
+                if (hit.transform.name == "Soccer Ball Practice" )
                 {
                     starttime = Time.time;
                     firstpos = Input.mousePosition;
