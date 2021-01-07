@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class Menu : MonoBehaviourPunCallbacks
@@ -62,6 +63,21 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Tournament Screen")]
     public Button registerButton;
     public Button backTournaButton;
+
+
+    public static Menu instance;
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            Screen.orientation = ScreenOrientation.Portrait;
+            DontDestroyOnLoad(this);
+        }
+    }
 
     public void SetScreen(GameObject screen)
     {
@@ -191,6 +207,13 @@ public class Menu : MonoBehaviourPunCallbacks
         gameScreen.SetActive(true);
         playButton.interactable = true;
     }
+
+    public void OnPracticarButton()
+    {
+        Screen.orientation = ScreenOrientation.Landscape;
+        SceneManager.LoadScene("GamePractice");
+    }
+
     public void OnTournamentButton()
     {
 
@@ -200,7 +223,6 @@ public class Menu : MonoBehaviourPunCallbacks
     }
     public void OnExitButton()
     {
-
         playerScreen.SetActive(false);
         loginScreen.SetActive(true);
         loginButton.interactable = true;

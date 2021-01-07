@@ -248,6 +248,7 @@ public class GameManagerPractice : MonoBehaviour
 
     public void OnGetOutPractice()
     {
+        Screen.orientation = ScreenOrientation.Portrait;
         SceneManager.LoadScene("Menu");
     }
 }
