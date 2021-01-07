@@ -129,18 +129,32 @@ public class PlayerControllerPractice : MonoBehaviour
                 WindSpeed = new Vector3(0, 0, 600);
 
             */
-            force.x = Mathf.Clamp(force.x, -880, 880);
-            force.y = Mathf.Clamp(force.y, 0, 890);
-            //force.z = 1350;
-            force.z = 830;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.transform.name == "KickLimit")
+                {
+                    
+                    Vector3 kickLimitPosition = new Vector3(lastpos.x, lastpos.y ,hit.collider.transform.position.z);
+                    Debug.Log(kickLimitPosition);
 
-            Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
+                    force.x = Mathf.Clamp(force.x, -880, 880);
+                    force.y = Mathf.Clamp(force.y, 0, 890);
+                    //force.z = 1350;
+                    force.z = 830;
 
-            GameManagerPractice.instance.stopTime();
-            //GameManagerPractice.instance.keeperCanCover(true);
-            StartCoroutine(KickAnimation(ballForce));
-            ballReturned = false;
-            StartCoroutine(ReturnBall());
+                    Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
+                    Debug.Log(ballForce);
+                    GameManagerPractice.instance.stopTime();
+                    //GameManagerPractice.instance.keeperCanCover(true);
+                    StartCoroutine(KickAnimation(ballForce));
+                    ballReturned = false;
+                    StartCoroutine(ReturnBall());
+                }
+
+            }
             //StartCoroutine(PlayerCoverBall());
         }
     }
