@@ -62,7 +62,7 @@ public class PlayerControllerPractice : MonoBehaviour
         playerModelStartPos = playerModel.transform.localPosition;
         playerModelStartRot = playerModel.transform.localRotation;
         playerRig = playerModel.GetComponent<Rigidbody>();
-        Physics2D.gravity = new Vector2(0f, -7.51f);
+        Physics2D.gravity = new Vector2(0f, -6.71f);
     }
     
 
@@ -100,53 +100,46 @@ public class PlayerControllerPractice : MonoBehaviour
         {
             endtime = Time.time;
             lastpos = Input.mousePosition;
-
+            Debug.Log("last" + lastpos);
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
-            Vector3 force = (distance / ((endtime - starttime) / 0.3f));
+            Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
+            //Vector3 force = (distance / ((endtime - starttime) / 0.41f));   
             toKick = false;
-            /*
-            if (distance.x < 0 && distance.y > 300)
-            {
-                //anim.SetTrigger("jumpLeft");
-                WindSpeed = new Vector3(0, 0, -600);
-
-                //Physics2D.gravity = new Vector2(15f, -7.51f);
-                Debug.Log("jumpleft");
-                Debug.Log(WindSpeed);
-            }
-            else if (distance.x > 0 && distance.y > 300)
-            {
-                //anim.SetTrigger("jumpRight");
-                WindSpeed = new Vector3(0, 0, 600);
-                //Physics2D.gravity = new Vector2(-15f, -7.51f);
-                Debug.Log("jumpRight");
-                Debug.Log(WindSpeed);
-            }
-            else if (distance.x < 0 && distance.y < 300)
-                WindSpeed = new Vector3(0, 0, -600);
-            else if (distance.x > 0 && distance.y < 300)
-                WindSpeed = new Vector3(0, 0, 600);
-
+    /*        Vector3 mousePos = Input.mousePosition;
+            mousePos.z = cam.nearClipPlane;
+            Vector3 worldPosition = cam.ScreenToWorldPoint(mousePos);
+            Debug.Log("WorldpOs" + worldPosition);
             */
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            
+/*
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            {
+                if (hit.transform.name == "KickLimit")
+                {
+                    Vector3 kikkkk = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+                    Debug.Log("kik"+kikkkk);                    
+                }
+
+            }
+*/
             if (Physics.Raycast(ray, out hit))
             {
                 if (hit.transform.name == "KickLimit")
                 {
-                    
-                    Vector3 kickLimitPosition = new Vector3(lastpos.x, lastpos.y ,hit.collider.transform.position.z);
-                    Debug.Log(kickLimitPosition);
-
-                    force.x = Mathf.Clamp(force.x, -880, 880);
-                    force.y = Mathf.Clamp(force.y, 0, 890);
-                    //force.z = 1350;
-                    force.z = 830;
-
+                    //Vector3 kickLimitPosition = new Vector3(hit.point.x, hit.collider.transform.position.y, hit.collider.transform.position.z);
+                    //Vector3 kickLimitPosition = new Vector3(lastpos.x, lastpos.y ,hit.collider.transform.position.z);
+                    //Debug.Log("kick"+kickLimitPosition);
+                    Debug.Log("dd" + force);
+                    //force.x = Mathf.Clamp(force.x, -880, 880);
+                    //force.y = Mathf.Clamp(force.y, 0, 890);
+                    //force.z = 830;
+                    force.y = Mathf.Clamp(force.y, 0, 650);
+                    force.z = Mathf.Clamp(force.z+120, 520, 700);
                     Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
-                    Debug.Log(ballForce);
+
+                    Debug.Log("real"+ballForce);
                     GameManagerPractice.instance.stopTime();
                     //GameManagerPractice.instance.keeperCanCover(true);
                     StartCoroutine(KickAnimation(ballForce));
