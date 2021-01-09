@@ -32,9 +32,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Button playButton;
     public static NetworkManager instance;
     public int maxPlayers;
-    string regUri = "http://localhost/JuegoPenales/registerUser.php";
-    string logUri = "http://localhost/JuegoPenales/loginUser.php";
-    string torneoInfoUri = "http://localhost/JuegoPenales/isTorneo.php";
+    string regUri = "https://juego-penales.herokuapp.com/unity/register.php";
+    //string logUri = "http://localhost/JuegoPenales/loginUser.php";
+    string logUri = "https://juego-penales.herokuapp.com/unity/login.php";
+    string torneoInfoUri = "https://juego-penales.herokuapp.com/unity/isTorneo.php";
     private void Awake()
     {
         if (instance != null && instance != this)
