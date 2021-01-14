@@ -6,41 +6,75 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     [Header("Screens")]
     public GameObject loginScreen;
-    public GameObject playerScreen;
+    public GameObject registerScreen;
+    //public GameObject playerScreen;
+
+    [Header("Buttons")]
+    public Button loginButton;
+    public Button registerButton;
+    public Button toRegisterButton;
+    public Button toLoginButton;
 
     [Header("Estadisticas")]
     public UserInfo userInfo;
 
     [Header("Torneo")]
-    public Button signInTournaButton;
+    //public Button signInTournaButton;
     public TorneoInfo torneoInfo;
     public PremioInfoList premiosInfo;
 
+    [Header("Register")]
+    public TMP_InputField registerNameInput;
+    public TMP_InputField registerUsernameInput;
+    public TMP_InputField registerEmailInput;
+    public TMP_InputField registerPasswordInput;
+    public TextMeshProUGUI registerStatusText;
+
+    [Header("Login")]
+    public TMP_InputField userNameInput;
+    public TMP_InputField playerPassword;
+    public TextMeshProUGUI loginStatusText;
+
+    /*
     [Header("Admin")]
     public Button crearTorneoButton;
     public Button configurarTorneoButton;
 
     [Header("Player")]
     public Button administradorButton;
-
+   
     public Button playButton;
+    */
     public static NetworkManager instance;
     public int maxPlayers;
+    public bool isConnected;
     string regUri = "https://juego-penales.herokuapp.com/unity/register.php";
     //string logUri = "http://localhost/JuegoPenales/loginUser.php";
     string logUri = "https://juego-penales.herokuapp.com/unity/login.php";
     string torneoInfoUri = "https://juego-penales.herokuapp.com/unity/isTorneo.php";
+    string resultToUserUri = "https://juego-penales.herokuapp.com/unity/addMatchResults.php";
+    //string resultToUserUri = "http://localhost/WebJuegoEnLinea/unity/addMatchResults.php";
     private void Awake()
     {
+        
+        Debug.Log(photonView.ViewID);
+        maxPlayers = 3;
+        instance = this;
+        Screen.orientation = ScreenOrientation.Portrait;
+        DontDestroyOnLoad(this);
+        photonView.ViewID = 1;
+        /*
         if (instance != null && instance != this)
         {
-            gameObject.SetActive(false);
+            // gameObject.SetActive(false);
+            Destroy(gameObject);
         }
         else
         {
@@ -49,6 +83,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Screen.orientation = ScreenOrientation.Portrait;
             DontDestroyOnLoad(this);
         }
+        */
     }
 
     private void Start()
@@ -59,7 +94,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
-        playButton.interactable = true;
+        loginButton.interactable = true;
     }
 
     public void CreateRoom(string roomName)
@@ -78,8 +113,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.orientation = ScreenOrientation.Landscape;
     }
 
+    void ActivateButtons()
+    {
+        loginButton.interactable = true;
+        toLoginButton.interactable = true;
+        registerButton.interactable = true;
+        toRegisterButton.interactable = true;
+    }    
+
+    void DeactivateButtons()
+    {
+        loginButton.interactable = false;
+        toLoginButton.interactable = false;
+        registerButton.interactable = false;
+        toRegisterButton.interactable = false;
+    }
+
+    public void OnPLayerNameChanged()
+    {
+        PhotonNetwork.NickName = userNameInput.text;
+    }
+
     public IEnumerator RegisterUser(string name, string username, string email, string password, TextMeshProUGUI status)
     {
+        DeactivateButtons();
         WWWForm form = new WWWForm();
         form.AddField("regName", name);
         form.AddField("regUser", username);
@@ -101,11 +158,49 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 status.text = webRequest.downloadHandler.text;
                 status.color = Color.green;
             }
+            ActivateButtons();
         }
+    }
+
+    public void OnRegisterButtonUI()
+    {
+        bool regName = isFieldEmpty(registerNameInput);
+        bool regUsername = isFieldEmpty(registerUsernameInput);
+        bool regEmail = isFieldEmpty(registerEmailInput);
+        bool regPass = isFieldEmpty(registerPasswordInput);
+        bool areFieldsEmpty = regName || regUsername || regEmail || regPass;
+
+        if (areFieldsEmpty)
+        {
+            registerStatusText.text = "Por favor, complete todos los campos!";
+            registerStatusText.color = Color.red;
+        }
+        else
+        {
+            StartCoroutine(RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
+        }
+    }
+
+    bool isFieldEmpty(TMP_InputField field)
+    {
+        return field.text == "";
+    }
+
+    public void trimInputs(TMP_InputField input)
+    {
+        input.text = input.text.Trim();
+    }
+
+    public void SetScreen(GameObject screen)
+    {
+        loginScreen.SetActive(false);
+        registerScreen.SetActive(false);
+        screen.SetActive(true);
     }
 
     public IEnumerator LoginUser(string username, string password, TextMeshProUGUI status)
     {
+        DeactivateButtons();
         WWWForm form = new WWWForm();
         form.AddField("logUser", username);
         form.AddField("logPass", password);
@@ -114,7 +209,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
-
+            ActivateButtons();
             if (webRequest.isNetworkError)
             {
                 status.text = webRequest.error;
@@ -129,18 +224,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     status.text = "Bienvenido " + userInfo.username + "!";
                     status.color = Color.green;
                     yield return new WaitForSeconds(2);
-                    if (userInfo.isadmin)
+                    /*if (userInfo.isadmin)
                     { 
                         administradorButton.gameObject.SetActive(true);
                     }
                     else
                     {
                         administradorButton.gameObject.SetActive(false);
-                    }
+                    }*/
+                    isConnected = true;
                     loginScreen.SetActive(false);
-                    playerScreen.SetActive(true);
+                    //playerScreen.SetActive(true);
                     status.text = "";
                     StartCoroutine(GetTorneoInfo());
+                    SceneManager.LoadScene("Menu");
                 }
                 else
                 {
@@ -150,6 +247,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    public void OnLoginButtonUI()
+    {
+        bool logName = isFieldEmpty(userNameInput);
+        bool logPass = isFieldEmpty(playerPassword);
+        bool areFieldsEmpty = logName || logPass;
+
+        if (areFieldsEmpty)
+        {
+            loginStatusText.text = "Por favor, complete todos los campos!";
+            loginStatusText.color = Color.red;
+        }
+        else
+        {
+            StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
+        }
+    }
+
 
     public IEnumerator GetTorneoInfo()
     {
@@ -167,19 +282,72 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 if (!resp.Contains("Error"))
                 {
                     torneoInfo = JsonUtility.FromJson<TorneoInfo>(resp);
+                    /*
                     if (!userInfo.isadmin)
                     {
                         signInTournaButton.interactable = true;
                     }
-                    configurarTorneoButton.interactable = true;
+                    */
+                    //configurarTorneoButton.interactable = true;
                 }
+                /*
                 else
                 {
                     crearTorneoButton.interactable = true;
                 }
+                */
             }
         }
     }
+
+    public IEnumerator AddResultToUser(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
+    {
+        userInfo.total_partidos += 1;
+        if(isWin)
+        {
+            userInfo.partidos_ganados += 1;
+        }
+        else
+        {
+            userInfo.partidos_perdidos += 1;
+        }
+        userInfo.goles_anotados += golesAnotados;
+        userInfo.goles_atajados += golesAtajados;
+        userInfo.goles_recibidos += golesRecibidos;
+       
+        WWWForm form = new WWWForm();
+        form.AddField("id_user", userInfo.id_user);
+        form.AddField("total_partidos", userInfo.total_partidos);
+        form.AddField("partidos_ganados", userInfo.partidos_ganados);
+        form.AddField("partidos_perdidos", userInfo.partidos_perdidos);
+        form.AddField("goles_anotados", userInfo.goles_anotados);
+        form.AddField("goles_atajados", userInfo.goles_atajados);
+        form.AddField("goles_recibidos", userInfo.goles_recibidos);
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Post(resultToUserUri, form))
+        {
+            yield return webRequest.SendWebRequest();
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log(webRequest.error);
+            }
+            else
+            {
+                string resp = webRequest.downloadHandler.text;
+                Debug.Log(resp);
+                /*if (!resp.Contains("Error"))
+                {
+                    
+                }*/
+            }
+        }
+    }
+
+    public void OnUpdateUserInfo(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
+    {
+        StartCoroutine(AddResultToUser(golesAnotados, golesRecibidos, golesAtajados, isWin));
+    }
+
     
     public class UserInfo
     {

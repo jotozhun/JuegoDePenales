@@ -113,7 +113,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
-            Vector3 force = (distance / ((endtime - starttime) / 0.3f));
+            //Vector3 force = (distance / ((endtime - starttime) / 0.3f));
+            Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
             toKick = false;
             /*
             if (distance.x < 0 && distance.y > 300)

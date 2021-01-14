@@ -46,6 +46,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public Button toLoginScreenButton;
 
     [Header("Player Screen")]
+    public TextMeshProUGUI playername;
     public Button playGameButton;
     public Button tournamentButton;
     public Button estadisticsButton;
@@ -66,16 +67,12 @@ public class Menu : MonoBehaviourPunCallbacks
 
 
     public static Menu instance;
-    private void Awake()
+    private void Start()
     {
-        if (instance != null && instance != this)
+        if (NetworkManager.instance.isConnected)
         {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            Screen.orientation = ScreenOrientation.Portrait;
-            DontDestroyOnLoad(this);
+            SetScreen(playerScreen);
+            playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
         }
     }
 
@@ -116,7 +113,7 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == NetworkManager.instance.maxPlayers)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == NetworkManager.instance.maxPlayers - 2)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
@@ -228,6 +225,20 @@ public class Menu : MonoBehaviourPunCallbacks
         loginButton.interactable = true;
     }
 
+    public void OnLogoutButton()
+    {
+        Destroy(NetworkManager.instance.gameObject);
+        StartCoroutine(DisconnectAndLoad());
+    }
+
+    IEnumerator DisconnectAndLoad()
+    {
+        PhotonNetwork.Disconnect();
+        while (PhotonNetwork.IsConnected)
+            yield return null;
+        SceneManager.LoadScene("GameAccount");
+    }
+
     // ESTADISTICS SCREEN
 
     // TOURNAMENT SCREEN
@@ -244,5 +255,11 @@ public class Menu : MonoBehaviourPunCallbacks
         playerScreen.SetActive(true);
     }
 
+    //TESTING
+    //Test Actualizar información de usuario
+    public void TestUpdateUserInfo()
+    {
+        StartCoroutine(NetworkManager.instance.AddResultToUser(4, 3, 1, true));
+    }
 
 }
