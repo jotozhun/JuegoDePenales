@@ -100,7 +100,7 @@ public class PlayerControllerPractice : MonoBehaviour
         {
             endtime = Time.time;
             lastpos = Input.mousePosition;
-            Debug.Log("last" + lastpos);
+            //Debug.Log("last" + lastpos);
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
             Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
@@ -131,7 +131,7 @@ public class PlayerControllerPractice : MonoBehaviour
                     //Vector3 kickLimitPosition = new Vector3(hit.point.x, hit.collider.transform.position.y, hit.collider.transform.position.z);
                     //Vector3 kickLimitPosition = new Vector3(lastpos.x, lastpos.y ,hit.collider.transform.position.z);
                     //Debug.Log("kick"+kickLimitPosition);
-                    Debug.Log("dd" + force);
+                    //Debug.Log("dd" + force);
                     //force.x = Mathf.Clamp(force.x, -880, 880);
                     //force.y = Mathf.Clamp(force.y, 0, 890);
                     //force.z = 830;
@@ -139,7 +139,7 @@ public class PlayerControllerPractice : MonoBehaviour
                     force.z = Mathf.Clamp(force.z+120, 520, 700);
                     Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
-                    Debug.Log("real"+ballForce);
+                    //Debug.Log("real"+ballForce);
                     GameManagerPractice.instance.stopTime();
                     //GameManagerPractice.instance.keeperCanCover(true);
                     StartCoroutine(KickAnimation(ballForce));

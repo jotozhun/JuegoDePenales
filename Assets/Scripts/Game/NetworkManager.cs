@@ -65,7 +65,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         
         Debug.Log(photonView.ViewID);
-        maxPlayers = 3;
+        maxPlayers = 2;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);

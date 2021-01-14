@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -49,7 +50,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         id = player.ActorNumber;
         Debug.Log("Player id: " + id);
         GameUI.instance.players[id - 1] = this;
-        GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
+        GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
+        //GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
             GameManager.instance.spawnAsKicker(this);
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         playerModelStartPos = playerModel.transform.localPosition;
         playerModelStartRot = playerModel.transform.localRotation;
         playerRig = playerModel.GetComponent<Rigidbody>();
-        Physics2D.gravity = new Vector2(0f, -7.51f);
+        Physics2D.gravity = new Vector2(0f, -6.71f);
     }
     
 
@@ -140,10 +142,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 WindSpeed = new Vector3(0, 0, 600);
 
             */
-            force.x = Mathf.Clamp(force.x, -880, 880);
-            force.y = Mathf.Clamp(force.y, 0, 890);
-            //force.z = 1350;
-            force.z = 830;
+            //force.x = Mathf.Clamp(force.x, -880, 880);
+            //force.y = Mathf.Clamp(force.y, 0, 890);
+            //force.z = 830;
+
+            force.y = Mathf.Clamp(force.y, 0, 650);
+            force.z = Mathf.Clamp(force.z + 120, 520, 700);
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
@@ -256,14 +260,35 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [PunRPC]
     public void checkRestartDecreaseKicks()
     {
-        if (GameManager.instance.numberKicks % 2 == 0)
+        if (GameManager.instance.numberKicks % 2 == 0) {
             GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
+            bool winGame = GameManager.instance.WinGame();
+            if (winGame == true)
+                LeaveGame();
+        }
         bool zeroKicks = GameManager.instance.activateSwitch();
         bool draw = GameManager.instance.DrawGame();
         if (zeroKicks == true && draw == true)
             GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
         else if (zeroKicks == true && draw == false)
-            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
-        
+            LeaveGame();
+
+
+
+
+    }
+    public void LeaveGame()
+    {
+        Destroy(NetworkManager.instance.gameObject);
+        StartCoroutine(LeaveAndLoad());
+    }
+
+    IEnumerator LeaveAndLoad()
+    {
+        PhotonNetwork.LeaveRoom();
+        while (PhotonNetwork.InRoom)
+            yield return null;
+        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
+        //SceneManager.LoadScene("Menu");
     }
 }

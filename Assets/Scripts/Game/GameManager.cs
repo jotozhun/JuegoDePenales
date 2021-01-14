@@ -262,5 +262,20 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
+    [PunRPC]
+    public bool WinGame()
+    {
+        int lastKicks = kickScipt.numKicks;
+        int canWin1 = lastKicks + scores[0];
+        int canWin2 = lastKicks + scores[1];
+        //Debug.Log(canWin1);
+        //Debug.Log(canWin2);
+        //Debug.Log(lastKicks);
+        if ( (scores[0] > lastKicks && scores[0] > canWin2) || (scores[1] > lastKicks && scores[1] > canWin1))
+            return true;
+        return false;
+
+    }
+
 
 }

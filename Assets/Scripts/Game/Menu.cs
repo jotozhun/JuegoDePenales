@@ -67,6 +67,21 @@ public class Menu : MonoBehaviourPunCallbacks
 
 
     public static Menu instance;
+    /*
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            //Screen.orientation = ScreenOrientation.Portrait;
+            //DontDestroyOnLoad(this);
+            //SetScreen(playerScreen);
+            //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
+        }
+    }*/
     private void Start()
     {
         if (NetworkManager.instance.isConnected)
@@ -113,7 +128,7 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == NetworkManager.instance.maxPlayers - 2)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == NetworkManager.instance.maxPlayers)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;

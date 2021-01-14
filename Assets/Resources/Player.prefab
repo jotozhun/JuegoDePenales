@@ -250,8 +250,6 @@ MonoBehaviour:
   canCover: 0
   canJump: 0
   playerCanCover: 0
-  throwForceInXandY: 1
-  throwForceInZ: 50
 --- !u!114 &2048221035869564742
 MonoBehaviour:
   m_ObjectHideFlags: 0
