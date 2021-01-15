@@ -93,8 +93,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinLobby();
-        loginButton.interactable = true;
+        if (!PhotonNetwork.InLobby)
+        {
+            PhotonNetwork.JoinLobby();
+            loginButton.interactable = true;
+        }
     }
 
     public void CreateRoom(string roomName)

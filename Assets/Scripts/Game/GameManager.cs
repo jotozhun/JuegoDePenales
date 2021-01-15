@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
 
-    private int playersInGame;
+    [HideInInspector]
+    public int playersInGame;
 
     [Header("Game Settings")]
     public GameObject[] goalBounds;
@@ -74,11 +75,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         Timer timerScript = playerObj.GetComponent<Timer>();
 
-        timerScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
-
+        //timerScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        //timerScript.photonView.RPC("Start", RpcTarget.All);
+        //GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
         CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
 
-        kcikScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        //kcikScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        //kcikScript.photonView.RPC("Start", RpcTarget.All);
     }
 
     //Goal and missed Goals

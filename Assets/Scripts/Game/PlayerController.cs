@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private float starttime, endtime;
     private bool toKick; 
     private bool ballReturned = true;
-    private Vector3 WindSpeed;
     public bool playerCanCover;
     
 
@@ -50,7 +49,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         id = player.ActorNumber;
         Debug.Log("Player id: " + id);
         GameUI.instance.players[id - 1] = this;
-        GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
+        //GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
         //GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
@@ -236,7 +235,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         checkRestartDecreaseKicks();
 
         GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
-        WindSpeed = new Vector3(0, 0, 0);
     }
 
     IEnumerator KickAnimation(Vector3 ballForce)
@@ -247,8 +245,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameUI.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);
         yield return new WaitForSeconds(0.50f);
-        Debug.Log(WindSpeed);
-        ballRigBody.AddRelativeForce(WindSpeed);
     }
 
     IEnumerator PlayerCoverBall()
@@ -264,31 +260,46 @@ public class PlayerController : MonoBehaviourPunCallbacks
             GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
             bool winGame = GameManager.instance.WinGame();
             if (winGame == true)
-                LeaveGame();
+            {
+                //PhotonNetwork.LeaveRoom();
+                //NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
+                //GameManager.instance.playersInGame--;
+                StartCoroutine(LeaveAndLoad());
+            }
         }
         bool zeroKicks = GameManager.instance.activateSwitch();
         bool draw = GameManager.instance.DrawGame();
         if (zeroKicks == true && draw == true)
             GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
         else if (zeroKicks == true && draw == false)
-            LeaveGame();
+            StartCoroutine(LeaveAndLoad()); 
 
 
 
 
     }
-    public void LeaveGame()
-    {
-        Destroy(NetworkManager.instance.gameObject);
-        StartCoroutine(LeaveAndLoad());
-    }
 
+    [PunRPC]
     IEnumerator LeaveAndLoad()
     {
+        //yield return new WaitForSeconds(0.01f);
+        PhotonNetwork.Disconnect();
+        while (PhotonNetwork.InRoom)
+            yield return null;
+        //NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
+        PhotonNetwork.LoadLevel("Menu");
+        /*Debug.Log("Salir");
         PhotonNetwork.LeaveRoom();
         while (PhotonNetwork.InRoom)
             yield return null;
-        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Menu");
-        //SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("Menu");*/
+        //NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Menu");
+    }
+    public void salirGame()
+    {
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
+        //PhotonNetwork.LeaveRoom();
+        PhotonNetwork.LoadLevel("Menu");
     }
 }

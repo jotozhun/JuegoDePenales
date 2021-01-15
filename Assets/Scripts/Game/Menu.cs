@@ -143,13 +143,12 @@ public class Menu : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    public override void OnLeftRoom()
+    /*public override void OnLeftRoom()
     {
         cancelButton.interactable = true;
         gameScreen.SetActive(true);
         waitingScreen.SetActive(false);
-    }
-
+    }*/
     // LOGIN SCREEN
 
     public void OnLoginButtonUI()
@@ -277,4 +276,12 @@ public class Menu : MonoBehaviourPunCallbacks
         StartCoroutine(NetworkManager.instance.AddResultToUser(4, 3, 1, true));
     }
 
+    
+
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.LoadLevel("Menu");
+        //SceneManager.LoadScene("Menu");
+    }
+    
 }
