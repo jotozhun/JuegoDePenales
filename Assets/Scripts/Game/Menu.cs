@@ -64,7 +64,12 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Tournament Screen")]
     public Button registerButton;
     public Button backTournaButton;
-
+    public TextMeshProUGUI tournaName;
+    public TextMeshProUGUI reglaUno;
+    public TextMeshProUGUI torneoInicia;
+    public TextMeshProUGUI torneoFin;
+    public TextMeshProUGUI registrados;
+    public TextMeshProUGUI signStatus;
 
     public static Menu instance;
     /*
@@ -88,6 +93,7 @@ public class Menu : MonoBehaviourPunCallbacks
         {
             SetScreen(playerScreen);
             playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
+            tournamentButton.interactable = true;
         }
     }
 
@@ -115,7 +121,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public void OnPlayButton()
     {
         playButton.interactable = false;
-        if(roomName.text != "")
+        if (roomName.text != "")
             NetworkManager.instance.CreateRoom(roomName.text);
     }
 
@@ -227,9 +233,16 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnTournamentButton()
     {
-
         playerScreen.SetActive(false);
         tournamentScreen.SetActive(true);
+
+        NetworkManager.TorneoInfo torneoInfo = NetworkManager.instance.torneoInfo;
+        tournaName.text = torneoInfo.nombre_torneo;
+        reglaUno.text = "Anotar " + torneoInfo.num_goles + " para ganar\n" + torneoInfo.tiempo_patear + " segundos para patear";
+        torneoInicia.text = torneoInfo.fecha_inicio.ToString();
+        torneoFin.text = torneoInfo.fecha_fin.ToString();
+        registrados.text = torneoInfo.registrados + " / " + torneoInfo.num_participantes;
+
         backTournaButton.interactable = true;
     }
     public void OnExitButton()
@@ -261,6 +274,11 @@ public class Menu : MonoBehaviourPunCallbacks
         backTournaButton.interactable = false;
         tournamentScreen.SetActive(false);
         playerScreen.SetActive(true);
+    }
+
+    public void OnSignTorneoButton()
+    {
+        NetworkManager.instance.SignTorneo(registerButton, backTournaButton, signStatus);
     }
 
     public void OnBackToPlayerScreen()
