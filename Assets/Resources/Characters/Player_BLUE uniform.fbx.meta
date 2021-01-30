@@ -3,7 +3,62 @@ guid: 2d7c834788b95904181f38e5e3c8bb59
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dreadlock
+    second: {fileID: 2100000, guid: e5ac83456dcf7e84db2102a033b70593, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Eye_grey.002
+    second: {fileID: 2100000, guid: 6d363f5f2bc9a7e4b9f42d7f99c5ce95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Eyelashes
+    second: {fileID: 2100000, guid: c45479d4a18928346a4cb1a3bca5cd2a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hair
+    second: {fileID: 2100000, guid: c205e67ca732d11419da109448d1fa87, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player-shoe
+    second: {fileID: 2100000, guid: e9861ec6a0ba8fd4fa26b0c86920cd48, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_Trouser BLUE
+    second: {fileID: 2100000, guid: 7e5061e2ebb06ee4986ba04ed1cda29c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_body
+    second: {fileID: 2100000, guid: fec56bbee1ece1849b295376fd4e4d96, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_shirt BLUE
+    second: {fileID: 2100000, guid: 57b940a7008362543b920b2c70017e4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: afro01
+    second: {fileID: 2100000, guid: 1f5f6f963dc69044d902ba66803a41ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eyebrow
+    second: {fileID: 2100000, guid: f2443a1b0c5ce5e4abf4bdecabaaaf29, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ponytail01
+    second: {fileID: 2100000, guid: 4211bf29e41e6ab4a9f50039b4b57343, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -31,7 +86,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
