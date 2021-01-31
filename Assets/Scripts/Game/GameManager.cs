@@ -133,11 +133,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void spawnAsGoalKeeper(PlayerController player)
     {
         player.isGoalKeeper = true;
-        //player.anim.SetBool("isGoalKeeper", true);
-        player.gameObject.transform.position = GameUI.instance.goalKeeperSpawn.position;
-        player.gameObject.transform.rotation = GameUI.instance.goalKeeperSpawn.rotation;
-        player.ball.SetActive(false);
         player.canCover = true;
+        //player.anim.SetBool("isGoalKeeper", true);
+        //player.gameObject.transform.position = GameUI.instance.goalKeeperSpawn.position;
+        //player.gameObject.transform.rotation = GameUI.instance.goalKeeperSpawn.rotation;
+        player.ChangeRol(true);
+        
         timScript.R();
         timScript.StartTime();
         //kickScipt.RestartKicks();
@@ -153,9 +154,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = false;
         player.canCover = false;
         //player.anim.SetBool("isGoalKeeper", false);
-        player.gameObject.transform.position = GameUI.instance.kickerSpawn.position;
-        player.gameObject.transform.rotation = GameUI.instance.kickerSpawn.rotation;
-        player.ball.SetActive(true);
+        //player.gameObject.transform.position = GameUI.instance.kickerSpawn.position;
+        //player.gameObject.transform.rotation = GameUI.instance.kickerSpawn.rotation;
+        player.ChangeRol(false);
         timScript.R();
         timScript.StartTime();
         //kickScipt.RestartKicks();

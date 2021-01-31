@@ -14,8 +14,9 @@ public class GameUI : MonoBehaviourPunCallbacks
 
     [Header("Players")]
     public string playerPrefabLocation;
-    public Transform goalKeeperSpawn;
-    public Transform kickerSpawn;
+    //public Transform goalKeeperSpawn;
+    //public Transform kickerSpawn;
+    public Transform playerSpawn;
     public PlayerController[] players;
     public PlayerController playerObject;
     //public int playersInGame;

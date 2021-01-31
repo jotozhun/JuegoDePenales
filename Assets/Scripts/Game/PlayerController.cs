@@ -12,28 +12,34 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public int id;
     public bool isGoalKeeper;
     public bool isSpectator;
-    private bool changePosition;
+    //private bool changePosition;
 
     [Header("Player parts")]
-    public GameObject playerModel;
-    public Camera cam;
+    //public GameObject kickerModel;
+    public Camera kicker_cam;
+    public Camera goalkeeper_cam;
     public GameObject ball;
-
+    public Animator kicker_anim;
+    public Animator goalkeeper_anim;
+    [Header("Player objects")]
+    public GameObject kicker_obj;
+    public GameObject goalkeeper_obj;
+    public GameObject kicker_cam_obj;
+    public GameObject goalkeeper_cam_obj;
     //Player components
-    public Animator anim;
+
     [HideInInspector]
     public Player photonPlayer;
     public bool hasToChange;
     //GoalKeeper settings
-    private Vector3 playerModelStartPos;
-    private Quaternion playerModelStartRot;
     private Vector3 firstCoverPos, lastCoverPos;
-    private Rigidbody playerRig;
+    //private Rigidbody playerRig;
     public bool canCover;
     public bool canJump;
     //Ball components
-    private Ball ballScript;
-    private Rigidbody ballRigBody;
+    [Header("Ball Components")]
+    public Ball ballScript;
+    public Rigidbody ballRigBody;
     private Vector3 firstpos, lastpos;
     private Vector3 startpos;
     private float starttime, endtime;
@@ -49,6 +55,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         id = player.ActorNumber;
         Debug.Log("Player id: " + id);
         GameUI.instance.players[id - 1] = this;
+
+        this.transform.position = GameUI.instance.playerSpawn.position;
         //GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
         //GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
@@ -59,20 +67,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         if(photonView.IsMine)
         {
-            cam.gameObject.SetActive(true);
+            kicker_cam.gameObject.SetActive(true);
         }
     }
 
     private void Start()
     {
         hasToChange = true;
-        anim = playerModel.GetComponent<Animator>();
-        ballScript = ball.GetComponent<Ball>();
-        ballRigBody = ball.GetComponent<Rigidbody>();
-        startpos = new Vector3(0.88f, -1.565f, 1.79f);
-        playerModelStartPos = playerModel.transform.localPosition;
-        playerModelStartRot = playerModel.transform.localRotation;
-        playerRig = playerModel.GetComponent<Rigidbody>();
+        //anim = kickerModel.GetComponent<Animator>();
+        //ballScript = ball.GetComponent<Ball>();
+        //ballRigBody = ball.GetComponent<Rigidbody>();
+        startpos = new Vector3(0.4403152f, -0.8204808f, -2.119095f);
+        //playerRig = kickerModel.GetComponent<Rigidbody>();
         Physics2D.gravity = new Vector2(0f, -6.71f);
     }
     
@@ -88,13 +94,30 @@ public class PlayerController : MonoBehaviourPunCallbacks
             photonView.RPC("TryCover", RpcTarget.All);
         }
     }
+
+    public void ChangeRol(bool isGoalkeeper)
+    {
+        goalkeeper_obj.SetActive(isGoalkeeper);
+
+        kicker_obj.SetActive(!isGoalkeeper);
+        
+        ball.SetActive(!isGoalkeeper);
+
+        //Cams
+        if (photonView.IsMine)
+        {
+            kicker_cam_obj.SetActive(!isGoalkeeper);
+            goalkeeper_cam_obj.SetActive(isGoalkeeper);
+        }
+
+    }
     // Playability
     [PunRPC]
     public void Kick()
     {
         if (Input.GetMouseButtonDown(0) && ballReturned)
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Ray ray = kicker_cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
@@ -183,13 +206,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator GetPlayerSet(Vector3 distance)
     {
         if (distance.x < 0 && distance.y > 0)
-            anim.SetTrigger("jumpLeft");
+            kicker_anim.SetTrigger("jumpLeft");
         else if (distance.x > 0 && distance.y > 0)
-            anim.SetTrigger("jumpRight");
+            kicker_anim.SetTrigger("jumpRight");
         else if (distance.x < 0 && distance.y < 0)
-            anim.SetTrigger("throwLeft");
+            kicker_anim.SetTrigger("throwLeft");
         else if (distance.x > 0 && distance.y < 0)
-            anim.SetTrigger("throwRight");
+            kicker_anim.SetTrigger("throwRight");
         yield return new WaitForSeconds(0.5f);
         if (this.isGoalKeeper)
             canCover = true;
@@ -240,7 +263,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator KickAnimation(Vector3 ballForce)
     {
         
-        anim.SetTrigger("kick");
+        kicker_anim.SetTrigger("kick");
         yield return new WaitForSeconds(0.55f);
         GameUI.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);

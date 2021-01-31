@@ -10,6 +10,8 @@ TagManager:
   - Bullet
   - KickLimit
   - Target
+  - Kicker
+  - Goalkeeper
   layers:
   - Default
   - TransparentFX
