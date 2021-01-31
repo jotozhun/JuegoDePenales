@@ -46,21 +46,23 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Admin")]
     public Button crearTorneoButton;
     public Button configurarTorneoButton;
-
-    [Header("Player")]
-    public Button administradorButton;
-   
-    public Button playButton;
     */
+    [Header("Player")]
+    public Button registrarTorneoButton;
+   
+    //public Button playButton;
+    
     public static NetworkManager instance;
     public int maxPlayers;
     public bool isConnected;
+    public bool isTorneo;
     string regUri = "https://juego-penales.herokuapp.com/unity/register.php";
     //string logUri = "http://localhost/JuegoPenales/loginUser.php";
     string logUri = "https://juego-penales.herokuapp.com/unity/login.php";
     string torneoInfoUri = "https://juego-penales.herokuapp.com/unity/isTorneo.php";
     string resultToUserUri = "https://juego-penales.herokuapp.com/unity/addMatchResults.php";
     //string resultToUserUri = "http://localhost/WebJuegoEnLinea/unity/addMatchResults.php";
+    string signTorneoUri = "http://localhost/WebJuegoEnLinea/unity/addParticipante.php";
     private void Awake()
     {
         
@@ -285,6 +287,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 if (!resp.Contains("Error"))
                 {
                     torneoInfo = JsonUtility.FromJson<TorneoInfo>(resp);
+                    isTorneo = true;
                     /*
                     if (!userInfo.isadmin)
                     {
@@ -346,6 +349,49 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public IEnumerator SignTorneo(Button registerButton, Button backButton, TextMeshProUGUI signStatus)
+    {
+        registerButton.interactable = false;
+        backButton.interactable = false;
+
+        WWWForm form = new WWWForm();
+        form.AddField("id_usuario", userInfo.id_user);
+        form.AddField("id_torneo", torneoInfo.id_torneo);
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Post(signTorneoUri, form))
+        {
+            yield return webRequest.SendWebRequest();
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log(webRequest.error);
+                signStatus.text = webRequest.error;
+                signStatus.color = Color.red;
+            }
+            else
+            {
+                string resp = webRequest.downloadHandler.text;
+                Debug.Log(resp);
+                signStatus.text = resp;
+                if (!resp.Contains("Error"))
+                {
+                    signStatus.color = Color.green;
+                }
+                else
+                {
+                    signStatus.color = Color.red;
+                }
+                
+
+                /*if (!resp.Contains("Error"))
+                {
+                    
+                }*/
+            }
+        }
+        registerButton.interactable = true;
+        backButton.interactable = true;
+    }
+
     public void OnUpdateUserInfo(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
     {
         StartCoroutine(AddResultToUser(golesAnotados, golesRecibidos, golesAtajados, isWin));
@@ -382,6 +428,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         public int tiempo_espera;
         public int tiempo_patear;
         public int num_grupos;
+        public int registrados;
     }
 
     public class PremioInfo
