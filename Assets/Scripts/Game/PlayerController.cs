@@ -65,20 +65,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
         else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
 
-        if(photonView.IsMine)
+        /*if(photonView.IsMine)
         {
             kicker_cam.gameObject.SetActive(true);
         }
+        */
     }
 
     private void Start()
     {
         hasToChange = true;
-        //anim = kickerModel.GetComponent<Animator>();
-        //ballScript = ball.GetComponent<Ball>();
-        //ballRigBody = ball.GetComponent<Rigidbody>();
         startpos = new Vector3(0.4403152f, -0.8204808f, -2.119095f);
-        //playerRig = kickerModel.GetComponent<Rigidbody>();
         Physics2D.gravity = new Vector2(0f, -6.71f);
     }
     
@@ -121,7 +118,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.name == "Soccer Ball" && hit.transform.GetComponent<Ball>().player.id == id)
+                if (hit.transform.name == "Soccer_Ball")// && hit.transform.GetComponent<Ball>().player.id == id)
                 {
                     starttime = Time.time;
                     firstpos = Input.mousePosition;
@@ -137,36 +134,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
-            //Vector3 force = (distance / ((endtime - starttime) / 0.3f));
             Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
             toKick = false;
-            /*
-            if (distance.x < 0 && distance.y > 300)
-            {
-                //anim.SetTrigger("jumpLeft");
-                WindSpeed = new Vector3(0, 0, -600);
-
-                //Physics2D.gravity = new Vector2(15f, -7.51f);
-                Debug.Log("jumpleft");
-                Debug.Log(WindSpeed);
-            }
-            else if (distance.x > 0 && distance.y > 300)
-            {
-                //anim.SetTrigger("jumpRight");
-                WindSpeed = new Vector3(0, 0, 600);
-                //Physics2D.gravity = new Vector2(-15f, -7.51f);
-                Debug.Log("jumpRight");
-                Debug.Log(WindSpeed);
-            }
-            else if (distance.x < 0 && distance.y < 300)
-                WindSpeed = new Vector3(0, 0, -600);
-            else if (distance.x > 0 && distance.y < 300)
-                WindSpeed = new Vector3(0, 0, 600);
-
-            */
-            //force.x = Mathf.Clamp(force.x, -880, 880);
-            //force.y = Mathf.Clamp(force.y, 0, 890);
-            //force.z = 830;
 
             force.y = Mathf.Clamp(force.y, 0, 650);
             force.z = Mathf.Clamp(force.z + 120, 520, 700);
@@ -205,20 +174,19 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator GetPlayerSet(Vector3 distance)
     {
-        if (distance.x < 0 && distance.y > 0)
-            kicker_anim.SetTrigger("jumpLeft");
+        if (Mathf.Abs(distance.x) < 20 && distance.y > 0)
+            goalkeeper_anim.SetTrigger("Jump");
+        else if (distance.x < 0 && distance.y > 0)
+            goalkeeper_anim.SetTrigger("DivingLeft");
         else if (distance.x > 0 && distance.y > 0)
-            kicker_anim.SetTrigger("jumpRight");
+            goalkeeper_anim.SetTrigger("DivingRight");
         else if (distance.x < 0 && distance.y < 0)
-            kicker_anim.SetTrigger("throwLeft");
+            goalkeeper_anim.SetTrigger("BodyLeft");
         else if (distance.x > 0 && distance.y < 0)
-            kicker_anim.SetTrigger("throwRight");
+            goalkeeper_anim.SetTrigger("BodyRight");
         yield return new WaitForSeconds(0.5f);
         if (this.isGoalKeeper)
             canCover = true;
-        //playerRig.velocity = Vector3.zero;
-        //playerModel.transform.localPosition = playerModelStartPos;
-        //playerModel.transform.localRotation = playerModelStartRot;
     }
     //Testing coroutines
     IEnumerator ReturnBall()
@@ -230,31 +198,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
         GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
-        //Debug.Log(GameManager.instance.numberKicks);
-        //GameManager.instance.restartTime();
         if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
         {
             GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
         }
         GameManager.instance.markGoal = false;
         GameManager.instance.missGoal = false;
-        //bool change = GameManager.instance.activateSwitch();
-        /*if (change == true)
-        {
-            GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
-        }*/
-        /*if (GameManager.instance.numberKicks%2 == 0)
-        {
-            //Debug.Log("DecrementarKicks");
-            GameManager.instance.photonView.RPC("decreaseKicksCount", RpcTarget.AllBuffered);
-            //GameManager.instance.decreaseKicksCount();
-        }
-        bool change = GameManager.instance.activateSwitch();
-        bool draw = GameManager.instance.DrawGame();
-        if (change == true && draw == true)
-        {
-            GameManager.instance.photonView.RPC("restartKicksCount", RpcTarget.AllBuffered);
-        }*/
         checkRestartDecreaseKicks();
 
         GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
@@ -263,7 +212,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator KickAnimation(Vector3 ballForce)
     {
         
-        kicker_anim.SetTrigger("kick");
+        kicker_anim.SetTrigger("KickNow");
         yield return new WaitForSeconds(0.55f);
         GameUI.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);
