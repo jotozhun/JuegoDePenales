@@ -70,9 +70,9 @@ public class GameManagerPractice : MonoBehaviour
 
     void SpawnPlayers()
     {
-        //Vector3 pos = new Vector3((float)-85.1, (float)-1.51, (float)-79.22);
+        Vector3 pos = new Vector3((float)-85.1, (float)-3, (float)-79.22);
         //Vector3 pos2 = new Vector3((float)-87.14, (float)-1.51, (float)-79.22);
-        GameObject playerObj = Instantiate(GameUIPractice.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
+        GameObject playerObj = Instantiate(GameUIPractice.instance.playerPrefabLocation, pos, Quaternion.identity);
         //Instantiate(GameUIPractice.instance.stadiumPrefabLocation, pos2, Quaternion.identity);
         //GameUIPractice.instance.stadiumPrefabLocation.SetActive(true);
         //Instantiate(GameUIPractice.instance.groundPrefabLocation, pos2, Quaternion.identity);

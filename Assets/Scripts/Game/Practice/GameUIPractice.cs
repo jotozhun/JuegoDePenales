@@ -20,6 +20,7 @@ public class GameUIPractice : MonoBehaviour
     public Transform kickerSpawn;
     public PlayerControllerPractice[] players;
     public PlayerControllerPractice playerObject;
+    public GameObject kickCollider;
     //public int playersInGame;
 
     [Header("Audio Effects")]

@@ -39,7 +39,8 @@ public class PlayerControllerPractice : MonoBehaviour
     private bool toKick; 
     private bool ballReturned = true;
     public bool playerCanCover;
-    
+    public Vector3 ballForce;
+
 
     public void Initialize()
     {
@@ -58,11 +59,13 @@ public class PlayerControllerPractice : MonoBehaviour
         anim = playerModel.GetComponent<Animator>();
         ballScript = ball.GetComponent<BallPractice>();
         ballRigBody = ball.GetComponent<Rigidbody>();
-        startpos = new Vector3(0.88f, -1.565f, 1.79f);
+        //startpos = new Vector3(0.88f, -1.565f, 1.79f);
+        startpos = new Vector3(1.05f, -0.1f, 2.52f);
         playerModelStartPos = playerModel.transform.localPosition;
         playerModelStartRot = playerModel.transform.localRotation;
         playerRig = playerModel.GetComponent<Rigidbody>();
         Physics2D.gravity = new Vector2(0f, -6.71f);
+        
     }
     
 
@@ -98,6 +101,7 @@ public class PlayerControllerPractice : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0) && toKick)
         {
+            
             endtime = Time.time;
             lastpos = Input.mousePosition;
             //Debug.Log("last" + lastpos);
@@ -113,6 +117,7 @@ public class PlayerControllerPractice : MonoBehaviour
             */
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+            GameUIPractice.instance.kickCollider.SetActive(true);
 /*
             if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
@@ -124,6 +129,8 @@ public class PlayerControllerPractice : MonoBehaviour
 
             }
 */
+            GameUIPractice.instance.kickCollider.SetActive(true);
+            GameUIPractice.instance.kickCollider.SetActive(true);
             if (Physics.Raycast(ray, out hit))
             {
                 if (hit.transform.name == "KickLimit")
@@ -137,12 +144,14 @@ public class PlayerControllerPractice : MonoBehaviour
                     //force.z = 830;
                     force.y = Mathf.Clamp(force.y, 0, 650);
                     force.z = Mathf.Clamp(force.z+120, 520, 700);
-                    Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
-
+                    ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
+                    
                     //Debug.Log("real"+ballForce);
                     GameManagerPractice.instance.stopTime();
                     //GameManagerPractice.instance.keeperCanCover(true);
-                    StartCoroutine(KickAnimation(ballForce));
+                    //StartCoroutine(KickAnimation(ballForce));
+                    
+                    anim.SetTrigger("KickNow");
                     ballReturned = false;
                     StartCoroutine(ReturnBall());
                 }
@@ -192,14 +201,14 @@ public class PlayerControllerPractice : MonoBehaviour
     //Testing coroutines
     IEnumerator ReturnBall()
     {
-        yield return new WaitForSeconds(3.2f);
+        yield return new WaitForSeconds(5.2f);
         ball.transform.localPosition = startpos;
         ball.transform.localRotation = Quaternion.identity;
         ballRigBody.velocity = Vector3.zero;
         ballRigBody.angularVelocity = Vector3.zero;
         ballReturned = true;
         GameManagerPractice.instance.restartTime();
-
+        GameUIPractice.instance.kickCollider.SetActive(false);
         if (!GameManagerPractice.instance.markGoal && !GameManagerPractice.instance.missGoal)
         {
             GameManagerPractice.instance.MarkGoalMissedToPlayer();
@@ -210,13 +219,22 @@ public class PlayerControllerPractice : MonoBehaviour
         //GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
     }
 
-    IEnumerator KickAnimation(Vector3 ballForce)
+    public void KickAnimation(Vector3 ballForce)
     {
         
-        anim.SetTrigger("kick");
-        yield return new WaitForSeconds(0.55f);
+        
+        //yield return new WaitForSeconds(4f);
         GameUIPractice.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("KickTrigger"))
+        {
+            //GameUIPractice.instance.kickSound.Play();
+            ballRigBody.AddForce(ballForce);
+        }
     }
 
     IEnumerator PlayerCoverBall()
