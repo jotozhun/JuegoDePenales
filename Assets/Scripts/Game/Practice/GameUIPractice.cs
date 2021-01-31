@@ -33,6 +33,9 @@ public class GameUIPractice : MonoBehaviour
     [Header("Kicks")]
     public GameObject kick;
 
+    [Header("TargetGame")]
+    public GameObject target;
+
     private void Awake()
     {
         instance = this;
