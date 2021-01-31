@@ -26,20 +26,20 @@ public class GameManagerPractice : MonoBehaviour
     [Header("Animators")]
     public Animator goalAnim;
     public Animator missedGoalAnim;
-
+    public Animator targetAnim;
 
     public int[] scores;
-
     private TimerPractice timScript;
-
     private CountKicks kickScipt;
+    private TargetPractice targetScipt;
     public PlayerControllerPractice playerScript;
+
     public bool markGoal;
     public bool missGoal;
-
     public int numberKicks;            //Change the number kicks of players
-
     public Button backPracticeButton;
+
+    
     private void Awake()
     {
         instance = this;
@@ -51,10 +51,10 @@ public class GameManagerPractice : MonoBehaviour
         missGoal = false;
         GameUIPractice.instance.players = new PlayerControllerPractice[1];
         scores = new int[1];
-        //photonView.RPC("ImInGame", RpcTarget.AllBuffered);
         ImInGame();
-        timScript = GameUIPractice.instance.time.GetComponent<TimerPractice>();
+        //timScript = GameUIPractice.instance.time.GetComponent<TimerPractice>();
         kickScipt = GameUIPractice.instance.kick.GetComponent<CountKicks>();
+        targetScipt = GameUIPractice.instance.target.GetComponent<TargetPractice>();
         //playerScript = GameUIPractice.instance.playerObject.GetComponent<PlayerControllerPractice>();
     }
 
@@ -77,11 +77,9 @@ public class GameManagerPractice : MonoBehaviour
         //GameUIPractice.instance.stadiumPrefabLocation.SetActive(true);
         //Instantiate(GameUIPractice.instance.groundPrefabLocation, pos2, Quaternion.identity);
         PlayerControllerPractice playerScript = playerObj.GetComponent<PlayerControllerPractice>();
-
+        
         //initialize the player
         playerScript.Initialize();
-        //timScript.Start();
-        //kickScipt.Start();
     }
 
     //Goal and missed Goals
@@ -109,6 +107,17 @@ public class GameManagerPractice : MonoBehaviour
         StartCoroutine(DeactivateMissedGoalBounds());
     }
 
+    public void MarkTargetToPlayer()
+    {
+        markGoal = true;
+        //Physics2D.gravity = new Vector2(0f, -7.51f);
+        //kickScipt.DecreaseKicks();
+        numberKicks++;
+        scores[0]++;
+        playerScoresUI[0].text = scores[0].ToString();
+        StartCoroutine(DeactivateTargetBounds());
+    }
+
     public void SwitchPositions()
     {
         markGoal = false;
@@ -134,10 +143,10 @@ public class GameManagerPractice : MonoBehaviour
         player.ball.SetActive(false);
         player.canCover = true;
 
-        timScript.R();
-        timScript.StartTime();
+        //timScript.R();
+        //timScript.StartTime();
         //kickScipt.RestartKicks();
-        timScript.keeper = true;
+        //timScript.keeper = true;
     }
 
     public void spawnAsKicker(PlayerControllerPractice player)
@@ -182,6 +191,14 @@ public class GameManagerPractice : MonoBehaviour
         ActivateBounds();
     }
 
+    IEnumerator DeactivateTargetBounds()
+    {
+        DeactivateBounds();
+        targetAnim.SetTrigger("goal");
+        yield return new WaitForSeconds(4.8f);
+        ActivateBounds();
+    }
+
     void DeactivateBounds()
     {
         foreach (GameObject missedGoalBound in missedGoalBounds)
@@ -205,10 +222,10 @@ public class GameManagerPractice : MonoBehaviour
             goalBound.SetActive(true);
         }
     }
-
+    
     public void stopTime()
     {
-        timScript.StopTime();
+        //timScript.StopTime();
     }
     
     public bool activateSwitch()
@@ -233,10 +250,10 @@ public class GameManagerPractice : MonoBehaviour
     
     public void restartTime()
     {
-        timScript.R();
-        timScript.StartTime();
+        //timScript.R();
+        //timScript.StartTime();
     }
-
+    
     public void keeperCanCover(bool cover)
     {
         PlayerControllerPractice player = playerScript;
