@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1245274791642243411}
   m_Layer: 0
   m_Name: Soccer Ball Practice
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 1975457108487340}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.88, y: -1.565, z: 1.79}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6b1f3e5caa1fb9409c6d90de2f1722d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: -4975972777827476590, guid: 60f8eafd5e11084448a2902daa39b158, type: 3}
+  player: {fileID: -2114575440715572112, guid: 22668ab1fe3cf4a43b1f907de25f38d6, type: 3}
 --- !u!135 &135134225773752490
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -105,7 +105,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.11000001
+  m_Radius: 0.12
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1245274791642243411
 Rigidbody:

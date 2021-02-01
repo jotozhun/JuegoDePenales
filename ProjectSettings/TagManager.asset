@@ -12,6 +12,8 @@ TagManager:
   - Target
   - Kicker
   - Goalkeeper
+  - KickTrigger
+  - ShoeKick
   layers:
   - Default
   - TransparentFX
