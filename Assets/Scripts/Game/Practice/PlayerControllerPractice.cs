@@ -115,7 +115,7 @@ public class PlayerControllerPractice : MonoBehaviour
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
             //Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
-            Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.34f)), (distance.y / ((endtime - starttime) / 0.32f)), (distance.z / ((endtime - starttime) / 0.35f)));
+            Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.39f)), (distance.y / ((endtime - starttime) / 0.35f)), (distance.z / ((endtime - starttime) / 0.37f)));
             toKick = false;
     /*        Vector3 mousePos = Input.mousePosition;
             mousePos.z = cam.nearClipPlane;
@@ -152,10 +152,10 @@ public class PlayerControllerPractice : MonoBehaviour
                     force.z = Mathf.Clamp(force.z + 120, 540, 700);
                     ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
                     //kickCollider.SetActive(true);
-                    Debug.Log("activar");
-                    Debug.Log("playercontrollerpractice"+ballForce);
+                    //Debug.Log("activar");
+                    //Debug.Log("playercontrollerpractice"+ballForce);
                     //Debug.Log("real"+ballForce);
-                    GameManagerPractice.instance.stopTime();
+                    //GameManagerPractice.instance.stopTime();
                     //GameManagerPractice.instance.keeperCanCover(true);
                     //StartCoroutine(KickAnimation(ballForce));
                     
@@ -218,10 +218,10 @@ public class PlayerControllerPractice : MonoBehaviour
         GameManagerPractice.instance.restartTime();
         //GameUIPractice.instance.kickCollider.SetActive(false);
         kickCollider.SetActive(false);
-        if (!GameManagerPractice.instance.markGoal && !GameManagerPractice.instance.missGoal)
+        /*if (!GameManagerPractice.instance.markGoal && !GameManagerPractice.instance.missGoal)
         {
             GameManagerPractice.instance.MarkGoalMissedToPlayer();
-        }
+        }*/
         GameManagerPractice.instance.markGoal = false;
         GameManagerPractice.instance.missGoal = false;
         //checkRestartDecreaseKicks();

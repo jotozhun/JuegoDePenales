@@ -17,8 +17,6 @@ public class GameManagerPractice : MonoBehaviour
     public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
 
-    private int playersInGame;
-
     [Header("Game Settings")]
     public GameObject[] goalBounds;
     public GameObject[] missedGoalBounds;
@@ -38,8 +36,11 @@ public class GameManagerPractice : MonoBehaviour
     public bool missGoal;
     public int numberKicks;            //Change the number kicks of players
     public Button backPracticeButton;
+    public Button levelNormalButtom;
+    public Button level1Buttom;
+    public Button level2Buttom;
 
-    
+
     private void Awake()
     {
         instance = this;
@@ -47,6 +48,9 @@ public class GameManagerPractice : MonoBehaviour
     private void Start()
     {
         backPracticeButton.interactable = true;
+        levelNormalButtom.interactable = true;
+        level1Buttom.interactable = true;
+        level2Buttom.interactable = true;
         markGoal = false;
         missGoal = false;
         GameUIPractice.instance.players = new PlayerControllerPractice[1];
@@ -56,16 +60,13 @@ public class GameManagerPractice : MonoBehaviour
         kickScipt = GameUIPractice.instance.kick.GetComponent<CountKicks>();
         targetScipt = GameUIPractice.instance.target.GetComponent<TargetPractice>();
         //playerScript = GameUIPractice.instance.playerObject.GetComponent<PlayerControllerPractice>();
+        targetScipt.Start();
     }
 
     void ImInGame()
     {
-        //playersInGame++;
         SpawnPlayers();
-        /*if(PhotonNetwork.IsMasterClient && playersInGame == PhotonNetwork.PlayerList.Length)
-        {
-            photonView.RPC("SpawnPlayers", RpcTarget.All);
-        }*/
+
     }
 
     void SpawnPlayers()
@@ -86,7 +87,6 @@ public class GameManagerPractice : MonoBehaviour
     public void MarkGoalToPlayer()
     {
         markGoal = true;
-        //Physics2D.gravity = new Vector2(0f, -7.51f);
         //kickScipt.DecreaseKicks();
         numberKicks++;
         scores[0]++;
@@ -99,7 +99,6 @@ public class GameManagerPractice : MonoBehaviour
     public void MarkGoalMissedToPlayer()
     {
         missGoal = true;
-        //Physics2D.gravity = new Vector2(0f, -7.51f);
         //kickScipt.DecreaseKicks();
         numberKicks++;
         GameUIPractice.instance.celebrationGoalSound.Stop();
@@ -110,7 +109,6 @@ public class GameManagerPractice : MonoBehaviour
     public void MarkTargetToPlayer()
     {
         markGoal = true;
-        //Physics2D.gravity = new Vector2(0f, -7.51f);
         //kickScipt.DecreaseKicks();
         numberKicks++;
         scores[0]++;
