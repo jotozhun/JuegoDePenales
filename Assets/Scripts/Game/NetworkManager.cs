@@ -14,7 +14,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Screens")]
     public GameObject loginScreen;
     public GameObject registerScreen;
-    //public GameObject playerScreen;
 
     [Header("Buttons")]
     public Button loginButton;
@@ -42,15 +41,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField playerPassword;
     public TextMeshProUGUI loginStatusText;
 
-    /*
-    [Header("Admin")]
-    public Button crearTorneoButton;
-    public Button configurarTorneoButton;
-    */
-    [Header("Player")]
-    public Button registrarTorneoButton;
    
-    //public Button playButton;
     
     public static NetworkManager instance;
     public int maxPlayers;
@@ -65,27 +56,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     string signTorneoUri = "http://localhost/WebJuegoEnLinea/unity/addParticipante.php";
     private void Awake()
     {
-        
         Debug.Log(photonView.ViewID);
         maxPlayers = 2;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
         photonView.ViewID = 1;
-        /*
-        if (instance != null && instance != this)
-        {
-            // gameObject.SetActive(false);
-            Destroy(gameObject);
-        }
-        else
-        {
-            maxPlayers = 2;
-            instance = this;
-            Screen.orientation = ScreenOrientation.Portrait;
-            DontDestroyOnLoad(this);
-        }
-        */
     }
 
     private void Start()
@@ -98,7 +74,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.InLobby)
         {
             PhotonNetwork.JoinLobby();
-            loginButton.interactable = true;
+            if(loginButton != null)
+                loginButton.interactable = true;
         }
     }
 
@@ -109,13 +86,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         options.MaxPlayers = (byte)maxPlayers;
 
         PhotonNetwork.JoinOrCreateRoom(roomName, options, null, null);
-    }
-
-    [PunRPC]
-    public void ChangeScene(string sceneName)
-    {
-        PhotonNetwork.LoadLevel(sceneName);
-        Screen.orientation = ScreenOrientation.Landscape;
     }
 
     void ActivateButtons()
@@ -382,10 +352,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 }
                 
 
-                /*if (!resp.Contains("Error"))
-                {
-                    
-                }*/
             }
         }
         registerButton.interactable = true;
@@ -397,7 +363,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         StartCoroutine(AddResultToUser(golesAnotados, golesRecibidos, golesAtajados, isWin));
     }
 
-    
+    [PunRPC]
+    public void ChangeScene(string sceneName)
+    {
+        PhotonNetwork.LoadLevel(sceneName);
+        Screen.orientation = ScreenOrientation.Landscape;
+    }
+
     public class UserInfo
     {
         public int id_user;

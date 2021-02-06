@@ -75,13 +75,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         Timer timerScript = playerObj.GetComponent<Timer>();
 
-        //timerScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
-        //timerScript.photonView.RPC("Start", RpcTarget.All);
-        //GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
         CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
-
-        //kcikScript.photonView.RPC("Start", RpcTarget.All, PhotonNetwork.LocalPlayer);
-        //kcikScript.photonView.RPC("Start", RpcTarget.All);
     }
 
     //Goal and missed Goals
@@ -89,8 +83,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void MarkGoalToPlayer(int id)
     {
         markGoal = true;
-        //Physics2D.gravity = new Vector2(0f, -7.51f);
-        //kickScipt.DecreaseKicks();
         numberKicks++;
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
@@ -103,8 +95,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void MarkGoalMissedToPlayer()
     {
         missGoal = true;
-        //Physics2D.gravity = new Vector2(0f, -7.51f);
-        //kickScipt.DecreaseKicks();
         numberKicks++;
         GameUI.instance.celebrationGoalSound.Stop();
         GameUI.instance.missedGoalSound.Play();
@@ -134,14 +124,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         player.isGoalKeeper = true;
         player.canCover = true;
-        //player.anim.SetBool("isGoalKeeper", true);
-        //player.gameObject.transform.position = GameUI.instance.goalKeeperSpawn.position;
-        //player.gameObject.transform.rotation = GameUI.instance.goalKeeperSpawn.rotation;
         player.ChangeRol(true);
         
         timScript.R();
         timScript.StartTime();
-        //kickScipt.RestartKicks();
         if (PhotonNetwork.IsMasterClient)
         {
             timScript.keeper = true;
@@ -153,9 +139,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.playerCanCover = false;
         player.isGoalKeeper = false;
         player.canCover = false;
-        //player.anim.SetBool("isGoalKeeper", false);
-        //player.gameObject.transform.position = GameUI.instance.kickerSpawn.position;
-        //player.gameObject.transform.rotation = GameUI.instance.kickerSpawn.rotation;
         player.ChangeRol(false);
         timScript.R();
         timScript.StartTime();

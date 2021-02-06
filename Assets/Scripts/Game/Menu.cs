@@ -18,8 +18,6 @@ public class Menu : MonoBehaviourPunCallbacks
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
     public GameObject resultsScreen;
-    public GameObject adminScreen;
-    public GameObject torneoAdministracionScreen;
 
     [Header("Game Screen")]
     public TMP_InputField playerName;
@@ -107,8 +105,6 @@ public class Menu : MonoBehaviourPunCallbacks
         estadisticsScreen.SetActive(false);
         tournamentScreen.SetActive(false);
         resultsScreen.SetActive(false);
-        adminScreen.SetActive(false);
-        torneoAdministracionScreen.SetActive(false);
 
         screen.SetActive(true);
     }
@@ -120,9 +116,11 @@ public class Menu : MonoBehaviourPunCallbacks
     }
     public void OnPlayButton()
     {
-        playButton.interactable = false;
         if (roomName.text != "")
+        {
             NetworkManager.instance.CreateRoom(roomName.text);
+            playButton.interactable = false;
+        }
     }
 
     public override void OnCreatedRoom()
@@ -143,67 +141,28 @@ public class Menu : MonoBehaviourPunCallbacks
     }
 
     // WAITING SCREEN
-    public void OnCancelButton()
+    public void OnCancelButton_WR()
+    {
+        StartCoroutine(LeaveWaitingRoom());
+    }
+
+    IEnumerator LeaveWaitingRoom()
     {
         cancelButton.interactable = false;
         PhotonNetwork.LeaveRoom();
+        while (PhotonNetwork.InRoom)
+            yield return null;
+        cancelButton.interactable = true;
+        SetScreen(gameScreen);
     }
-
+    
     /*public override void OnLeftRoom()
     {
         cancelButton.interactable = true;
         gameScreen.SetActive(true);
         waitingScreen.SetActive(false);
     }*/
-    // LOGIN SCREEN
-
-    public void OnLoginButtonUI()
-    {
-        bool logName = isFieldEmpty(userNameInput);
-        bool logPass = isFieldEmpty(playerPassword);
-        bool areFieldsEmpty = logName || logPass;
-
-        if (areFieldsEmpty)
-        {
-            loginStatusText.text = "Por favor, complete todos los campos!";
-            loginStatusText.color = Color.red;
-        }
-        else
-        {
-            StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
-        }
-    }
-
-    // SIGN UP SCREEN
-
-    public void OnRegisterButtonUI()
-    {
-        bool regName = isFieldEmpty(registerNameInput);
-        bool regUsername = isFieldEmpty(registerUsernameInput);
-        bool regEmail = isFieldEmpty(registerEmailInput);
-        bool regPass = isFieldEmpty(registerPasswordInput);
-        bool areFieldsEmpty = regName || regUsername || regEmail || regPass;
-
-        if (areFieldsEmpty)
-        {
-            registerStatusText.text = "Por favor, complete todos los campos!";
-            registerStatusText.color = Color.red;
-        }
-        else
-        {
-            StartCoroutine(NetworkManager.instance.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
-        }
-    }
-
-    bool isFieldEmpty(TMP_InputField field)
-    {
-        return field.text == "";
-    }
-
-    public void trimInputs(TMP_InputField input)
-    {
-        input.text = input.text.Trim();
-    }
+    
     // PLAYER SCREEN
     public void OnEstadisticButtonUI()
     {
@@ -295,11 +254,12 @@ public class Menu : MonoBehaviourPunCallbacks
     }
 
     
-
+    /*
     public override void OnLeftRoom()
     {
+        Debug.Log("Bye bye");
         PhotonNetwork.LoadLevel("Menu");
         //SceneManager.LoadScene("Menu");
     }
-    
+    */
 }

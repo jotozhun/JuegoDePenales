@@ -12,10 +12,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public int id;
     public bool isGoalKeeper;
     public bool isSpectator;
-    //private bool changePosition;
 
     [Header("Player parts")]
-    //public GameObject kickerModel;
     public Camera kicker_cam;
     public Camera goalkeeper_cam;
     public GameObject ball;
@@ -33,7 +31,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public bool hasToChange;
     //GoalKeeper settings
     private Vector3 firstCoverPos, lastCoverPos;
-    //private Rigidbody playerRig;
     public bool canCover;
     public bool canJump;
     //Ball components
@@ -58,18 +55,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         this.transform.position = GameUI.instance.playerSpawn.position;
         //GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
-        //GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
+        GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
             GameManager.instance.spawnAsKicker(this);
         else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
 
-        /*if(photonView.IsMine)
-        {
-            kicker_cam.gameObject.SetActive(true);
-        }
-        */
     }
 
     private void Start()
@@ -118,7 +110,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.name == "Soccer_Ball")// && hit.transform.GetComponent<Ball>().player.id == id)
+                if (hit.transform.name == "Soccer_Ball" && hit.transform.GetComponent<Ball>().player.id == id)
                 {
                     starttime = Time.time;
                     firstpos = Input.mousePosition;
@@ -149,6 +141,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             StartCoroutine(ReturnBall());
             StartCoroutine(PlayerCoverBall());
         }
+       
     }
 
     [PunRPC]
@@ -174,19 +167,29 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator GetPlayerSet(Vector3 distance)
     {
-        if (Mathf.Abs(distance.x) < 20 && distance.y > 0)
-            goalkeeper_anim.SetTrigger("Jump");
+        if (Mathf.Abs(distance.x) < 50 && distance.y > 0)
+            goalkeeper_anim.SetBool("Jump1", true);
         else if (distance.x < 0 && distance.y > 0)
-            goalkeeper_anim.SetTrigger("DivingLeft");
+            goalkeeper_anim.SetBool("DivingLeft1", true);
         else if (distance.x > 0 && distance.y > 0)
-            goalkeeper_anim.SetTrigger("DivingRight");
+            goalkeeper_anim.SetBool("DivingRight1", true);
         else if (distance.x < 0 && distance.y < 0)
-            goalkeeper_anim.SetTrigger("BodyLeft");
+            goalkeeper_anim.SetBool("BodyLeft1", true);
         else if (distance.x > 0 && distance.y < 0)
-            goalkeeper_anim.SetTrigger("BodyRight");
+            goalkeeper_anim.SetBool("BodyRight1", true);
         yield return new WaitForSeconds(0.5f);
         if (this.isGoalKeeper)
             canCover = true;
+    }
+
+    public void UncheckAnimBooleans()
+    {
+        goalkeeper_anim.SetBool("Jump1", false);
+        goalkeeper_anim.SetBool("DivingLeft1", false);
+        goalkeeper_anim.SetBool("DivingRight1", false);
+        goalkeeper_anim.SetBool("BodyLeft1", false);
+        goalkeeper_anim.SetBool("BodyRight1", false);
+        kicker_anim.SetBool("KickNow1", false);
     }
     //Testing coroutines
     IEnumerator ReturnBall()
@@ -211,8 +214,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator KickAnimation(Vector3 ballForce)
     {
-        
-        kicker_anim.SetTrigger("KickNow");
+
+        //kicker_anim.SetTrigger("KickNow");
+        kicker_anim.SetBool("KickNow1", true);
         yield return new WaitForSeconds(0.55f);
         GameUI.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);
