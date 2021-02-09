@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("Game Settings")]
     public GameObject[] goalBounds;
     public GameObject[] missedGoalBounds;
+    
 
     [Header("Animators")]
     public Animator goalAnim;
@@ -32,8 +33,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Timer timScript;
 
     private CountKicks kickScipt;
-    public bool markGoal;
-    public bool missGoal;
+    //public bool markGoal;
+    //public bool missGoal;
 
     public int numberKicks;            //Change the number kicks of players
 
@@ -43,13 +44,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        markGoal = false;
-        missGoal = false;
+        //markGoal = false;
+        //missGoal = false;
         GameUI.instance.players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
-        timScript = GameUI.instance.time.GetComponent<Timer>();
-        kickScipt = GameUI.instance.kick.GetComponent<CountKicks>();
+        //timScript = GameUI.instance.time.GetComponent<Timer>();
+        //kickScipt = GameUI.instance.kick.GetComponent<CountKicks>();
     }
 
     [PunRPC]
@@ -82,30 +83,34 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalToPlayer(int id)
     {
-        markGoal = true;
+        //markGoal = true;
         numberKicks++;
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
         GameUI.instance.celebrationGoalSound.Play();
         GameUI.instance.missedGoalSound.Stop();
-        StartCoroutine(DeactivateGoalBounds());
+        //StartCoroutine(DeactivateGoalBounds());
+        DeactivateBounds();
+        goalAnim.SetTrigger("goal");
     }
 
     [PunRPC]
-    public void MarkGoalMissedToPlayer()
+    public void MarkGoalMissedToPlayer(int id)
     {
-        missGoal = true;
+        //missGoal = true;
         numberKicks++;
         GameUI.instance.celebrationGoalSound.Stop();
         GameUI.instance.missedGoalSound.Play();
-        StartCoroutine(DeactivateMissedGoalBounds());
+        //StartCoroutine(DeactivateMissedGoalBounds());
+        DeactivateBounds();
+        missedGoalAnim.SetTrigger("missedgoal");
     }
 
     [PunRPC]
     public void SwitchPositions()
     {
-        markGoal = false;
-        missGoal = false;
+        //markGoal = false;
+        //missGoal = false;
         foreach (PlayerController player in GameUI.instance.players)
         {
             player.hasToChange = true;
@@ -125,13 +130,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = true;
         player.canCover = true;
         player.ChangeRol(true);
-        
+        /*
         timScript.R();
         timScript.StartTime();
         if (PhotonNetwork.IsMasterClient)
         {
             timScript.keeper = true;
         }
+        */
     }
 
     public void spawnAsKicker(PlayerController player)
@@ -140,6 +146,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = false;
         player.canCover = false;
         player.ChangeRol(false);
+        /*
         timScript.R();
         timScript.StartTime();
         //kickScipt.RestartKicks();
@@ -147,9 +154,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             timScript.keeper = false;
         }
+        */
     }
     
     //Goal Bounds
+    /*
     IEnumerator DeactivateMissedGoalBounds()
     {
         DeactivateBounds();
@@ -166,6 +175,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         ActivateBounds();
     }
 
+    */
     void DeactivateBounds()
     {
         foreach (GameObject missedGoalBound in missedGoalBounds)
@@ -190,6 +200,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    /*
     [PunRPC]
     public void stopTime()
     {
@@ -225,7 +236,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         timScript.R();
         timScript.StartTime();
     }
-
+    */
     [PunRPC]
     public void keeperCanCover(bool cover)
     {
@@ -236,8 +247,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                 player.playerCanCover = cover;
             }
         }
+        ActivateBounds();
     }
-
+    /*
     [PunRPC]
     public bool DrawGame()
     {
@@ -264,5 +276,5 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-
+    */
 }

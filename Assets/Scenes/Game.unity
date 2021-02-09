@@ -987,8 +987,6 @@ MonoBehaviour:
   goalAnim: {fileID: 1211908462}
   missedGoalAnim: {fileID: 1739824779}
   scores: 
-  markGoal: 0
-  missGoal: 0
   numberKicks: 0
 --- !u!114 &430216123
 MonoBehaviour:
@@ -7669,7 +7667,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2030189439
 RectTransform:
   m_ObjectHideFlags: 0

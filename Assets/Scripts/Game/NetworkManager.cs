@@ -358,6 +358,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         backButton.interactable = true;
     }
 
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        base.OnDisconnected(cause);
+    }
+
     public void OnUpdateUserInfo(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
     {
         StartCoroutine(AddResultToUser(golesAnotados, golesRecibidos, golesAtajados, isWin));

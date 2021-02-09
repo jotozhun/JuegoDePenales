@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 223335978521073921}
   m_Layer: 0
   m_Name: shin.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -386,7 +386,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.001
+  m_Radius: 0.002
   m_Height: 0.004
   m_Direction: 1
   m_Center: {x: 0, y: 0.002, z: 0.0002}
@@ -421,7 +421,7 @@ Transform:
   - {fileID: 7918432097188885452}
   m_Father: {fileID: 7301876790434167743}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 75.9409, y: -62.764484, z: -63.457596}
+  m_LocalEulerAnglesHint: {x: 71.45836, y: -12.239695, z: -14.557845}
 --- !u!136 &223335979915872715
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -860,7 +860,7 @@ GameObject:
   - component: {fileID: 1089303642218634993}
   m_Layer: 0
   m_Name: thigh.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -890,7 +890,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0011
+  m_Radius: 0.0015
   m_Height: 0.0041
   m_Direction: 1
   m_Center: {x: 0, y: 0.002, z: -0.0002}
@@ -925,7 +925,7 @@ Transform:
   - {fileID: 1448772193845879784}
   m_Father: {fileID: 2703126908891085546}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 75.054855, y: 155.65334, z: 153.09933}
+  m_LocalEulerAnglesHint: {x: 13.994698, y: 172.8911, z: 164.68172}
 --- !u!136 &1089303643508182587
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1042,7 +1042,7 @@ Transform:
   - {fileID: 4097855813933650016}
   m_Father: {fileID: 3897988052786241070}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -83.2834, y: 32.19939, z: -32.68394}
+  m_LocalEulerAnglesHint: {x: -64.09297, y: -46.88118, z: 28.717968}
 --- !u!136 &1232218120388298885
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1069,7 +1069,7 @@ GameObject:
   - component: {fileID: 1232218121111623767}
   m_Layer: 0
   m_Name: foot.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1100,7 +1100,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.001
+  m_Radius: 0.0015
   m_Height: 0.003
   m_Direction: 1
   m_Center: {x: 0, y: 0.001, z: -0.0002}
@@ -1246,7 +1246,7 @@ Transform:
   - {fileID: 815419168728899466}
   m_Father: {fileID: 9017546620107042822}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -3.490222, y: -1.3192947, z: 5.8055506}
+  m_LocalEulerAnglesHint: {x: -3.3877332, y: 6.8591146, z: -5.182429}
 --- !u!1 &1580528314463654129
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,7 +1258,7 @@ GameObject:
   - component: {fileID: 1350391720534201100}
   m_Layer: 0
   m_Name: spine.002
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1339,7 +1339,7 @@ Transform:
   - {fileID: 5743315450716187959}
   m_Father: {fileID: 815419168728899466}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: -85.74687, y: -25.885633, z: -45.604244}
+  m_LocalEulerAnglesHint: {x: -84.06958, y: -46.43232, z: -27.623749}
 --- !u!1 &2069581961570781331
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,7 +1352,7 @@ GameObject:
   - component: {fileID: 2069581961570781330}
   m_Layer: 0
   m_Name: forearm.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1382,7 +1382,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0005
+  m_Radius: 0.0011
   m_Height: 0.0025
   m_Direction: 1
   m_Center: {x: 0, y: 0.0011, z: 0}
@@ -1417,7 +1417,7 @@ Transform:
   - {fileID: 179786118912539312}
   m_Father: {fileID: 5743315450716187959}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 51.07498, y: 42.817543, z: 33.526985}
+  m_LocalEulerAnglesHint: {x: 38.600506, y: 33.815273, z: 20.860958}
 --- !u!136 &2069581962323466332
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1845,7 +1845,7 @@ Transform:
   - {fileID: 2029230769024189231}
   m_Father: {fileID: 5423701618846471121}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 60.157173, y: -4.9584904, z: -0.07334558}
+  m_LocalEulerAnglesHint: {x: 41.28041, y: -8.021758, z: -1.1047039}
 --- !u!136 &2811788209533392551
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1872,7 +1872,7 @@ GameObject:
   - component: {fileID: 2811788210827265621}
   m_Layer: 0
   m_Name: shin.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1902,7 +1902,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.001
+  m_Radius: 0.002
   m_Height: 0.004
   m_Direction: 1
   m_Center: {x: 0, y: 0.002, z: 0.0002}
@@ -1937,7 +1937,7 @@ Transform:
   - {fileID: 8063323118833566808}
   m_Father: {fileID: 5351543288767458655}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -12.710739, y: -19.55649, z: 6.223386}
+  m_LocalEulerAnglesHint: {x: 5.559555, y: -29.450573, z: 37.108295}
 --- !u!136 &3107291889458635547
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1964,7 +1964,7 @@ GameObject:
   - component: {fileID: 3107291890748322769}
   m_Layer: 0
   m_Name: hand.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1994,8 +1994,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0008
-  m_Height: 0.002
+  m_Radius: 0.001
+  m_Height: 0.0025
   m_Direction: 1
   m_Center: {x: 0.0002, y: 0.0006, z: 0.0001}
 --- !u!1 &3266544513750205586
@@ -2141,7 +2141,7 @@ Transform:
   - {fileID: 2672277981789077548}
   m_Father: {fileID: 815419168728899466}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 21.27862, y: -0.120027244, z: -0.93108517}
+  m_LocalEulerAnglesHint: {x: 27.807514, y: -0.6985988, z: -0.048920035}
 --- !u!135 &3382623237448050561
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2167,7 +2167,7 @@ GameObject:
   - component: {fileID: 3382623238171506507}
   m_Layer: 0
   m_Name: spine.004
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2198,7 +2198,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0016
+  m_Radius: 0.002
   m_Center: {x: 0, y: 0.002, z: 0}
 --- !u!1 &3753879790434390993
 GameObject:
@@ -2432,7 +2432,7 @@ GameObject:
   - component: {fileID: 4044214725104670724}
   m_Layer: 0
   m_Name: upper_arm.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2462,7 +2462,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0006
+  m_Radius: 0.001
   m_Height: 0.0028
   m_Direction: 1
   m_Center: {x: 0, y: 0.0009, z: 0}
@@ -2497,7 +2497,7 @@ Transform:
   - {fileID: 1910340698304990822}
   m_Father: {fileID: 5294920055300579115}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 16.304518, y: -89.47858, z: 55.439224}
+  m_LocalEulerAnglesHint: {x: -14.494449, y: -62.40358, z: 40.316437}
 --- !u!136 &4044214726365251786
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2679,7 +2679,7 @@ Transform:
   - {fileID: 1485283477368964009}
   m_Father: {fileID: 5946928152170513592}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -12.883483, y: 0.059271272, z: -0.90589094}
+  m_LocalEulerAnglesHint: {x: -6.3544827, y: -0.6643713, z: 0.22953737}
 --- !u!1 &5234002787504273703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2780,7 +2780,7 @@ Transform:
   - {fileID: 5946928152170513592}
   m_Father: {fileID: 1350391719278068674}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 5.5729885, y: -1.3855288, z: 5.58455}
+  m_LocalEulerAnglesHint: {x: 5.6717644, y: 6.85577, z: -4.0681334}
 --- !u!1 &5547883750495731249
 GameObject:
   m_ObjectHideFlags: 0
@@ -2812,7 +2812,7 @@ Transform:
   - {fileID: 3897988052786241070}
   m_Father: {fileID: 2703126908891085546}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 38.93101, y: -167.89906, z: 175.44261}
+  m_LocalEulerAnglesHint: {x: 60.37418, y: -155.22386, z: -154.30867}
 --- !u!136 &5547883750495731248
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2839,7 +2839,7 @@ GameObject:
   - component: {fileID: 5547883751886204670}
   m_Layer: 0
   m_Name: thigh.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2869,7 +2869,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0011
+  m_Radius: 0.0015
   m_Height: 0.0041
   m_Direction: 1
   m_Center: {x: 0, y: 0.002, z: -0.0002}
@@ -3093,7 +3093,7 @@ Transform:
   - {fileID: 1713434661498114902}
   m_Father: {fileID: 1448772193845879784}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -83.50973, y: -51.03795, z: 43.213783}
+  m_LocalEulerAnglesHint: {x: -79.24942, y: -118.7614, z: 122.56016}
 --- !u!136 &5708754989749929277
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3120,7 +3120,7 @@ GameObject:
   - component: {fileID: 5708754990607865343}
   m_Layer: 0
   m_Name: foot.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3151,7 +3151,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.001
+  m_Radius: 0.0015
   m_Height: 0.003
   m_Direction: 1
   m_Center: {x: 0, y: 0.001, z: -0.0002}
@@ -3186,7 +3186,7 @@ Transform:
   - {fileID: 1350391719278068674}
   m_Father: {fileID: 2703126908891085546}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -4.4213552, y: -0.5732514, z: -0.7793601}
+  m_LocalEulerAnglesHint: {x: -4.384463, y: 1.1528811, z: -5.2429485}
 --- !u!136 &5838307293678714217
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3213,7 +3213,7 @@ GameObject:
   - component: {fileID: 5838307295073250723}
   m_Layer: 0
   m_Name: spine.001
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3243,7 +3243,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.002
+  m_Radius: 0.0025
   m_Height: 0.0056
   m_Direction: 1
   m_Center: {x: 0, y: 0.0019, z: 0}
@@ -3308,7 +3308,7 @@ Transform:
   - {fileID: 1734785258170633685}
   m_Father: {fileID: 1485283477368964009}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: -9.202585, y: 0.33454627, z: -0.8848529}
+  m_LocalEulerAnglesHint: {x: -2.6770434, y: -0.6758207, z: -0.022126794}
 --- !u!1 &5868336298273153569
 GameObject:
   m_ObjectHideFlags: 0
@@ -3340,7 +3340,7 @@ Transform:
   - {fileID: 8610210927426499938}
   m_Father: {fileID: 1910340698304990822}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 5.430416, y: 5.894381, z: 0.8999987}
+  m_LocalEulerAnglesHint: {x: -3.4977295, y: 40.68964, z: -20.054817}
 --- !u!136 &5868336298273153568
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3367,7 +3367,7 @@ GameObject:
   - component: {fileID: 5868336299667698414}
   m_Layer: 0
   m_Name: hand.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3397,8 +3397,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0008
-  m_Height: 0.002
+  m_Radius: 0.001
+  m_Height: 0.0025
   m_Direction: 1
   m_Center: {x: -0.0001, y: 0.0006, z: 0.0001}
 --- !u!1 &5950161219280268171
@@ -3431,7 +3431,7 @@ Transform:
   - {fileID: 2703126908891085546}
   m_Father: {fileID: 4002167476420664423}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: -59.7788, y: 37.442646, z: -12.241894}
+  m_LocalEulerAnglesHint: {x: -60.40355, y: -174.93703, z: -163.06804}
 --- !u!1 &6496769172313825653
 GameObject:
   m_ObjectHideFlags: 0
@@ -3617,7 +3617,7 @@ Transform:
   - {fileID: 5351543288767458655}
   m_Father: {fileID: 7579346707894700303}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 31.896723, y: 94.32198, z: -64.98966}
+  m_LocalEulerAnglesHint: {x: -36.018314, y: 115.419304, z: -60.079178}
 --- !u!136 &6789194858293550686
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3644,7 +3644,7 @@ GameObject:
   - component: {fileID: 6789194859012804240}
   m_Layer: 0
   m_Name: upper_arm.R
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3674,7 +3674,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0006
+  m_Radius: 0.001
   m_Height: 0.0028
   m_Direction: 1
   m_Center: {x: 0, y: 0.0009, z: 0}
@@ -3855,7 +3855,7 @@ Transform:
   - {fileID: 5965841932580605439}
   m_Father: {fileID: 2672277981789077548}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -12.750291, y: 0.22899371, z: -0.91676104}
+  m_LocalEulerAnglesHint: {x: -6.223358, y: -0.6813221, z: 0.104845285}
 --- !u!1 &7087579189947604082
 GameObject:
   m_ObjectHideFlags: 0
@@ -3917,7 +3917,7 @@ Transform:
   - {fileID: 4601138287639724008}
   m_Father: {fileID: 815419168728899466}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -84.81972, y: 37.58396, z: 34.88535}
+  m_LocalEulerAnglesHint: {x: -82.2763, y: 56.637867, z: 16.728895}
 --- !u!1 &7399548433287947909
 GameObject:
   m_ObjectHideFlags: 0
@@ -4070,7 +4070,7 @@ GameObject:
   - component: {fileID: 7487242294447138592}
   m_Layer: 0
   m_Name: forearm.L
-  m_TagString: Untagged
+  m_TagString: Goalkeeper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4100,7 +4100,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0005
+  m_Radius: 0.0011
   m_Height: 0.0025
   m_Direction: 1
   m_Center: {x: 0.0001, y: 0.0011, z: -0.0001}
@@ -4135,7 +4135,7 @@ Transform:
   - {fileID: 5362107616336915313}
   m_Father: {fileID: 4601138287639724008}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 29.556074, y: -30.323238, z: -14.652273}
+  m_LocalEulerAnglesHint: {x: 18.957737, y: -27.912653, z: -8.813997}
 --- !u!136 &7487242295304943598
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4242,7 +4242,7 @@ Transform:
   - {fileID: 2017474236024569518}
   m_Father: {fileID: 2029230769024189231}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 57.364536, y: -179.99995, z: 0.000028294106}
+  m_LocalEulerAnglesHint: {x: 32.004925, y: 78.57005, z: -1.3615121e-13}
 --- !u!1 &7648895040292445468
 GameObject:
   m_ObjectHideFlags: 0
@@ -4581,7 +4581,7 @@ GameObject:
   - component: {fileID: 2920711036056307225}
   m_Layer: 0
   m_Name: Soccer_Ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4891,7 +4891,7 @@ Transform:
   - {fileID: 7755027544310606440}
   m_Father: {fileID: 7918432097188885452}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 35.47492, y: 179.99998, z: 0}
+  m_LocalEulerAnglesHint: {x: 36.015266, y: 180, z: 8.674863e-15}
 --- !u!1 &8465386440092554397
 GameObject:
   m_ObjectHideFlags: 0

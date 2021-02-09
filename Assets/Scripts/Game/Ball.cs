@@ -11,13 +11,17 @@ public class Ball : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
-        if (other.CompareTag("GoalBound"))
+        if (other.CompareTag("Goalkeeper"))
+        {
+            Debug.Log("Atajado!");
+        }
+        else if (other.CompareTag("GoalBound"))
         {
             GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id - 1);
         }
         else if (other.CompareTag("MissedGoalBound"))
         {
-            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All);
+            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, player.id - 1);
         }
     }
 }

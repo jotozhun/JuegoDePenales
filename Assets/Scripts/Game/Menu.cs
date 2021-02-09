@@ -90,7 +90,9 @@ public class Menu : MonoBehaviourPunCallbacks
         if (NetworkManager.instance.isConnected)
         {
             SetScreen(playerScreen);
-            playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
+            //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
+            //playername.text = "Bienvenido de vuelta " + PhotonNetwork.NickName + "!";
+            playername.text = "Bienvenido de vuelta " + PhotonNetwork.LocalPlayer.NickName + "!";
             tournamentButton.interactable = true;
         }
     }
@@ -110,10 +112,12 @@ public class Menu : MonoBehaviourPunCallbacks
     }
 
     // MAIN SCREEN
+    /*
     public void OnPlayerNameChanged()
     {
         PhotonNetwork.NickName = playerName.text;
     }
+    */
     public void OnPlayButton()
     {
         if (roomName.text != "")

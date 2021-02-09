@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.name == "Soccer_Ball" && hit.transform.GetComponent<Ball>().player.id == id)
+                if (hit.collider.CompareTag("Ball"))//hit.transform.name == "Soccer_Ball" && hit.transform.GetComponent<Ball>().player.id == id)
                 {
                     starttime = Time.time;
                     firstpos = Input.mousePosition;
@@ -134,16 +134,55 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
-            GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
+            //GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
             GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, true);
             StartCoroutine(KickAnimation(ballForce));
             ballReturned = false;
             StartCoroutine(ReturnBall());
-            StartCoroutine(PlayerCoverBall());
+            //StartCoroutine(PlayerCoverBall());
         }
        
     }
 
+    IEnumerator KickAnimation(Vector3 ballForce)
+    {
+
+        //kicker_anim.SetTrigger("KickNow");
+        kicker_anim.SetBool("KickNow1", true);
+        yield return new WaitForSeconds(0.55f);
+        GameUI.instance.kickSound.Play();
+        ballRigBody.AddForce(ballForce);
+        UncheckAnimBooleans();
+        //yield return new WaitForSeconds(0.50f);
+    }
+
+    IEnumerator ReturnBall()
+    {
+        yield return new WaitForSeconds(4.0f);
+        ball.transform.localPosition = startpos;
+        ball.transform.localRotation = Quaternion.identity;
+        ballRigBody.velocity = Vector3.zero;
+        ballRigBody.angularVelocity = Vector3.zero;
+        ballReturned = true;
+        /*
+        GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
+        if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
+        {
+            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered, id - 1);
+        }
+        GameManager.instance.markGoal = false;
+        GameManager.instance.missGoal = false;
+        checkRestartDecreaseKicks();
+        */
+        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+    }
+    /*
+    IEnumerator PlayerCoverBall()
+    {
+        yield return new WaitForSeconds(1.1f);
+        GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, false);
+    }
+    */
     [PunRPC]
     public void TryCover()
     {
@@ -178,8 +217,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
         else if (distance.x > 0 && distance.y < 0)
             goalkeeper_anim.SetBool("BodyRight1", true);
         yield return new WaitForSeconds(0.5f);
-        if (this.isGoalKeeper)
-            canCover = true;
+        //if (this.isGoalKeeper)
+          //  canCover = true;
+        UncheckAnimBooleans();
     }
 
     public void UncheckAnimBooleans()
@@ -191,44 +231,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         goalkeeper_anim.SetBool("BodyRight1", false);
         kicker_anim.SetBool("KickNow1", false);
     }
-    //Testing coroutines
-    IEnumerator ReturnBall()
-    {
-        yield return new WaitForSeconds(3.2f);
-        ball.transform.localPosition = startpos;
-        ball.transform.localRotation = Quaternion.identity;
-        ballRigBody.velocity = Vector3.zero;
-        ballRigBody.angularVelocity = Vector3.zero;
-        ballReturned = true;
-        GameManager.instance.photonView.RPC("restartTime", RpcTarget.AllBuffered);
-        if (!GameManager.instance.markGoal && !GameManager.instance.missGoal)
-        {
-            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
-        }
-        GameManager.instance.markGoal = false;
-        GameManager.instance.missGoal = false;
-        checkRestartDecreaseKicks();
 
-        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
-    }
-
-    IEnumerator KickAnimation(Vector3 ballForce)
-    {
-
-        //kicker_anim.SetTrigger("KickNow");
-        kicker_anim.SetBool("KickNow1", true);
-        yield return new WaitForSeconds(0.55f);
-        GameUI.instance.kickSound.Play();
-        ballRigBody.AddForce(ballForce);
-        yield return new WaitForSeconds(0.50f);
-    }
-
-    IEnumerator PlayerCoverBall()
-    {
-        yield return new WaitForSeconds(1.1f);
-        GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, false);
-    }
-
+    /*
     [PunRPC]
     public void checkRestartDecreaseKicks()
     {
@@ -254,7 +258,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
 
     }
-
+    */
+    /*
     [PunRPC]
     IEnumerator LeaveAndLoad()
     {
@@ -270,7 +275,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             yield return null;
         SceneManager.LoadScene("Menu");*/
         //NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Menu");
-    }
+    /*}
     public void salirGame()
     {
         if (PhotonNetwork.InRoom)
@@ -278,4 +283,5 @@ public class PlayerController : MonoBehaviourPunCallbacks
         //PhotonNetwork.LeaveRoom();
         PhotonNetwork.LoadLevel("Menu");
     }
+    */
 }

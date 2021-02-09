@@ -36,19 +36,19 @@ public class Timer : MonoBehaviourPunCallbacks
         }
 
 
-        if (sec < 0.0)
+        if (sec < 0.0 && PhotonNetwork.IsMasterClient)
         {
-            if (PhotonNetwork.IsMasterClient && keeper == true)
+            if (keeper == true)
             {
                 //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id + 1);
-                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
-                playerScript.checkRestartDecreaseKicks();
+                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered, playerScript.id - 1);
+                //playerScript.checkRestartDecreaseKicks();
             }
-            else if (PhotonNetwork.IsMasterClient && keeper == false)
+            else if (keeper == false)
             {
                 //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id);
-                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered);
-                playerScript.checkRestartDecreaseKicks();
+                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.AllBuffered, playerScript.id - 1);
+                //playerScript.checkRestartDecreaseKicks();
             }
             /*
             if (change == draw)
@@ -61,6 +61,7 @@ public class Timer : MonoBehaviourPunCallbacks
             {
                 GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
             }*/
+            GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
             R();
         }
     }
