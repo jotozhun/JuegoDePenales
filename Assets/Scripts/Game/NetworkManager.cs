@@ -41,8 +41,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField playerPassword;
     public TextMeshProUGUI loginStatusText;
 
-   
-    
+
+    public float resolutionCoeficient;
+    private float standardGameHeight = 1920f;
     public static NetworkManager instance;
     public int maxPlayers;
     public bool isConnected;
@@ -62,6 +63,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
         photonView.ViewID = 1;
+        SetResolutionCoeficient();
+    }
+
+    void SetResolutionCoeficient()
+    {
+        float height = Screen.height;
+        resolutionCoeficient = standardGameHeight / height;
     }
 
     private void Start()
@@ -374,6 +382,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel(sceneName);
         Screen.orientation = ScreenOrientation.Landscape;
     }
+
 
     public class UserInfo
     {

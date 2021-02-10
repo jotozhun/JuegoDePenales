@@ -87,7 +87,7 @@ public class Menu : MonoBehaviourPunCallbacks
     }*/
     private void Start()
     {
-        if (NetworkManager.instance.isConnected)
+        if (NetworkManager.instance != null && NetworkManager.instance.isConnected)
         {
             SetScreen(playerScreen);
             //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
@@ -132,6 +132,7 @@ public class Menu : MonoBehaviourPunCallbacks
         playButton.interactable = true;
         gameScreen.SetActive(false);
         waitingScreen.SetActive(true);
+        Debug.Log(PhotonNetwork.CurrentRoom.Name);
     }
 
     public override void OnJoinedRoom()
@@ -217,8 +218,15 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnLogoutButton()
     {
-        Destroy(NetworkManager.instance.gameObject);
-        StartCoroutine(DisconnectAndLoad());
+        if (NetworkManager.instance != null)
+        {
+            Destroy(NetworkManager.instance.gameObject);
+            StartCoroutine(DisconnectAndLoad());
+        }
+        else
+        {
+            SceneManager.LoadScene("GameAccount");
+        }
     }
 
     IEnumerator DisconnectAndLoad()

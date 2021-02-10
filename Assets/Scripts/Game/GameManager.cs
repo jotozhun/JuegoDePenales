@@ -53,6 +53,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         //kickScipt = GameUI.instance.kick.GetComponent<CountKicks>();
     }
 
+    private void Update()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+    }
+
     [PunRPC]
     void ImInGame()
     {
@@ -200,6 +206,21 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    
+    [PunRPC]
+    public void keeperCanCover(bool cover)
+    {
+        foreach (PlayerController player in GameUI.instance.players)
+        {
+            if (player.isGoalKeeper)
+            {
+                player.playerCanCover = cover;
+            }
+        }
+        ActivateBounds();
+    }
+
+    
     /*
     [PunRPC]
     public void stopTime()
@@ -237,18 +258,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         timScript.StartTime();
     }
     */
-    [PunRPC]
-    public void keeperCanCover(bool cover)
-    {
-        foreach (PlayerController player in GameUI.instance.players)
-        {
-            if (player.isGoalKeeper)
-            {
-                player.playerCanCover = cover;
-            }
-        }
-        ActivateBounds();
-    }
+
     /*
     [PunRPC]
     public bool DrawGame()

@@ -14,53 +14,10 @@ public class BallPractice : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        
+
         if (targetScipt.isTargetPractice)
         {
-            if (other.CompareTag("ShoeKick"))
-            {
-                //Debug.Log("patear");
-                //Debug.Log("fuerzaBall" + player.ballForce);
-                player.KickAnimation(player.ballForce);
-            }
-            if (other.CompareTag("Target"))
-            {
-                player.ReturnBall();
-            }
-            else if (other.CompareTag("GoalBound"))
-            {
-                //Debug.Log("noObjetivoSIarco");
-                targetScipt.intentosJugador++;
-                targetScipt.actualizarUIText();
-                player.ReturnBall();
-            }
-            else if (other.CompareTag("MissedGoalBound"))
-            {
-                //Debug.Log("noObjetivoSIfallo");
-                targetScipt.intentosJugador++;
-                targetScipt.actualizarUIText();
-                player.ReturnBall();
-            }
-        }
-        else
-        {
-            if (other.CompareTag("ShoeKick"))
-            {
-                //Debug.Log("patear2");
-                //Debug.Log("fuerzaBall2" + player.ballForce);
-                player.KickAnimation(player.ballForce);
-            }
-            if (other.CompareTag("GoalBound"))
-            {
-                GameManagerPractice.instance.MarkGoalToPlayer();
-                player.ReturnBall();
-            }
-            else if (other.CompareTag("MissedGoalBound"))
-            {
-                GameManagerPractice.instance.MarkGoalMissedToPlayer();
-                player.ReturnBall();
-            }
-        }
 
+        }
     }
 }

@@ -121,7 +121,6 @@ public class GameManagerPractice : MonoBehaviour
         markGoal = false;
         missGoal = false;
         PlayerControllerPractice player = playerScript;
-        player.hasToChange = true;
         if (player.isGoalKeeper)
         {
             spawnAsKicker(player);
@@ -139,37 +138,15 @@ public class GameManagerPractice : MonoBehaviour
         player.gameObject.transform.position = GameUIPractice.instance.goalKeeperSpawn.position;
         player.gameObject.transform.rotation = GameUIPractice.instance.goalKeeperSpawn.rotation;
         player.ball.SetActive(false);
-        player.canCover = true;
-
-        //timScript.R();
-        //timScript.StartTime();
-        //kickScipt.RestartKicks();
-        //timScript.keeper = true;
     }
 
     public void spawnAsKicker(PlayerControllerPractice player)
     {
-        /*GameUIPractice.instance.playerObject.playerCanCover = false;
-        GameUIPractice.instance.playerObject.isGoalKeeper = false;
-        GameUIPractice.instance.playerObject.canCover = false;
-        //player.anim.SetBool("isGoalKeeper", false);
-        GameUIPractice.instance.playerObject.gameObject.transform.position = GameUIPractice.instance.kickerSpawn.position;
-        GameUIPractice.instance.playerObject.gameObject.transform.rotation = GameUIPractice.instance.kickerSpawn.rotation;
-        GameUIPractice.instance.playerObject.ball.SetActive(true);
-        //timScript.R();
-        //timScript.StartTime();
-        //kickScipt.RestartKicks();
-        //timScript.keeper = false;*/
-        player.playerCanCover = false;
         player.isGoalKeeper = false;
-        player.canCover = false;
         //player.anim.SetBool("isGoalKeeper", false);
         player.gameObject.transform.position = GameUIPractice.instance.kickerSpawn.position;
         player.gameObject.transform.rotation = GameUIPractice.instance.kickerSpawn.rotation;
         player.ball.SetActive(true);
-        //timScript.R();
-        //timScript.StartTime();
-        //kickScipt.RestartKicks();
     }
     
     //Goal Bounds
@@ -218,46 +195,6 @@ public class GameManagerPractice : MonoBehaviour
         foreach (GameObject goalBound in goalBounds)
         {
             goalBound.SetActive(true);
-        }
-    }
-    
-    public void stopTime()
-    {
-        //timScript.StopTime();
-    }
-    
-    public bool activateSwitch()
-    {
-        //Debug.Log("kicks:" + kickScipt.numKicks);
-        if (kickScipt.numKicks == 0)
-        {
-            return true;
-        }
-        return false;
-    }
-    
-    public void decreaseKicksCount()
-    {
-        kickScipt.DecreaseKicks();
-    }
-
-    public void restartKicksCount()
-    {
-        kickScipt.RestartKicks();
-    }
-    
-    public void restartTime()
-    {
-        //timScript.R();
-        //timScript.StartTime();
-    }
-    
-    public void keeperCanCover(bool cover)
-    {
-        PlayerControllerPractice player = playerScript;
-        if (player.isGoalKeeper)
-        {
-            player.playerCanCover = cover;
         }
     }
 

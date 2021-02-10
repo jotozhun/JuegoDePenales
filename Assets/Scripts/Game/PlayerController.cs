@@ -43,8 +43,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool toKick; 
     private bool ballReturned = true;
     public bool playerCanCover;
-    
 
+    private float forceCoeficient;
     [PunRPC]
     public void Initialize(Player player)
     {
@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
 
+        forceCoeficient = NetworkManager.instance.resolutionCoeficient;
     }
 
     private void Start()
@@ -127,9 +128,35 @@ public class PlayerController : MonoBehaviourPunCallbacks
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
             Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
+
+            force *= forceCoeficient;
             toKick = false;
 
-            force.y = Mathf.Clamp(force.y, 0, 650);
+            if (force.y >= 400)
+            {
+
+                float baseForce = 400f;
+                float diferential = Mathf.Pow(force.y - baseForce, 0.95f);
+
+                force.y = baseForce + diferential;
+                Debug.Log("Now is: " + force.y);
+            }
+
+            if (force.x < 0 && force.x > -260)
+            {
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.92f);
+            }
+            else if (force.x <= -260 && force.x > -340)
+            {
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.95f);
+            }
+            else if (force.x <= -340)
+            {
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.98f);
+            }
+
+            force.x = Mathf.Clamp(force.x, -600, 600);
+            force.y = Mathf.Clamp(force.y, 0, 600);
             force.z = Mathf.Clamp(force.z + 120, 520, 700);
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;

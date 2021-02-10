@@ -343,7 +343,6 @@ Transform:
   m_Children:
   - {fileID: 6099974293882397849}
   - {fileID: 7090537489726676149}
-  - {fileID: 320897810038533651}
   - {fileID: 3015106738722950280}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -366,8 +365,8 @@ MonoBehaviour:
   playerModel: {fileID: 7132628230909531786}
   cam: {fileID: 7171595804985086271}
   ball: {fileID: 7093216135310166751}
-  kickCollider: {fileID: 8892376171010562001}
-  anim: {fileID: 0}
+  kickCollider: {fileID: 0}
+  anim: {fileID: 4192136075324115427}
   hasToChange: 0
   canCover: 0
   canJump: 0
@@ -494,7 +493,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3911283202295145308}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 8.485001, y: 0, z: 0}
 --- !u!20 &7171595804985086271
 Camera:
@@ -2209,64 +2208,6 @@ Transform:
   m_Father: {fileID: 2164325482511862008}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8892376171010562001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 320897810038533651}
-  - component: {fileID: 1969866006867277815}
-  - component: {fileID: 2364917473591096928}
-  m_Layer: 0
-  m_Name: KickTriggerY
-  m_TagString: KickTrigger
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &320897810038533651
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8892376171010562001}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.886, y: 0.891, z: 1.727}
-  m_LocalScale: {x: 1.529, y: 1.9886, z: 0.4}
-  m_Children: []
-  m_Father: {fileID: 3911283202295145308}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1969866006867277815
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8892376171010562001}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2364917473591096928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8892376171010562001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba42d02bfb2854249b24b1bafd1373b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: -2114575440715572112}
 --- !u!1 &8928624306832545289
 GameObject:
   m_ObjectHideFlags: 0
