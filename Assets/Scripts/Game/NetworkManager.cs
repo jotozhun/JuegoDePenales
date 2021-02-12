@@ -63,13 +63,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
         photonView.ViewID = 1;
-        SetResolutionCoeficient();
-    }
-
-    void SetResolutionCoeficient()
-    {
-        float height = Screen.height;
-        resolutionCoeficient = standardGameHeight / height;
+        //CalculateCoeficient();
     }
 
     private void Start()
@@ -82,11 +76,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.InLobby)
         {
             PhotonNetwork.JoinLobby();
-            if(loginButton != null)
+            if (loginButton != null)
                 loginButton.interactable = true;
         }
     }
-
+    /*
+    void CalculateCoeficient()
+    {
+        float screenHeight = Screen.height;
+        resolutionCoeficient = standardGameHeight / screenHeight;
+    }
+    */
     public void CreateRoom(string roomName)
     {
         RoomOptions options = new RoomOptions();
@@ -102,7 +102,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         toLoginButton.interactable = true;
         registerButton.interactable = true;
         toRegisterButton.interactable = true;
-    }    
+    }
 
     void DeactivateButtons()
     {
@@ -251,11 +251,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public IEnumerator GetTorneoInfo()
     {
-        using(UnityWebRequest webRequest = UnityWebRequest.Get(torneoInfoUri))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(torneoInfoUri))
         {
             yield return webRequest.SendWebRequest();
 
-            if(webRequest.isNetworkError)
+            if (webRequest.isNetworkError)
             {
                 Debug.Log(webRequest.error);
             }
@@ -287,7 +287,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public IEnumerator AddResultToUser(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
     {
         userInfo.total_partidos += 1;
-        if(isWin)
+        if (isWin)
         {
             userInfo.partidos_ganados += 1;
         }
@@ -298,7 +298,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         userInfo.goles_anotados += golesAnotados;
         userInfo.goles_atajados += golesAtajados;
         userInfo.goles_recibidos += golesRecibidos;
-       
+
         WWWForm form = new WWWForm();
         form.AddField("id_user", userInfo.id_user);
         form.AddField("total_partidos", userInfo.total_partidos);
@@ -358,7 +358,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 {
                     signStatus.color = Color.red;
                 }
-                
+
 
             }
         }
@@ -382,7 +382,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel(sceneName);
         Screen.orientation = ScreenOrientation.Landscape;
     }
-
 
     public class UserInfo
     {

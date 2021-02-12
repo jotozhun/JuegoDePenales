@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
 
-        forceCoeficient = NetworkManager.instance.resolutionCoeficient;
+        forceCoeficient = 1080/Screen.height;
     }
 
     private void Start()

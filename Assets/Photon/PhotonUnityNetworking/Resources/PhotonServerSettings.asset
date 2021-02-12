@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: d9aa9104-4692-4c11-9d84-13850cc9f000
+    AppIdRealtime: 10fa83a7-58aa-4f3d-a85d-9f437dd485a1
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
@@ -22,7 +22,7 @@ MonoBehaviour:
     Server: 
     Port: 0
     ProxyServer: 
-    Protocol: 1
+    Protocol: 0
     EnableProtocolFallback: 1
     AuthMode: 0
     EnableLobbyStatistics: 0
@@ -32,29 +32,7 @@ MonoBehaviour:
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
-  RpcList:
-  - ClickRpc
-  - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - ChangeScene
-  - ImInGame
-  - Initialize
-  - MarkGoalToPlayer
-  - SwitchPositions
-  - MarkGoalMissedToPlayer
-  - Kick
-  - SpawnPlayers
-  - TryCover
-  - DecreaseKicks
-  - keeperCanCover
-  - OnEndGame
-  - R
-  - RestartKicks
-  - Start
-  - StartTime
-  - StopTime
+  RpcList: []
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
-  DevRegionSetOnce: 1
+  ShowSettings: 0
+  DevRegionSetOnce: 0

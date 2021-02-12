@@ -87,7 +87,7 @@ public class Menu : MonoBehaviourPunCallbacks
     }*/
     private void Start()
     {
-        if (NetworkManager.instance != null && NetworkManager.instance.isConnected)
+        if (NetworkManager.instance.isConnected)
         {
             SetScreen(playerScreen);
             //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
@@ -132,7 +132,6 @@ public class Menu : MonoBehaviourPunCallbacks
         playButton.interactable = true;
         gameScreen.SetActive(false);
         waitingScreen.SetActive(true);
-        Debug.Log(PhotonNetwork.CurrentRoom.Name);
     }
 
     public override void OnJoinedRoom()
@@ -160,14 +159,14 @@ public class Menu : MonoBehaviourPunCallbacks
         cancelButton.interactable = true;
         SetScreen(gameScreen);
     }
-    
+
     /*public override void OnLeftRoom()
     {
         cancelButton.interactable = true;
         gameScreen.SetActive(true);
         waitingScreen.SetActive(false);
     }*/
-    
+
     // PLAYER SCREEN
     public void OnEstadisticButtonUI()
     {
@@ -218,15 +217,8 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnLogoutButton()
     {
-        if (NetworkManager.instance != null)
-        {
-            Destroy(NetworkManager.instance.gameObject);
-            StartCoroutine(DisconnectAndLoad());
-        }
-        else
-        {
-            SceneManager.LoadScene("GameAccount");
-        }
+        Destroy(NetworkManager.instance.gameObject);
+        StartCoroutine(DisconnectAndLoad());
     }
 
     IEnumerator DisconnectAndLoad()
@@ -265,7 +257,7 @@ public class Menu : MonoBehaviourPunCallbacks
         StartCoroutine(NetworkManager.instance.AddResultToUser(4, 3, 1, true));
     }
 
-    
+
     /*
     public override void OnLeftRoom()
     {
