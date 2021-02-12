@@ -23,7 +23,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Hair
-    second: {fileID: 2100000, guid: da9242f9dae19fa448eb322ad2846f41, type: 2}
+    second: {fileID: 2100000, guid: 2e2796d9f4bd2864bb8de8e222d992ed, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -48,17 +48,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: afro01
-    second: {fileID: 2100000, guid: ac4921c6aa0a299409ced9f936ac56e8, type: 2}
+    second: {fileID: 2100000, guid: 4e18d68df26452e4e88ef0d5a9fae569, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: eyebrow
-    second: {fileID: 2100000, guid: 9b9b4e4c15b06b044aa3e4789352ee97, type: 2}
+    second: {fileID: 2100000, guid: bba0b43a0330d0f4ba5f8907e84b0997, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: ponytail01
-    second: {fileID: 2100000, guid: 16ca6af70f005124180b439444501617, type: 2}
+    second: {fileID: 2100000, guid: 189a22b5ae5b84c4ab90b5e1339a8b26, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

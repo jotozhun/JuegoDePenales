@@ -87,7 +87,7 @@ public class Menu : MonoBehaviourPunCallbacks
     }*/
     private void Start()
     {
-        if (NetworkManager.instance.isConnected)
+        if (NetworkManager.instance != null && NetworkManager.instance.isConnected)
         {
             SetScreen(playerScreen);
             //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
