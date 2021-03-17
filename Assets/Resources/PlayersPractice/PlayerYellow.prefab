@@ -221,7 +221,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &18720755411996330
 Transform:
   m_ObjectHideFlags: 0
@@ -365,13 +365,12 @@ MonoBehaviour:
   playerModel: {fileID: 7132628230909531786}
   cam: {fileID: 7171595804985086271}
   ball: {fileID: 7093216135310166751}
-  kickCollider: {fileID: 0}
+  kicker_haircuts:
+  - {fileID: 123282381094839794}
+  - {fileID: 380600613840888417}
+  - {fileID: 2919446833534725348}
   anim: {fileID: 4192136075324115427}
-  hasToChange: 0
-  canCover: 0
-  canJump: 0
-  playerCanCover: 0
-  ballForce: {x: 0, y: 0, z: 0}
+  forceCoeficient: 0
 --- !u!1 &846645294379818097
 GameObject:
   m_ObjectHideFlags: 0
@@ -872,7 +871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8752696336090219363
 Transform:
   m_ObjectHideFlags: 0
@@ -2307,6 +2306,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3911283202295145308}
     m_Modifications:
+    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
+      propertyPath: m_Name
+      value: Soccer Ball Practice
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
+      propertyPath: m_TagString
+      value: Ball
+      objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.03
@@ -2362,14 +2369,6 @@ PrefabInstance:
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalScale.z
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
-      propertyPath: m_Name
-      value: Soccer Ball Practice
-      objectReference: {fileID: 0}
-    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
-      propertyPath: m_TagString
-      value: Ball
       objectReference: {fileID: 0}
     - target: {fileID: 2541795261319422715, guid: f0dfc61ac5d6669469fab0c6906e4a5b,
         type: 3}

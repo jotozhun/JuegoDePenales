@@ -371,7 +371,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2382854785714449974
 Transform:
   m_ObjectHideFlags: 0
@@ -1217,7 +1217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7743945636811713192
 Transform:
   m_ObjectHideFlags: 0
@@ -1419,50 +1419,6 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 0.00733907, z: -0.000014910882}
     m_Extent: {x: 0.00047289988, y: 0.0000882484, z: 0.000087664244}
   m_DirtyAABB: 0
---- !u!1 &5684981278071993543
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5684981278071993542}
-  - component: {fileID: 5684981278071993541}
-  m_Layer: 0
-  m_Name: KickTrigger
-  m_TagString: KickTrigger
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5684981278071993542
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5684981278071993543}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.44411469, y: 2.089895, z: -9.868927}
-  m_LocalScale: {x: 1.529, y: 1.9886, z: 0.4}
-  m_Children: []
-  m_Father: {fileID: 5684981278545016893}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5684981278071993541
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5684981278071993543}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5684981278545016894
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1428,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5684981278545016893}
+  - component: {fileID: 542085553502966339}
   m_Layer: 0
   m_Name: PlayerWhite
   m_TagString: Untagged
@@ -1492,11 +1449,34 @@ Transform:
   m_Children:
   - {fileID: 5363210334712789891}
   - {fileID: 5689335821709500225}
-  - {fileID: 5684981278071993542}
   - {fileID: 5684981279472509689}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &542085553502966339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5684981278545016894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b554a3f6fc364543b49f9c8a3cf87b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  isGoalKeeper: 0
+  isSpectator: 0
+  playerModel: {fileID: 8950529028101802384}
+  cam: {fileID: 5684981279472509671}
+  ball: {fileID: 5684133101406685483}
+  kicker_haircuts:
+  - {fileID: 3985116297924155871}
+  - {fileID: 4909069418632092032}
+  - {fileID: 1573356806536555976}
+  anim: {fileID: 2659358691720353529}
+  forceCoeficient: 0
 --- !u!1 &5684981279472509690
 GameObject:
   m_ObjectHideFlags: 0
@@ -1522,13 +1502,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5684981279472509690}
-  m_LocalRotation: {x: 0.14156969, y: -0, z: -0, w: 0.98992836}
-  m_LocalPosition: {x: -0.06411743, y: 3.008895, z: -11.988922}
+  m_LocalRotation: {x: 0.07398217, y: -0, z: -0, w: 0.99725956}
+  m_LocalPosition: {x: 0.6380005, y: 2.124, z: -1.068}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5684981278545016893}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 16.277, y: 0, z: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 8.485001, y: 0, z: 0}
 --- !u!20 &5684981279472509671
 Camera:
   m_ObjectHideFlags: 0
@@ -2243,8 +2223,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8950529028101802384}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.202, y: 0, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.3, z: 1.2}
   m_Children:
   - {fileID: 459009760049023972}
   - {fileID: 7367784374462930421}
@@ -2265,7 +2245,7 @@ Animator:
   m_GameObject: {fileID: 8950529028101802384}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 36e0338ce63a85947869b38f6a2d3208, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 81a3cf6c3f91e2c4ea8e380bd2b13ca0, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2312,29 +2292,33 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5684981278545016893}
     m_Modifications:
+    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
+      propertyPath: m_Name
+      value: Soccer Ball Practice
+      objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.03
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.132
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.682
+      value: 3.52
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2356,15 +2340,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
-      propertyPath: m_Name
-      value: Soccer Ball Practice
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0dfc61ac5d6669469fab0c6906e4a5b, type: 3}
 --- !u!4 &5689335821709500225 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4935240531098310, guid: f0dfc61ac5d6669469fab0c6906e4a5b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5684981279349204359}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5684133101406685483 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1975457108487340, guid: f0dfc61ac5d6669469fab0c6906e4a5b,
     type: 3}
   m_PrefabInstance: {fileID: 5684981279349204359}
   m_PrefabAsset: {fileID: 0}

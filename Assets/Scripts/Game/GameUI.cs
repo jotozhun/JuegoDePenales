@@ -15,9 +15,12 @@ public class GameUI : MonoBehaviourPunCallbacks
     [Header("Players")]
     public string playerPrefabLocation;
     public string[] playersPrefabLocation;
+    public Sprite[] playerEmblemas;
     //public Transform goalKeeperSpawn;
     //public Transform kickerSpawn;
     public Transform playerSpawn;
+    public Transform playerWinSpawn;
+    public Transform playerLoseSpawn;
     public PlayerController[] players;
     public PlayerController playerObject;
     //public int playersInGame;
@@ -27,12 +30,12 @@ public class GameUI : MonoBehaviourPunCallbacks
     public AudioSource celebrationGoalSound;
     public AudioSource kickSound;
 
-    [Header("Timer")]
+    /*[Header("Timer")]
     public GameObject time;
-
+    
     [Header("Kicks")]
     public GameObject kick;
-
+    */
     [Header("Buttons")]
     public Button surrenderButton;
 
@@ -68,5 +71,12 @@ public class GameUI : MonoBehaviourPunCallbacks
             yield return null;
         Screen.orientation = ScreenOrientation.Portrait;
         PhotonNetwork.LoadLevel("Menu");
+    }
+
+    public Transform GetDidWinSpawn(bool didWin)
+    {
+        if (didWin)
+            return playerWinSpawn;
+        return playerLoseSpawn;
     }
 }

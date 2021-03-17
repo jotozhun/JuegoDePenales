@@ -12,38 +12,22 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Screens")]
     public GameObject gameScreen;
     public GameObject waitingScreen;
-    public GameObject loginScreen;
-    public GameObject signUpScreen;
     public GameObject playerScreen;
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
     public GameObject resultsScreen;
+    public GameObject interfazScreen;
 
     [Header("Game Screen")]
-    public TMP_InputField playerName;
     public TMP_InputField roomName;
     public Button playButton;
 
     [Header("Waiting Room")]
     public Button cancelButton;
 
-    [Header("Login Screen")]
-    public TMP_InputField userNameInput;
-    public TMP_InputField playerPassword;
-    public TextMeshProUGUI loginStatusText;
-    public Button loginButton;
-    public Button toRegisterScreenButton;
-
-    [Header("SignUp Screen")]
-    public TMP_InputField registerNameInput;
-    public TMP_InputField registerUsernameInput;
-    public TMP_InputField registerEmailInput;
-    public TMP_InputField registerPasswordInput;
-    public TextMeshProUGUI registerStatusText;
-    public Button registerAccountButton;
-    public Button toLoginScreenButton;
 
     [Header("Player Screen")]
+    public GameObject gameLogo;
     public TextMeshProUGUI playername;
     public Button playGameButton;
     public Button tournamentButton;
@@ -70,60 +54,47 @@ public class Menu : MonoBehaviourPunCallbacks
     public TextMeshProUGUI signStatus;
 
     public static Menu instance;
-    /*
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            //Screen.orientation = ScreenOrientation.Portrait;
-            //DontDestroyOnLoad(this);
-            //SetScreen(playerScreen);
-            //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
-        }
-    }*/
+
     private void Start()
     {
         if (NetworkManager.instance != null && NetworkManager.instance.isConnected)
         {
-            SetScreen(playerScreen);
+            
             //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
             //playername.text = "Bienvenido de vuelta " + PhotonNetwork.NickName + "!";
-            playername.text = "Bienvenido de vuelta " + PhotonNetwork.LocalPlayer.NickName + "!";
+            playername.text = "¿Listo para ganar?\n" + PhotonNetwork.LocalPlayer.NickName;
             tournamentButton.interactable = true;
+        }else if(NetworkManager.instance != null && !NetworkManager.instance.isConnected)
+        {
+            playername.text = "Bienvenido " + NetworkManager.instance.userInfo.username;
+            playGameButton.interactable = false;
+            tournamentButton.interactable = false;
+            estadisticsButton.interactable = false;
         }
+        SetScreen(playerScreen);
     }
 
     public void SetScreen(GameObject screen)
     {
         gameScreen.SetActive(false);
         waitingScreen.SetActive(false);
-        loginScreen.SetActive(false);
-        signUpScreen.SetActive(false);
         playerScreen.SetActive(false);
         estadisticsScreen.SetActive(false);
         tournamentScreen.SetActive(false);
         resultsScreen.SetActive(false);
+        interfazScreen.SetActive(false);
 
         screen.SetActive(true);
     }
 
-    // MAIN SCREEN
-    /*
-    public void OnPlayerNameChanged()
-    {
-        PhotonNetwork.NickName = playerName.text;
-    }
-    */
     public void OnPlayButton()
     {
         if (roomName.text != "")
         {
+
             NetworkManager.instance.CreateRoom(roomName.text);
             playButton.interactable = false;
+            
         }
     }
 
@@ -132,6 +103,7 @@ public class Menu : MonoBehaviourPunCallbacks
         playButton.interactable = true;
         gameScreen.SetActive(false);
         waitingScreen.SetActive(true);
+        gameLogo.SetActive(false);
     }
 
     public override void OnJoinedRoom()
@@ -141,6 +113,7 @@ public class Menu : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
             NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Game");
+            gameLogo.SetActive(false);
         }
     }
 
@@ -159,13 +132,6 @@ public class Menu : MonoBehaviourPunCallbacks
         cancelButton.interactable = true;
         SetScreen(gameScreen);
     }
-
-    /*public override void OnLeftRoom()
-    {
-        cancelButton.interactable = true;
-        gameScreen.SetActive(true);
-        waitingScreen.SetActive(false);
-    }*/
 
     // PLAYER SCREEN
     public void OnEstadisticButtonUI()
@@ -211,8 +177,6 @@ public class Menu : MonoBehaviourPunCallbacks
     public void OnExitButton()
     {
         playerScreen.SetActive(false);
-        loginScreen.SetActive(true);
-        loginButton.interactable = true;
     }
 
     public void OnLogoutButton()
@@ -257,13 +221,4 @@ public class Menu : MonoBehaviourPunCallbacks
         StartCoroutine(NetworkManager.instance.AddResultToUser(4, 3, 1, true));
     }
 
-
-    /*
-    public override void OnLeftRoom()
-    {
-        Debug.Log("Bye bye");
-        PhotonNetwork.LoadLevel("Menu");
-        //SceneManager.LoadScene("Menu");
-    }
-    */
 }

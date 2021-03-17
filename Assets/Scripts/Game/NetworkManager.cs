@@ -20,9 +20,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Button registerButton;
     public Button toRegisterButton;
     public Button toLoginButton;
+    public Button offlineButton;
 
     [Header("Estadisticas")]
     public UserInfo userInfo;
+    public MCharacter characterInfo;
+    public int kicker_index;
+    public int kicker_haircutIndex;
+    public int emblemaIndex;
 
     [Header("Torneo")]
     //public Button signInTournaButton;
@@ -42,11 +47,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI loginStatusText;
 
 
-    public float resolutionCoeficient;
-    private float standardGameHeight = 1920f;
+    //public float resolutionCoeficient;
     public static NetworkManager instance;
     public int maxPlayers;
-    public bool isConnected;
+    
     public bool isTorneo;
     string regUri = "https://juego-penales.herokuapp.com/unity/register.php";
     //string logUri = "http://localhost/JuegoPenales/loginUser.php";
@@ -55,15 +59,42 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     string resultToUserUri = "https://juego-penales.herokuapp.com/unity/addMatchResults.php";
     //string resultToUserUri = "http://localhost/WebJuegoEnLinea/unity/addMatchResults.php";
     string signTorneoUri = "http://localhost/WebJuegoEnLinea/unity/addParticipante.php";
+
+    [Header("Connected Settings")]
+    public bool isConnected;
+    public UserInfo offlineInfo;
     private void Awake()
     {
+        if(instance == null)
+        {
+            Initialize();
+            offlineInfo = new UserInfo();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        /*
         Debug.Log(photonView.ViewID);
         maxPlayers = 2;
+        kicker_index = 0;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
         photonView.ViewID = 1;
         //CalculateCoeficient();
+        */
+    }
+
+    void Initialize()
+    {
+        Debug.Log(photonView.ViewID);
+        maxPlayers = 2;
+        kicker_index = 0;
+        instance = this;
+        Screen.orientation = ScreenOrientation.Portrait;
+        DontDestroyOnLoad(this);
+        photonView.ViewID = 1;
     }
 
     private void Start()
@@ -79,6 +110,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             if (loginButton != null)
                 loginButton.interactable = true;
         }
+    }
+
+    public void OnOfflineButton()
+    {
+        isConnected = false;
+        userInfo = offlineInfo;
+        SceneManager.LoadScene("Menu");
     }
     /*
     void CalculateCoeficient()
@@ -110,6 +148,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         toLoginButton.interactable = false;
         registerButton.interactable = false;
         toRegisterButton.interactable = false;
+        offlineButton.interactable = false;
     }
 
     public void OnPLayerNameChanged()
@@ -135,6 +174,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             {
                 status.text = webRequest.error;
                 status.color = Color.red;
+                offlineButton.interactable = true;
             }
             else
             {
@@ -197,6 +237,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             {
                 status.text = webRequest.error;
                 status.color = Color.red;
+                offlineButton.interactable = true;
             }
             else
             {
@@ -226,6 +267,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 {
                     status.text = resp;
                     status.color = Color.red;
+                    offlineButton.interactable = true;
                 }
             }
         }
@@ -244,7 +286,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
+            //StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
+            StartCoroutine(LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
         }
     }
 
@@ -400,6 +443,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         public int goles_atajados;
         public int goles_recibidos;
         public int posicion_ranking;
+
+        public UserInfo()
+        {
+            nombre = "Harta demencia offline";
+            username = "Harta demencia offline";
+            email = "";
+            password = "";
+        }
     }
 
     public class TorneoInfo

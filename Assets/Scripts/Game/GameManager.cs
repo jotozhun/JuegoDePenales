@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("Players Info")]
     public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
+    public Image[] playerEmblemas;
 
     [HideInInspector]
     public int playersInGame;
@@ -37,9 +39,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     //public bool missGoal;
 
     public int numberKicks;            //Change the number kicks of players
-
+    [Header("EndGame")]
+    public GameObject endGameCam;
+    public bool temporalEndGame;
     private void Awake()
     {
+        temporalEndGame = false;
         instance = this;
     }
     private void Start()
@@ -57,6 +62,38 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
+        if(temporalEndGame)
+        {
+            photonView.RPC("spawnAsEndMatch", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    public void spawnAsEndMatch()
+    {
+        temporalEndGame = false;
+        foreach (PlayerController player in GameUI.instance.players)
+        {
+            Transform tmpTransf = null;
+            player.ball.SetActive(false);
+            player.goalkeeper_obj.SetActive(false);
+            player.goalkeeper_cam_obj.SetActive(false);
+            player.kicker_cam_obj.SetActive(false);
+            player.kicker_obj.SetActive(true);
+            endGameCam.SetActive(true);
+            if (player.id == 1)
+            {
+                tmpTransf = GameUI.instance.GetDidWinSpawn(true);
+                player.kicker_anim.SetBool("DidWin", true);
+            }
+            else
+            {
+                tmpTransf = GameUI.instance.GetDidWinSpawn(false);
+                player.kicker_anim.SetBool("DidLose", true);
+            }
+            player.transform.position = tmpTransf.position;
+            player.transform.rotation = tmpTransf.rotation;
+        }
     }
 
     [PunRPC]
@@ -73,16 +110,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void SpawnPlayers()
     {
-        GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
-
+        //GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
+        int indexOfKicker = NetworkManager.instance.kicker_index;
+        GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playersPrefabLocation[indexOfKicker], Vector3.one, Quaternion.identity);
         PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
         //initialize the player
         playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
 
-        Timer timerScript = playerObj.GetComponent<Timer>();
+        //Timer timerScript = playerObj.GetComponent<Timer>();
 
-        CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
+        //CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
     }
 
     //Goal and missed Goals
@@ -136,6 +174,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = true;
         player.canCover = true;
         player.ChangeRol(true);
+        //player.goalkeeper_anim.SetBool("ExitAnim", true);
         /*
         timScript.R();
         timScript.StartTime();
@@ -152,6 +191,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = false;
         player.canCover = false;
         player.ChangeRol(false);
+        //player.touch_ball_col.enabled = true;
         /*
         timScript.R();
         timScript.StartTime();
@@ -162,6 +202,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         */
     }
+
+    
     
     //Goal Bounds
     /*

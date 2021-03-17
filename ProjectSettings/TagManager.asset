@@ -14,6 +14,7 @@ TagManager:
   - Goalkeeper
   - KickTrigger
   - ShoeKick
+  - BallTrigger
   layers:
   - Default
   - TransparentFX
@@ -48,6 +49,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Selectables
+    uniqueID: 3632979361
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

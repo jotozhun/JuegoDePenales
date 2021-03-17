@@ -17,6 +17,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Camera kicker_cam;
     public Camera goalkeeper_cam;
     public GameObject ball;
+
+    [Header("Haircuts")]
+    public GameObject[] kicker_haircuts;
+
+    //public SphereCollider touch_ball_col;
+    [Header("Animators")]
     public Animator kicker_anim;
     public Animator goalkeeper_anim;
     [Header("Player objects")]
@@ -29,6 +35,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [HideInInspector]
     public Player photonPlayer;
     public bool hasToChange;
+
+    //Cam settings
+    private Quaternion camStartRotK;
+    private bool isCamFollowingK;
     //GoalKeeper settings
     private Vector3 firstCoverPos, lastCoverPos;
     public bool canCover;
@@ -44,7 +54,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool ballReturned = true;
     public bool playerCanCover;
 
-    private float forceCoeficient;
+    public float forceCoeficient;
     [PunRPC]
     public void Initialize(Player player)
     {
@@ -54,15 +64,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameUI.instance.players[id - 1] = this;
 
         this.transform.position = GameUI.instance.playerSpawn.position;
+        SelectKickerHaircut(NetworkManager.instance.kicker_haircutIndex);
         //GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
         GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
+        GameManager.instance.playerEmblemas[id - 1].sprite = GameUI.instance.playerEmblemas[NetworkManager.instance.emblemaIndex];
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
             GameManager.instance.spawnAsKicker(this);
         else if (id == 2)
             GameManager.instance.spawnAsGoalKeeper(this);
 
-        forceCoeficient = 1080/Screen.height;
+        forceCoeficient = 1920f/Screen.height;
+        camStartRotK = kicker_cam.gameObject.transform.localRotation;
     }
 
     private void Start()
@@ -83,6 +96,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             photonView.RPC("TryCover", RpcTarget.All);
         }
+        if(isCamFollowingK)
+        {
+            kicker_cam.transform.LookAt(ball.transform);
+        }else
+        {
+            kicker_cam.transform.localRotation = camStartRotK;
+        }
+    }
+
+    public void SelectKickerHaircut(int index)
+    {
+        foreach (GameObject haircut in kicker_haircuts)
+        {
+            haircut.SetActive(false);
+        }
+        kicker_haircuts[index].SetActive(true);
     }
 
     public void ChangeRol(bool isGoalkeeper)
@@ -161,6 +190,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 ballForce = transform.forward * force.z + transform.right * force.x + transform.up * force.y;
 
+            //touch_ball_col.enabled = false;
             //GameManager.instance.photonView.RPC("stopTime", RpcTarget.AllBuffered);
             GameManager.instance.photonView.RPC("keeperCanCover", RpcTarget.AllBuffered, true);
             StartCoroutine(KickAnimation(ballForce));
@@ -180,12 +210,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameUI.instance.kickSound.Play();
         ballRigBody.AddForce(ballForce);
         UncheckAnimBooleans();
+        isCamFollowingK = true;
         //yield return new WaitForSeconds(0.50f);
     }
 
     IEnumerator ReturnBall()
     {
         yield return new WaitForSeconds(4.0f);
+        isCamFollowingK = false;
         ball.transform.localPosition = startpos;
         ball.transform.localRotation = Quaternion.identity;
         ballRigBody.velocity = Vector3.zero;
@@ -226,6 +258,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             lastCoverPos = Input.mousePosition;
 
             Vector3 distance = lastCoverPos - firstCoverPos;
+            //goalkeeper_anim.SetBool("ExitAnim", false);
             StartCoroutine(GetPlayerSet(distance));
          }
         
