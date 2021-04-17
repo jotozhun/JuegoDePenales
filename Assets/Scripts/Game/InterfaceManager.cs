@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Realtime;
+using Photon.Pun;
 
 public class InterfaceManager : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class InterfaceManager : MonoBehaviour
     public GameObject peinadosScreen;
     public GameObject characterViewsScreen;
     public GameObject emblemaScreen;
+
+    private Player player;
 
     [Header("Index stats")]
     public int indexOfPlayer;
@@ -37,6 +41,7 @@ public class InterfaceManager : MonoBehaviour
 
     private void Start()
     {
+        player = PhotonNetwork.LocalPlayer;
         indexOfPlayer = tmp_indexofPlayer = NetworkManager.instance.kicker_index;
         indexOfHaircut = tmp_indexOfHaircut = NetworkManager.instance.kicker_haircutIndex;
         indexOfEmblema = tmp_indexOfEmblema = NetworkManager.instance.emblemaIndex;
@@ -149,6 +154,7 @@ public class InterfaceManager : MonoBehaviour
         indexOfHaircut = tmp_indexOfHaircut;
         player_animators[indexOfPlayer].SetBool("applyButton", true);
         NetworkManager.instance.kicker_haircutIndex = indexOfHaircut;
+        player.CustomProperties["KickerHaircutIndex"] = indexOfHaircut;
         if (applyCharacter.isPlaying)
             applyCharacter.Stop();
         applyCharacter.Play();
@@ -159,9 +165,11 @@ public class InterfaceManager : MonoBehaviour
         icon_applyButton.interactable = false;
         indexOfEmblema = tmp_indexOfEmblema;
         NetworkManager.instance.emblemaIndex = indexOfEmblema;
+        player.CustomProperties["EmblemaIndex"] = indexOfEmblema;
         if (applyCharacter.isPlaying)
             applyCharacter.Stop();
         applyCharacter.Play();
+
     }
 
     public void OnBackButton()

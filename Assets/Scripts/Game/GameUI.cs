@@ -23,6 +23,8 @@ public class GameUI : MonoBehaviourPunCallbacks
     public Transform playerLoseSpawn;
     public PlayerController[] players;
     public PlayerController playerObject;
+    public Transform[] spectatorCameras;
+    public GameObject spectator_cam_obj;
     //public int playersInGame;
 
     [Header("Audio Effects")]
@@ -30,11 +32,39 @@ public class GameUI : MonoBehaviourPunCallbacks
     public AudioSource celebrationGoalSound;
     public AudioSource kickSound;
 
+
+    [Header("UI Scores")]
+    public string goalTypeRoute;
+    public GameObject goalTypePrefab;
+    public GameObject[] goalContainers;
+    public Image[] goalTypeSpritesCont1;
+    public Image[] goalTypeSpritesCont2;
+    public Sprite goalSprite;
+    public Sprite savedSprite;
+    public Sprite failedSprite;
+    public TextMeshProUGUI winnerMsg;
+    public GameObject spectatorCanvas;
+
+    [Header("Win Game Screen")]
+    public GameObject winScreen;
+    public TextMeshProUGUI winScoreText;
+
+    [Header("Lose Game Screen")]
+    public GameObject loseScreen;
+    public TextMeshProUGUI LoseScoreText;
+    
+    //Score logic
+    private int[] goalScores = { 0, 0};
+    private int[] savedScores = { 0, 0 };
+    private int[] failedScores = { 0, 0 };
+
+    private int[] kicksLeft = new int[2];
+    private int[] indexOfEmblema = new int[2];
+    private int[] indexOfPeinado = new int[2];
+    private int numberOfGoals;
+    public bool isSuddenDeath = false;
     /*[Header("Timer")]
     public GameObject time;
-    
-    [Header("Kicks")]
-    public GameObject kick;
     */
     [Header("Buttons")]
     public Button surrenderButton;
@@ -47,15 +77,147 @@ public class GameUI : MonoBehaviourPunCallbacks
         instance = this;
     }
 
+    [PunRPC]
+    public void InitializeGoalContainers(int id)
+    {
+        numberOfGoals = NetworkManager.instance.numberOfGoals;
+        if (id == 0)
+        {
+            kicksLeft[0] = numberOfGoals;
+            goalTypeSpritesCont1 = new Image[numberOfGoals];
+        }
+        else if(id == 1)
+        {
+            kicksLeft[1] = numberOfGoals;
+            goalTypeSpritesCont2 = new Image[numberOfGoals];
+        }
+        for (int i = 0; i < numberOfGoals; i++)
+        {
+            //Instantiation
+            GameObject tmpGoalTypeObj = Instantiate(goalTypePrefab);
+            if(id == 0)
+            {
+                tmpGoalTypeObj.transform.SetParent(goalContainers[id].transform);
+                goalTypeSpritesCont1[i] = tmpGoalTypeObj.GetComponent<Image>();
+            }
+            else if(id == 1)
+            {
+                tmpGoalTypeObj.transform.SetParent(goalContainers[id].transform);
+                goalTypeSpritesCont2[i] = tmpGoalTypeObj.GetComponent<Image>();
+            }
+        }   
+    }
+
+    public void MarkGoalUI(Player player, int kicksLeft)
+    {
+        //goalScores[idPlayer] += 1;
+        if (player.ActorNumber == 1)
+        {
+            goalTypeSpritesCont1[numberOfGoals-kicksLeft].sprite = goalSprite;
+        }
+        else if(player.ActorNumber == 2)
+        {
+            goalTypeSpritesCont2[numberOfGoals - kicksLeft].sprite = goalSprite;
+        }
+        CalculateWin(player);
+    }
+
+    public void MarkSavedGoalUI(Player player, int kicksLeft)
+    {
+        if (player.ActorNumber == 1)
+        {
+            goalTypeSpritesCont1[numberOfGoals - kicksLeft].sprite = savedSprite;
+        }
+        else if (player.ActorNumber == 2)
+        {
+            goalTypeSpritesCont2[numberOfGoals - kicksLeft].sprite = savedSprite;
+        }
+        CalculateWin(player);
+    }
+
+    public void MarkFailedGoalUI(Player player, int kicksLeft)
+    {
+        if (player.ActorNumber == 1)
+        {
+            goalTypeSpritesCont1[numberOfGoals - kicksLeft].sprite = failedSprite;
+        }
+        else if (player.ActorNumber == 2)
+        {
+            goalTypeSpritesCont2[numberOfGoals - kicksLeft].sprite = failedSprite;
+        }
+        CalculateWin(player);
+    }
+
+    void CalculateWin(Player player)
+    {
+        Player otherPlayer = null;
+        foreach(PlayerController controller in players)
+        {
+            if (controller.photonPlayer.ActorNumber != player.ActorNumber)
+                otherPlayer = controller.photonPlayer;
+        }
+
+        //Player who achieved, missed or failed a goal
+        int actualGoals = (int)player.CustomProperties["Goals"];
+        int actualKicksLeft = (int)player.CustomProperties["KicksLeft"];
+        //The player who was the goalkeeper
+        int otherGoals = (int)otherPlayer.CustomProperties["Goals"];
+        int otherKicksLeft = (int)otherPlayer.CustomProperties["KicksLeft"];
+
+        bool actualPlayerWon = actualGoals > otherGoals + otherKicksLeft;
+        bool otherPlayerWon = otherGoals > actualGoals + actualKicksLeft;
+
+        
+
+        if (actualPlayerWon)
+        {
+            //StartCoroutine(ShowWinner(player));
+            //photonView.RPC("OnShowWinner", RpcTarget.All, player);
+            GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
+        }
+        else if(otherPlayerWon)
+        {
+            //StartCoroutine(ShowWinner(otherPlayer));
+            //photonView.RPC("OnShowWinner", RpcTarget.All, otherPlayer);
+            GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
+        }
+    }
+
+
     public void OpenSurrenderScreen(bool state)
     {
         surrenderScreen.SetActive(state);
     }
 
+    public void spawnAsSpectator()
+    {
+        spectator_cam_obj.SetActive(true);
+        spectatorCanvas.SetActive(true);
+        surrenderButton.gameObject.SetActive(false);
+    }
+
+    public void OnCameraPosition(int pos)
+    {
+        spectator_cam_obj.transform.position = spectatorCameras[pos].localPosition;
+        spectator_cam_obj.transform.rotation = spectatorCameras[pos].localRotation;
+    }
     
     public void OnAcceptExitButton()
     {
         photonView.RPC("OnEndGame", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void OnShowWinner(Player player)
+    {
+        StartCoroutine(ShowWinner(player));
+    }
+
+    IEnumerator ShowWinner(Player player)
+    {
+        winnerMsg.text = "El ganador es " + player.NickName;
+        yield return new WaitForSeconds(4);
+        StartCoroutine(LeaveGameRoom());
     }
 
     [PunRPC]
@@ -69,6 +231,10 @@ public class GameUI : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
         while(PhotonNetwork.InRoom)
             yield return null;
+
+        //This is for testing purposes
+
+
         Screen.orientation = ScreenOrientation.Portrait;
         PhotonNetwork.LoadLevel("Menu");
     }
@@ -78,5 +244,19 @@ public class GameUI : MonoBehaviourPunCallbacks
         if (didWin)
             return playerWinSpawn;
         return playerLoseSpawn;
+    }
+
+    public IEnumerator ActivateWinnerScreen(int winnerScore, int loserScore)
+    {
+        yield return new WaitForSeconds(2);
+        winScreen.SetActive(true);
+        winScoreText.text = winnerScore + " - " + loserScore;
+    }
+
+    public IEnumerator ActivateLoserScreen(int winnerScore, int loserScore)
+    {
+        yield return new WaitForSeconds(2);
+        loseScreen.SetActive(true);
+        LoseScoreText.text = winnerScore + " - " + loserScore;
     }
 }

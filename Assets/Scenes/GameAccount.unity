@@ -495,8 +495,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 70
-  m_fontSizeBase: 70
+  m_fontSize: 55
+  m_fontSizeBase: 55
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3609,6 +3609,8 @@ MonoBehaviour:
   kicker_index: 0
   kicker_haircutIndex: 0
   emblemaIndex: 0
+  numberOfGoals: 0
+  secondsToKick: 0
   registerNameInput: {fileID: 326374444}
   registerUsernameInput: {fileID: 1138894908}
   registerEmailInput: {fileID: 486880818}
@@ -3617,7 +3619,7 @@ MonoBehaviour:
   userNameInput: {fileID: 1655007288}
   playerPassword: {fileID: 1931715445}
   loginStatusText: {fileID: 747722269}
-  maxPlayers: 2
+  maxPlayers: 3
   isTorneo: 0
   isConnected: 0
 --- !u!4 &1095082841
@@ -5892,8 +5894,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 742, y: 449}
-  m_SizeDelta: {x: 339.4, y: 179.1}
+  m_AnchoredPosition: {x: 717, y: 404}
+  m_SizeDelta: {x: 247, y: 132.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2033943315
 MonoBehaviour:

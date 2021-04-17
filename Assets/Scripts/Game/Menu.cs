@@ -21,6 +21,7 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Game Screen")]
     public TMP_InputField roomName;
     public Button playButton;
+    public GameObject spectateButton;
 
     [Header("Waiting Room")]
     public Button cancelButton;
@@ -64,12 +65,19 @@ public class Menu : MonoBehaviourPunCallbacks
             //playername.text = "Bienvenido de vuelta " + PhotonNetwork.NickName + "!";
             playername.text = "¿Listo para ganar?\n" + PhotonNetwork.LocalPlayer.NickName;
             tournamentButton.interactable = true;
-        }else if(NetworkManager.instance != null && !NetworkManager.instance.isConnected)
+            if(NetworkManager.instance.userInfo.isadmin)
+            {
+                spectateButton.SetActive(true);
+            }
+            ResetGoalProperties();
+        }
+        else if(NetworkManager.instance != null && !NetworkManager.instance.isConnected)
         {
             playername.text = "Bienvenido " + NetworkManager.instance.userInfo.username;
             playGameButton.interactable = false;
             tournamentButton.interactable = false;
             estadisticsButton.interactable = false;
+            
         }
         SetScreen(playerScreen);
     }
@@ -98,6 +106,15 @@ public class Menu : MonoBehaviourPunCallbacks
         }
     }
 
+    public void ResetGoalProperties()
+    {
+        Player player = PhotonNetwork.LocalPlayer;
+        player.CustomProperties["Goals"] = 0;
+        player.CustomProperties["SavedGoals"] = 0;
+        player.CustomProperties["FailedGoals"] = 0;
+        player.CustomProperties["KicksLeft"] = NetworkManager.instance.numberOfGoals;
+    }
+
     public override void OnCreatedRoom()
     {
         playButton.interactable = true;
@@ -108,13 +125,21 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == NetworkManager.instance.maxPlayers)
+        int curPlayerCount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
+        if (curPlayerCount == (NetworkManager.instance.maxPlayers - 1))
         {
-            PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.CurrentRoom.IsVisible = false;
-            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Game");
+            PhotonNetwork.CurrentRoom.IsOpen = true;
+            PhotonNetwork.CurrentRoom.IsVisible = true;
+            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Game");
             gameLogo.SetActive(false);
         }
+        
+         
+        else if(curPlayerCount > (NetworkManager.instance.maxPlayers - 1))
+        {
+            NetworkManager.instance.ChangeScene("Game");
+        }
+        
     }
 
     // WAITING SCREEN
@@ -181,6 +206,7 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnLogoutButton()
     {
+        NetworkManager.instance.SaveLogout();
         Destroy(NetworkManager.instance.gameObject);
         StartCoroutine(DisconnectAndLoad());
     }
@@ -212,6 +238,11 @@ public class Menu : MonoBehaviourPunCallbacks
     {
         gameScreen.SetActive(false);
         playerScreen.SetActive(true);
+    }
+
+    public void OnSpectateButton()
+    {
+
     }
 
     //TESTING

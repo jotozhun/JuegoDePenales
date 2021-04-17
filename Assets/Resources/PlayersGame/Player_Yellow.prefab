@@ -3395,6 +3395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 6697810153883761876}
+  doneMissedGoal: 0
 --- !u!135 &1757707454125398265
 SphereCollider:
   m_ObjectHideFlags: 0

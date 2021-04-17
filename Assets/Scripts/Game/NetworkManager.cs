@@ -29,6 +29,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public int kicker_haircutIndex;
     public int emblemaIndex;
 
+    [Header("Game")]
+    public int numberOfGoals;
+    public int secondsToKick;
+
     [Header("Torneo")]
     //public Button signInTournaButton;
     public TorneoInfo torneoInfo;
@@ -44,9 +48,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Login")]
     public TMP_InputField userNameInput;
     public TMP_InputField playerPassword;
-    public TextMeshProUGUI loginStatusText;
+    public TextMeshProUGUI loginStatusText; 
 
-
+    private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable(); 
     //public float resolutionCoeficient;
     public static NetworkManager instance;
     public int maxPlayers;
@@ -69,6 +73,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Initialize();
             offlineInfo = new UserInfo();
+            
         }
         else
         {
@@ -86,15 +91,54 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         */
     }
 
+    public void Save()
+    {
+        PlayerPrefs.SetString("save", Helper.Serialize<UserInfo>(userInfo));
+    }
+
+    public void SaveLogout()
+    {
+        userInfo.isLoggedIn = false;
+        Save();
+    }
+
+    public void Load()
+    {
+        if(PlayerPrefs.HasKey("save"))
+        {
+            userInfo = Helper.Deserialize<UserInfo>(PlayerPrefs.GetString("save"));
+            if(userInfo.isLoggedIn)
+            {
+                loginButton.interactable = false;
+                registerButton.interactable = false;
+                userNameInput.text = userInfo.username;
+                playerPassword.text = userInfo.password;
+                StartCoroutine(LoginUser(userInfo.username, userInfo.password, loginStatusText));
+            }
+        }
+    }
+
+
     void Initialize()
     {
         Debug.Log(photonView.ViewID);
-        maxPlayers = 2;
+        maxPlayers = 3;
         kicker_index = 0;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
         photonView.ViewID = 1;
+        //default
+        numberOfGoals = 5;
+        secondsToKick = 10;
+        //Custom propierties
+        _playerCustomProperties["EmblemaIndex"] = emblemaIndex;
+        _playerCustomProperties["KickerHaircutIndex"] = kicker_haircutIndex;
+        _playerCustomProperties["Goals"] = 0;
+        _playerCustomProperties["SavedGoals"] = 0;
+        _playerCustomProperties["FailedGoals"] = 0;
+        _playerCustomProperties["KicksLeft"] = numberOfGoals;
+        PhotonNetwork.LocalPlayer.CustomProperties = _playerCustomProperties;
     }
 
     private void Start()
@@ -110,6 +154,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             if (loginButton != null)
                 loginButton.interactable = true;
         }
+        if(SceneManager.GetActiveScene().name == "GameAccount")
+            Load(); //Carga informacion del usuario si es que esta existe
     }
 
     public void OnOfflineButton()
@@ -128,11 +174,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void CreateRoom(string roomName)
     {
         RoomOptions options = new RoomOptions();
-
+        
         options.MaxPlayers = (byte)maxPlayers;
 
         PhotonNetwork.JoinOrCreateRoom(roomName, options, null, null);
     }
+
+    
 
     void ActivateButtons()
     {
@@ -245,6 +293,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 if (!resp.Contains("Error"))
                 {
                     userInfo = JsonUtility.FromJson<UserInfo>(resp);
+                    userInfo.isLoggedIn = true;
+                    Save();
                     status.text = "Bienvenido " + userInfo.username + "!";
                     status.color = Color.green;
                     yield return new WaitForSeconds(2);
@@ -362,10 +412,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             {
                 string resp = webRequest.downloadHandler.text;
                 Debug.Log(resp);
-                /*if (!resp.Contains("Error"))
-                {
-                    
-                }*/
             }
         }
     }
@@ -443,6 +489,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         public int goles_atajados;
         public int goles_recibidos;
         public int posicion_ranking;
+        public bool isLoggedIn;
 
         public UserInfo()
         {

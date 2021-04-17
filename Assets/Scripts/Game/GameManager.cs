@@ -15,7 +15,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("Players Info")]
     public TextMeshProUGUI[] playersNickname;
     public TextMeshProUGUI[] playerScoresUI;
+    public GameObject[] goalContainers;
     public Image[] playerEmblemas;
+    public int[] emblemasIndexs;
 
     [HideInInspector]
     public int playersInGame;
@@ -23,6 +25,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("Game Settings")]
     public GameObject[] goalBounds;
     public GameObject[] missedGoalBounds;
+    
     
 
     [Header("Animators")]
@@ -49,29 +52,27 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        //markGoal = false;
-        //missGoal = false;
         GameUI.instance.players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
-        photonView.RPC("ImInGame", RpcTarget.AllBuffered);
-        //timScript = GameUI.instance.time.GetComponent<Timer>();
-        //kickScipt = GameUI.instance.kick.GetComponent<CountKicks>();
+        photonView.RPC("ImInGame", RpcTarget.All);
     }
 
     private void Update()
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
+        /*
         if(temporalEndGame)
         {
             photonView.RPC("spawnAsEndMatch", RpcTarget.All);
         }
+        */
     }
 
     [PunRPC]
-    public void spawnAsEndMatch()
+    public void spawnAsEndMatch(Player winnerPlayer, Player loserPlayer, int winnerScore, int loseScore)
     {
-        temporalEndGame = false;
+        temporalEndGame = true;
         foreach (PlayerController player in GameUI.instance.players)
         {
             Transform tmpTransf = null;
@@ -81,7 +82,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.kicker_cam_obj.SetActive(false);
             player.kicker_obj.SetActive(true);
             endGameCam.SetActive(true);
-            if (player.id == 1)
+            if (player.id == winnerPlayer.ActorNumber)
             {
                 tmpTransf = GameUI.instance.GetDidWinSpawn(true);
                 player.kicker_anim.SetBool("DidWin", true);
@@ -93,6 +94,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             player.transform.position = tmpTransf.position;
             player.transform.rotation = tmpTransf.rotation;
+        }
+
+        if(PhotonNetwork.LocalPlayer.ActorNumber == winnerPlayer.ActorNumber)
+        {
+            StartCoroutine(GameUI.instance.ActivateWinnerScreen(winnerScore, loseScore));
+        }
+        else
+        {
+            StartCoroutine(GameUI.instance.ActivateLoserScreen(winnerScore, loseScore));
         }
     }
 
@@ -110,41 +120,77 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void SpawnPlayers()
     {
-        //GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
-        int indexOfKicker = NetworkManager.instance.kicker_index;
-        GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playersPrefabLocation[indexOfKicker], Vector3.one, Quaternion.identity);
-        PlayerController playerScript = playerObj.GetComponent<PlayerController>();
+        if (PhotonNetwork.LocalPlayer.ActorNumber != 3)
+        {
+            //GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playerPrefabLocation, Vector3.one, Quaternion.identity);
+            int indexOfKicker = NetworkManager.instance.kicker_index;
+            GameObject playerObj = PhotonNetwork.Instantiate(GameUI.instance.playersPrefabLocation[indexOfKicker], Vector3.one, Quaternion.identity);
+            PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
-        //initialize the player
-        playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+            //initialize the player
 
-        //Timer timerScript = playerObj.GetComponent<Timer>();
+            playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
 
-        //CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
+            GameUI.instance.photonView.RPC("InitializeGoalContainers", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber - 1);
+            //Timer timerScript = playerObj.GetComponent<Timer>();
+
+            //CountKicks kcikScript = playerObj.GetComponent<CountKicks>();
+        }
+        else
+        {
+            GameUI.instance.spawnAsSpectator();
+        }
     }
 
     //Goal and missed Goals
     [PunRPC]
-    public void MarkGoalToPlayer(int id)
+    public void MarkGoalToPlayer(Player player)
     {
         //markGoal = true;
+        int id = player.ActorNumber - 1;
+        int goalNumber = (int)player.CustomProperties["Goals"] + 1;
+        int kicksLeft = (int)player.CustomProperties["KicksLeft"];
+        player.CustomProperties["Goals"] = goalNumber;
+        player.CustomProperties["KicksLeft"] = kicksLeft - 1;
         numberKicks++;
         scores[id]++;
         playerScoresUI[id].text = scores[id].ToString();
         GameUI.instance.celebrationGoalSound.Play();
         GameUI.instance.missedGoalSound.Stop();
+        GameUI.instance.MarkGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateGoalBounds());
         DeactivateBounds();
         goalAnim.SetTrigger("goal");
     }
 
     [PunRPC]
-    public void MarkGoalMissedToPlayer(int id)
+    public void MarkSavedGoalToPlayer(Player player)
     {
-        //missGoal = true;
+        int id = player.ActorNumber - 1;
+        int savedGoals = (int)player.CustomProperties["SavedGoals"] + 1;
+        int kicksLeft = (int)player.CustomProperties["KicksLeft"];
+        player.CustomProperties["SavedGoals"] = savedGoals;
+        player.CustomProperties["KicksLeft"] = kicksLeft - 1;
         numberKicks++;
+        scores[id]++;
+        playerScoresUI[id].text = scores[id].ToString();
         GameUI.instance.celebrationGoalSound.Stop();
         GameUI.instance.missedGoalSound.Play();
+        GameUI.instance.MarkSavedGoalUI(player, kicksLeft);
+    }
+
+    [PunRPC]
+    public void MarkGoalMissedToPlayer(Player player)
+    {
+        //missGoal = true;
+        int id = player.ActorNumber - 1;
+        int failedGoals = (int)player.CustomProperties["FailedGoals"] + 1;
+        int kicksLeft = (int)player.CustomProperties["KicksLeft"];
+        player.CustomProperties["FailedGoals"] = failedGoals;
+        player.CustomProperties["KicksLeft"] = kicksLeft - 1;
+        GameUI.instance.celebrationGoalSound.Stop();
+        GameUI.instance.missedGoalSound.Play();
+        GameUI.instance.MarkFailedGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateMissedGoalBounds());
         DeactivateBounds();
         missedGoalAnim.SetTrigger("missedgoal");
@@ -155,6 +201,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //markGoal = false;
         //missGoal = false;
+        if (temporalEndGame == true)
+            return;
         foreach (PlayerController player in GameUI.instance.players)
         {
             player.hasToChange = true;
@@ -167,6 +215,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 spawnAsGoalKeeper(player);
             }
         }
+        Clock.instance.RestartTime();
     }
 
     public void spawnAsGoalKeeper(PlayerController player)
@@ -174,15 +223,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = true;
         player.canCover = true;
         player.ChangeRol(true);
-        //player.goalkeeper_anim.SetBool("ExitAnim", true);
-        /*
-        timScript.R();
-        timScript.StartTime();
-        if (PhotonNetwork.IsMasterClient)
-        {
-            timScript.keeper = true;
-        }
-        */
     }
 
     public void spawnAsKicker(PlayerController player)
@@ -191,16 +231,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.isGoalKeeper = false;
         player.canCover = false;
         player.ChangeRol(false);
-        //player.touch_ball_col.enabled = true;
-        /*
-        timScript.R();
-        timScript.StartTime();
-        //kickScipt.RestartKicks();
-        if (PhotonNetwork.IsMasterClient)
-        {
-            timScript.keeper = false;
-        }
-        */
     }
 
     

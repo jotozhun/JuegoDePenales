@@ -64,18 +64,34 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameUI.instance.players[id - 1] = this;
 
         this.transform.position = GameUI.instance.playerSpawn.position;
-        SelectKickerHaircut(NetworkManager.instance.kicker_haircutIndex);
+        GameManager.instance.playerEmblemas[id - 1].sprite = GameUI.instance.playerEmblemas[(int)photonPlayer.CustomProperties["EmblemaIndex"]];
+        SelectKickerHaircut((int)photonPlayer.CustomProperties["KickerHaircutIndex"]);
         //GameManager.instance.playersNickname[id - 1].text = NetworkManager.instance.userInfo.username;
         GameManager.instance.playersNickname[id - 1].text = photonPlayer.NickName;
-        GameManager.instance.playerEmblemas[id - 1].sprite = GameUI.instance.playerEmblemas[NetworkManager.instance.emblemaIndex];
+
         //GameUI.instance.playersName[id - 1].text = photonPlayer.NickName;
         if (id == 1)
+        {
             GameManager.instance.spawnAsKicker(this);
+            //
+            //SelectKickerHaircut(NetworkManager.instance.kicker_haircutIndex);
+        }
         else if (id == 2)
+        {
             GameManager.instance.spawnAsGoalKeeper(this);
-
+            //GameManager.instance.playerEmblemas[id - 1].sprite = GameUI.instance.playerEmblemas[NetworkManager.instance.emblemaIndex];
+            //SelectKickerHaircut(NetworkManager.instance.kicker_haircutIndex);
+        }
+        /*
+        else
+        {
+            GameUI.instance.spawnAsSpectator();
+        }
+        */
         forceCoeficient = 1920f/Screen.height;
         camStartRotK = kicker_cam.gameObject.transform.localRotation;
+        if (PhotonNetwork.LocalPlayer.ActorNumber != id)
+            this.enabled = false;
     }
 
     private void Start()
@@ -88,20 +104,26 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if(!isGoalKeeper)
+        if (GameManager.instance.temporalEndGame == true)
+            return;
+        if (!isSpectator)
         {
-            photonView.RPC("Kick", RpcTarget.All);
-        }
-        if(isGoalKeeper && playerCanCover)
-        {
-            photonView.RPC("TryCover", RpcTarget.All);
-        }
-        if(isCamFollowingK)
-        {
-            kicker_cam.transform.LookAt(ball.transform);
-        }else
-        {
-            kicker_cam.transform.localRotation = camStartRotK;
+            if (!isGoalKeeper)
+            {
+                photonView.RPC("Kick", RpcTarget.All);
+            }
+            else if (isGoalKeeper && playerCanCover)
+            {
+                photonView.RPC("TryCover", RpcTarget.All);
+            }
+            if (isCamFollowingK)
+            {
+                kicker_cam.transform.LookAt(ball.transform);
+            }
+            else
+            {
+                kicker_cam.transform.localRotation = camStartRotK;
+            }
         }
     }
 
@@ -165,7 +187,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
 
                 float baseForce = 400f;
-                float diferential = Mathf.Pow(force.y - baseForce, 0.95f);
+                float diferential = Mathf.Pow(force.y - baseForce, 0.95f); //0.95
 
                 force.y = baseForce + diferential;
                 Debug.Log("Now is: " + force.y);
@@ -173,18 +195,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             if (force.x < 0 && force.x > -260)
             {
-                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.92f);
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.92f); //0.92
             }
             else if (force.x <= -260 && force.x > -340)
             {
-                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.95f);
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.95f); //0.95
             }
             else if (force.x <= -340)
             {
-                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.98f);
+                force.x = -Mathf.Pow(Mathf.Abs(force.x), 0.98f); //0.98
             }
 
-            force.x = Mathf.Clamp(force.x, -600, 600);
+            force.x = Mathf.Clamp(force.x, -550, 550);
             force.y = Mathf.Clamp(force.y, 0, 600);
             force.z = Mathf.Clamp(force.z + 120, 520, 700);
 
@@ -203,7 +225,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator KickAnimation(Vector3 ballForce)
     {
-
+        Clock.instance.StopTimer();
         //kicker_anim.SetTrigger("KickNow");
         kicker_anim.SetBool("KickNow1", true);
         yield return new WaitForSeconds(0.55f);
@@ -218,6 +240,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(4.0f);
         isCamFollowingK = false;
+        ballScript.doneMissedGoal = false;
         ball.transform.localPosition = startpos;
         ball.transform.localRotation = Quaternion.identity;
         ballRigBody.velocity = Vector3.zero;
@@ -233,7 +256,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameManager.instance.missGoal = false;
         checkRestartDecreaseKicks();
         */
-        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.AllBuffered);
+        GameManager.instance.photonView.RPC("SwitchPositions", RpcTarget.All);
     }
     /*
     IEnumerator PlayerCoverBall()

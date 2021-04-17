@@ -4738,6 +4738,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 777301776016598953}
+  doneMissedGoal: 0
 --- !u!1 &8414063883376135781
 GameObject:
   m_ObjectHideFlags: 0
