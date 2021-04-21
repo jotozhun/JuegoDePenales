@@ -59,12 +59,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         photonView.RPC("ImInGame", RpcTarget.All);
     }
 
-    private void Update()
-    {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-    }
-
     [PunRPC]
     public void spawnAsEndMatch(Player winnerPlayer, Player loserPlayer, int winnerScore, int loseScore)
     {
@@ -93,7 +87,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.transform.position = tmpTransf.position;
             player.transform.rotation = tmpTransf.rotation;
         }
-
+        NetworkManager.instance.ResetPlayerCustomProperties();
         if(PhotonNetwork.LocalPlayer.ActorNumber == winnerPlayer.ActorNumber)
         {
             StartCoroutine(gameUI.ActivateWinnerScreen(winnerScore, loseScore));
@@ -143,6 +137,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //markGoal = true;
         int id = player.ActorNumber - 1;
+        bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
         int goalNumber = (int)player.CustomProperties["Goals"] + 1;
         int kicksLeft = (int)player.CustomProperties["KicksLeft"];
         player.CustomProperties["Goals"] = goalNumber;
@@ -152,7 +147,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         playerScoresUI[id].text = scores[id].ToString();
         gameUI.celebrationGoalSound.Play();
         gameUI.missedGoalSound.Stop();
-        gameUI.MarkGoalUI(player, kicksLeft);
+        if (isDeathmatchTime)
+            gameUI.CalculateWin(player);
+        else
+            gameUI.MarkGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateGoalBounds());
         DeactivateBounds();
         goalAnim.SetTrigger("goal");
@@ -162,16 +160,20 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void MarkSavedGoalToPlayer(Player player)
     {
         int id = player.ActorNumber - 1;
+        bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
         int savedGoals = (int)player.CustomProperties["SavedGoals"] + 1;
         int kicksLeft = (int)player.CustomProperties["KicksLeft"];
         player.CustomProperties["SavedGoals"] = savedGoals;
         player.CustomProperties["KicksLeft"] = kicksLeft - 1;
         numberKicks++;
-        scores[id]++;
-        playerScoresUI[id].text = scores[id].ToString();
+        //scores[id]++;
+        //playerScoresUI[id].text = scores[id].ToString();
         gameUI.celebrationGoalSound.Stop();
         gameUI.missedGoalSound.Play();
-        gameUI.MarkSavedGoalUI(player, kicksLeft);
+        if (isDeathmatchTime)
+            gameUI.CalculateWin(player);
+        else
+            gameUI.MarkSavedGoalUI(player, kicksLeft);
         DeactivateBounds();
     }
 
@@ -180,13 +182,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //missGoal = true;
         int id = player.ActorNumber - 1;
+        bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
         int failedGoals = (int)player.CustomProperties["FailedGoals"] + 1;
         int kicksLeft = (int)player.CustomProperties["KicksLeft"];
         player.CustomProperties["FailedGoals"] = failedGoals;
         player.CustomProperties["KicksLeft"] = kicksLeft - 1;
         gameUI.celebrationGoalSound.Stop();
         gameUI.missedGoalSound.Play();
-        gameUI.MarkFailedGoalUI(player, kicksLeft);
+        if (isDeathmatchTime)
+            gameUI.CalculateWin(player);
+        else
+            gameUI.MarkFailedGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateMissedGoalBounds());
         DeactivateBounds();
         missedGoalAnim.SetTrigger("missedgoal");

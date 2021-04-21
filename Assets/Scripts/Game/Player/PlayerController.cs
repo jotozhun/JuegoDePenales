@@ -236,7 +236,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     IEnumerator ReturnBall()
     {
         yield return new WaitForSeconds(5.0f);
-        /*
+        
         if(!ballScript.alreadyAGoalResult)
         {
             if(ballScript.touchedByGoalkeeper)
@@ -248,7 +248,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 gameManager.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, photonPlayer);
             }
         }
-        */
+        ballScript.alreadyAGoalResult = false;
+        ballScript.touchedByGoalkeeper = false;
+
         yield return new WaitForSeconds(2.0f);
         isCamFollowingK = false;
         ballScript.touchedByGoalkeeper = false;

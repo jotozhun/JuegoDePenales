@@ -122,6 +122,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         numberOfGoals = 5;
         secondsToKick = 7;
         //Custom propierties
+        ResetPlayerCustomProperties();
+    }
+
+    public void ResetPlayerCustomProperties()
+    {
         _playerCustomProperties["EmblemaIndex"] = emblemaIndex;
         _playerCustomProperties["KickerHaircutIndex"] = kicker_haircutIndex;
         _playerCustomProperties["Goals"] = 0;
@@ -129,6 +134,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         _playerCustomProperties["FailedGoals"] = 0;
         _playerCustomProperties["KicksLeft"] = numberOfGoals;
         _playerCustomProperties["isGoalkeeper"] = false;
+        _playerCustomProperties["isDeathMatchTime"] = false;
         PhotonNetwork.LocalPlayer.CustomProperties = _playerCustomProperties;
     }
 

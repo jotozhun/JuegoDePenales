@@ -148,7 +148,7 @@ public class GameUI : MonoBehaviourPunCallbacks
         CalculateWin(player);
     }
 
-    void CalculateWin(Player player)
+    public void CalculateWin(Player player)
     {
         Player otherPlayer = null;
         foreach(PlayerController controller in players)
@@ -164,23 +164,40 @@ public class GameUI : MonoBehaviourPunCallbacks
         int otherGoals = (int)otherPlayer.CustomProperties["Goals"];
         int otherKicksLeft = (int)otherPlayer.CustomProperties["KicksLeft"];
 
+        bool isDeathmatchTime = calculateDeathMatch(actualGoals, actualKicksLeft, otherGoals, otherKicksLeft);
+
         bool actualPlayerWon = actualGoals > otherGoals + otherKicksLeft;
         bool otherPlayerWon = otherGoals > actualGoals + actualKicksLeft;
 
-        
+        if (isDeathmatchTime)
+        {
+            player.CustomProperties["isDeathMatchTime"] = true;
+            otherPlayer.CustomProperties["isDeathMatchTime"] = true;
+            player.CustomProperties["KicksLeft"] = 1;
+            otherPlayer.CustomProperties["KicksLeft"] = 1;
+            actualPlayerWon = false;
+            otherPlayerWon = false;
+        }
+        else
+        {
+            if (actualPlayerWon)
+            {
+                //StartCoroutine(ShowWinner(player));
+                //photonView.RPC("OnShowWinner", RpcTarget.All, player);
+                GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
+            }
+            else if (otherPlayerWon)
+            {
+                //StartCoroutine(ShowWinner(otherPlayer));
+                //photonView.RPC("OnShowWinner", RpcTarget.All, otherPlayer);
+                GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
+            }
+        }
+    }
 
-        if (actualPlayerWon)
-        {
-            //StartCoroutine(ShowWinner(player));
-            //photonView.RPC("OnShowWinner", RpcTarget.All, player);
-            GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
-        }
-        else if(otherPlayerWon)
-        {
-            //StartCoroutine(ShowWinner(otherPlayer));
-            //photonView.RPC("OnShowWinner", RpcTarget.All, otherPlayer);
-            GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
-        }
+    bool calculateDeathMatch(int actualGoals, int actualKicksLeft, int otherGoals, int otherKicksLeft)
+    {
+        return (actualKicksLeft == 0 && otherKicksLeft == 0 && actualGoals == otherGoals);
     }
 
 
