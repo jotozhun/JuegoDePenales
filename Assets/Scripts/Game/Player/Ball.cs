@@ -6,34 +6,44 @@ using Photon.Pun;
 public class Ball : MonoBehaviourPun
 {
     public PlayerController player;
-    public bool doneMissedGoal;
+    public bool touchedByGoalkeeper;
+    public bool alreadyAGoalResult;
+    GameUI gameUI;
+
+    private void Start()
+    {
+        gameUI = GameUI.instance;
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-        
+        if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
+          return;
+
         if (other.CompareTag("GoalBound"))
         {
-            //GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.id - 1);
+            alreadyAGoalResult = true;
             GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.photonPlayer);
         }
         else if (other.CompareTag("MissedGoalBound"))
         {
-            //GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, player.id - 1);
+            alreadyAGoalResult = true;
             GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, player.photonPlayer);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!PhotonNetwork.IsMasterClient)
+
+        if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
             return;
-        if(collision.collider.CompareTag("Goalkeeper") && !doneMissedGoal)
+
+        if (collision.collider.CompareTag("Goalkeeper") && !touchedByGoalkeeper)
         {
             this.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            doneMissedGoal = true;
-            GameManager.instance.photonView.RPC("MarkSavedGoalToPlayer", RpcTarget.All, player.photonPlayer);
+            touchedByGoalkeeper = true;
+            //GameManager.instance.photonView.RPC("MarkSavedGoalToPlayer", RpcTarget.All, player.photonPlayer);
         }
     }
 }

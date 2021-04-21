@@ -12,6 +12,8 @@ public class Clock : MonoBehaviourPunCallbacks
     public int currTimeToText;
     public float currTime;
     public bool started;
+    Player photonPlayer;
+    GameUI gameUI;
 
     public static Clock instance;
 
@@ -19,19 +21,19 @@ public class Clock : MonoBehaviourPunCallbacks
     {
         instance = this;
         secondsToKick = NetworkManager.instance.secondsToKick;
-        started = true;
+        photonPlayer = PhotonNetwork.LocalPlayer;
     }
-
+    
     private void Start()
     {
         currTime = secondsToKick;
         currTimeToText = (int)currTime;
         timerText.text = (currTimeToText).ToString();
+        gameUI = GameUI.instance;
     }
-
+    
     private void Update()
     {
-
         if (started && currTime > 0.00)
         {
             currTime -= Time.deltaTime;
@@ -40,15 +42,21 @@ public class Clock : MonoBehaviourPunCallbacks
         } else if (currTime <= 0.00 && started)
         {
             StopTimer();
-            GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer);
+            if(!(bool)photonPlayer.CustomProperties["isGoalkeeper"])
+            {
+                GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, photonPlayer);//PhotonNetwork.LocalPlayer);
+                gameUI.players[photonPlayer.ActorNumber - 1].FailedGoalByClock();
+            }
         }
     }
-
+    
+    [PunRPC]
     public void StopTimer()
     {
         started = false;
     }
 
+    [PunRPC]
     public void RestartTime()
     {
         currTime = secondsToKick;

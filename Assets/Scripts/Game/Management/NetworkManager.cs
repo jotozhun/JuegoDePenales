@@ -79,16 +79,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
-        /*
-        Debug.Log(photonView.ViewID);
-        maxPlayers = 2;
-        kicker_index = 0;
-        instance = this;
-        Screen.orientation = ScreenOrientation.Portrait;
-        DontDestroyOnLoad(this);
-        photonView.ViewID = 1;
-        //CalculateCoeficient();
-        */
     }
 
     public void Save()
@@ -130,7 +120,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         photonView.ViewID = 1;
         //default
         numberOfGoals = 5;
-        secondsToKick = 10;
+        secondsToKick = 7;
         //Custom propierties
         _playerCustomProperties["EmblemaIndex"] = emblemaIndex;
         _playerCustomProperties["KickerHaircutIndex"] = kicker_haircutIndex;
@@ -138,6 +128,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         _playerCustomProperties["SavedGoals"] = 0;
         _playerCustomProperties["FailedGoals"] = 0;
         _playerCustomProperties["KicksLeft"] = numberOfGoals;
+        _playerCustomProperties["isGoalkeeper"] = false;
         PhotonNetwork.LocalPlayer.CustomProperties = _playerCustomProperties;
     }
 
@@ -164,13 +155,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         userInfo = offlineInfo;
         SceneManager.LoadScene("Menu");
     }
-    /*
-    void CalculateCoeficient()
-    {
-        float screenHeight = Screen.height;
-        resolutionCoeficient = standardGameHeight / screenHeight;
-    }
-    */
+
     public void CreateRoom(string roomName)
     {
         RoomOptions options = new RoomOptions();
@@ -298,17 +283,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     status.text = "Bienvenido " + userInfo.username + "!";
                     status.color = Color.green;
                     yield return new WaitForSeconds(2);
-                    /*if (userInfo.isadmin)
-                    { 
-                        administradorButton.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        administradorButton.gameObject.SetActive(false);
-                    }*/
                     isConnected = true;
                     loginScreen.SetActive(false);
-                    //playerScreen.SetActive(true);
                     status.text = "";
                     StartCoroutine(GetTorneoInfo());
                     SceneManager.LoadScene("Menu");
@@ -336,7 +312,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            //StartCoroutine(NetworkManager.instance.LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
             StartCoroutine(LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
         }
     }
@@ -359,20 +334,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 {
                     torneoInfo = JsonUtility.FromJson<TorneoInfo>(resp);
                     isTorneo = true;
-                    /*
-                    if (!userInfo.isadmin)
-                    {
-                        signInTournaButton.interactable = true;
-                    }
-                    */
-                    //configurarTorneoButton.interactable = true;
                 }
-                /*
-                else
-                {
-                    crearTorneoButton.interactable = true;
-                }
-                */
             }
         }
     }

@@ -259,4 +259,6 @@ public class GameUI : MonoBehaviourPunCallbacks
         loseScreen.SetActive(true);
         LoseScoreText.text = winnerScore + " - " + loserScore;
     }
+
+    
 }

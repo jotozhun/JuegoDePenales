@@ -1726,6 +1726,7 @@ MonoBehaviour:
   canJump: 0
   ballScript: {fileID: 8282184392834843217}
   ballRigBody: {fileID: 8282184392834843240}
+  ballReturned: 1
   playerCanCover: 0
   forceCoeficient: 0
 --- !u!114 &8282184393028139511
@@ -4738,7 +4739,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 777301776016598953}
-  doneMissedGoal: 0
+  touchedByGoalkeeper: 0
+  alreadyAGoalResult: 0
 --- !u!1 &8414063883376135781
 GameObject:
   m_ObjectHideFlags: 0

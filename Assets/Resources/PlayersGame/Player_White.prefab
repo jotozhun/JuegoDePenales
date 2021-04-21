@@ -2623,7 +2623,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4869790497141221621}
-  doneMissedGoal: 0
+  touchedByGoalkeeper: 0
+  alreadyAGoalResult: 0
 --- !u!135 &7049554300625750341
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4618,6 +4619,7 @@ MonoBehaviour:
   canJump: 0
   ballScript: {fileID: 4300169825070058765}
   ballRigBody: {fileID: 4300169825070058804}
+  ballReturned: 1
   playerCanCover: 0
   forceCoeficient: 0
 --- !u!114 &4300169824994784939
