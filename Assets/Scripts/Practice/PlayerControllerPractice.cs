@@ -41,7 +41,7 @@ public class PlayerControllerPractice : MonoBehaviour
     {
         GameUIPractice.instance.players[0] = this;
         this.transform.position = GameUIPractice.instance.kickerSpawn.position;
-        SelectKickerHaircut(NetworkManager.instance.kicker_haircutIndex);
+        SelectKickerHaircut(NetworkManager.instance.userLogin.haircut_player);
         GameManagerPractice.instance.spawnAsKicker(this);
         cam.gameObject.SetActive(true);
         forceCoeficient = 1920f / Screen.height;

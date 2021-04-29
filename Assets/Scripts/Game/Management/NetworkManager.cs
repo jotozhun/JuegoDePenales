@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using AccountModels;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -23,11 +24,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Button offlineButton;
 
     [Header("Estadisticas")]
-    public UserInfo userInfo;
     public MCharacter characterInfo;
-    public int kicker_index;
-    public int kicker_haircutIndex;
-    public int emblemaIndex;
 
     [Header("Game")]
     public int numberOfGoals;
@@ -36,7 +33,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Torneo")]
     //public Button signInTournaButton;
     public TorneoInfo torneoInfo;
-    public PremioInfoList premiosInfo;
 
     [Header("Register")]
     public TMP_InputField registerNameInput;
@@ -48,31 +44,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("Login")]
     public TMP_InputField userNameInput;
     public TMP_InputField playerPassword;
-    public TextMeshProUGUI loginStatusText; 
+    public TextMeshProUGUI loginStatusText;
 
-    private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable(); 
+    public NetworkAPICalls apiCalls;
+    [HideInInspector]
+    public UserToken userToken;
+    public UserLogin userLogin;
+    public SavedAccount savedAccount;
+    public StatusCodes responses = new StatusCodes();
+
+    private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
     //public float resolutionCoeficient;
     public static NetworkManager instance;
     public int maxPlayers;
-    
-    public bool isTorneo;
-    string regUri = "https://juego-penales.herokuapp.com/unity/register.php";
-    //string logUri = "http://localhost/JuegoPenales/loginUser.php";
-    string logUri = "https://juego-penales.herokuapp.com/unity/login.php";
-    string torneoInfoUri = "https://juego-penales.herokuapp.com/unity/isTorneo.php";
-    string resultToUserUri = "https://juego-penales.herokuapp.com/unity/addMatchResults.php";
-    //string resultToUserUri = "http://localhost/WebJuegoEnLinea/unity/addMatchResults.php";
-    string signTorneoUri = "http://localhost/WebJuegoEnLinea/unity/addParticipante.php";
+
 
     [Header("Connected Settings")]
     public bool isConnected;
-    public UserInfo offlineInfo;
+    public UserLogin offlineInfo;
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             Initialize();
-            offlineInfo = new UserInfo();
+            offlineInfo = new UserLogin();
             
         }
         else
@@ -83,27 +78,27 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Save()
     {
-        PlayerPrefs.SetString("save", Helper.Serialize<UserInfo>(userInfo));
+        PlayerPrefs.SetString("saved", Helper.Serialize<SavedAccount>(savedAccount));
     }
 
     public void SaveLogout()
     {
-        userInfo.isLoggedIn = false;
+        savedAccount.isLoggedIn = false;
         Save();
     }
 
     public void Load()
     {
-        if(PlayerPrefs.HasKey("save"))
+        if (PlayerPrefs.HasKey("saved"))
         {
-            userInfo = Helper.Deserialize<UserInfo>(PlayerPrefs.GetString("save"));
-            if(userInfo.isLoggedIn)
+            savedAccount = Helper.Deserialize<SavedAccount>(PlayerPrefs.GetString("saved"));
+            if (savedAccount.isLoggedIn)
             {
                 loginButton.interactable = false;
                 registerButton.interactable = false;
-                userNameInput.text = userInfo.username;
-                playerPassword.text = userInfo.password;
-                StartCoroutine(LoginUser(userInfo.username, userInfo.password, loginStatusText));
+                userNameInput.text = savedAccount.username;
+                playerPassword.text = savedAccount.password;
+                StartCoroutine(LoginAuth(savedAccount.username, savedAccount.password, loginStatusText));
             }
         }
     }
@@ -113,7 +108,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log(photonView.ViewID);
         maxPlayers = 3;
-        kicker_index = 0;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
@@ -121,20 +115,27 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //default
         numberOfGoals = 5;
         secondsToKick = 7;
-        //Custom propierties
-        ResetPlayerCustomProperties();
     }
 
-    public void ResetPlayerCustomProperties()
+    void SetPlayerCustomPropierties()
     {
+        int emblemaIndex = userLogin.emblema;
+        int kicker_haircutIndex = userLogin.haircut_player;
+
         _playerCustomProperties["EmblemaIndex"] = emblemaIndex;
         _playerCustomProperties["KickerHaircutIndex"] = kicker_haircutIndex;
+        ResetPlayerGameProperties();
+    }
+
+    public void ResetPlayerGameProperties()
+    {
         _playerCustomProperties["Goals"] = 0;
         _playerCustomProperties["SavedGoals"] = 0;
         _playerCustomProperties["FailedGoals"] = 0;
         _playerCustomProperties["KicksLeft"] = numberOfGoals;
         _playerCustomProperties["isGoalkeeper"] = false;
         _playerCustomProperties["isDeathMatchTime"] = false;
+        _playerCustomProperties["hasMarkedAResult"] = false;
         PhotonNetwork.LocalPlayer.CustomProperties = _playerCustomProperties;
     }
 
@@ -151,27 +152,27 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             if (loginButton != null)
                 loginButton.interactable = true;
         }
-        if(SceneManager.GetActiveScene().name == "GameAccount")
+        if (SceneManager.GetActiveScene().name == "GameAccount")
             Load(); //Carga informacion del usuario si es que esta existe
     }
 
     public void OnOfflineButton()
     {
         isConnected = false;
-        userInfo = offlineInfo;
+        userLogin = offlineInfo;
         SceneManager.LoadScene("Menu");
     }
 
     public void CreateRoom(string roomName)
     {
         RoomOptions options = new RoomOptions();
-        
+
         options.MaxPlayers = (byte)maxPlayers;
 
         PhotonNetwork.JoinOrCreateRoom(roomName, options, null, null);
     }
 
-    
+
 
     void ActivateButtons()
     {
@@ -195,34 +196,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.NickName = userNameInput.text;
     }
 
-    public IEnumerator RegisterUser(string name, string username, string email, string password, TextMeshProUGUI status)
-    {
-        DeactivateButtons();
-        WWWForm form = new WWWForm();
-        form.AddField("regName", name);
-        form.AddField("regUser", username);
-        form.AddField("regEmail", email);
-        form.AddField("regPass", password);
-
-        using (UnityWebRequest webRequest = UnityWebRequest.Post(regUri, form))
-        {
-            // Request and wait for the desired page.
-            yield return webRequest.SendWebRequest();
-
-            if (webRequest.isNetworkError)
-            {
-                status.text = webRequest.error;
-                status.color = Color.red;
-                offlineButton.interactable = true;
-            }
-            else
-            {
-                status.text = webRequest.downloadHandler.text;
-                status.color = Color.green;
-            }
-            ActivateButtons();
-        }
-    }
 
     public void OnRegisterButtonUI()
     {
@@ -239,8 +212,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            StartCoroutine(RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
+            StartCoroutine(Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
         }
+    }
+
+    public IEnumerator Register(string name, string username, string email, string password, TextMeshProUGUI status)
+    {
+        DeactivateButtons();
+        yield return StartCoroutine(apiCalls.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text));
+
+        Debug.Log("Code: " + responses.registerCode);
+
+        if(responses.registerCode == 200)
+        {
+            status.text = "Usuario Registrado Correctamente!";
+            status.color = Color.green;
+            yield return new WaitForSeconds(2);
+            SetScreen(loginScreen);
+        }
+        else
+        {
+            status.text = "Error en el servidor, intente más tarde por favor";
+            status.color = Color.red;
+        }
+        ActivateButtons();
     }
 
     bool isFieldEmpty(TMP_InputField field)
@@ -260,51 +255,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         screen.SetActive(true);
     }
 
-    public IEnumerator LoginUser(string username, string password, TextMeshProUGUI status)
-    {
-        DeactivateButtons();
-        WWWForm form = new WWWForm();
-        form.AddField("logUser", username);
-        form.AddField("logPass", password);
-
-        using (UnityWebRequest webRequest = UnityWebRequest.Post(logUri, form))
-        {
-            // Request and wait for the desired page.
-            yield return webRequest.SendWebRequest();
-            ActivateButtons();
-            if (webRequest.isNetworkError)
-            {
-                status.text = webRequest.error;
-                status.color = Color.red;
-                offlineButton.interactable = true;
-            }
-            else
-            {
-                string resp = webRequest.downloadHandler.text;
-                if (!resp.Contains("Error"))
-                {
-                    userInfo = JsonUtility.FromJson<UserInfo>(resp);
-                    userInfo.isLoggedIn = true;
-                    Save();
-                    status.text = "Bienvenido " + userInfo.username + "!";
-                    status.color = Color.green;
-                    yield return new WaitForSeconds(2);
-                    isConnected = true;
-                    loginScreen.SetActive(false);
-                    status.text = "";
-                    StartCoroutine(GetTorneoInfo());
-                    SceneManager.LoadScene("Menu");
-                }
-                else
-                {
-                    status.text = resp;
-                    status.color = Color.red;
-                    offlineButton.interactable = true;
-                }
-            }
-        }
-    }
-
     public void OnLoginButtonUI()
     {
         bool logName = isFieldEmpty(userNameInput);
@@ -318,119 +268,102 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            StartCoroutine(LoginUser(userNameInput.text, playerPassword.text, loginStatusText));
+            StartCoroutine(LoginAuth(userNameInput.text, playerPassword.text, loginStatusText));
         }
     }
 
-
-    public IEnumerator GetTorneoInfo()
+    public IEnumerator LoginAuth(string username, string password, TextMeshProUGUI status)
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(torneoInfoUri))
-        {
-            yield return webRequest.SendWebRequest();
+        DeactivateButtons();
+        yield return StartCoroutine(apiCalls.CallUserToken(username, password));
 
-            if (webRequest.isNetworkError)
+        if (userToken.statusCode == 200)
+        {
+            int userId = userToken.id;
+            string tmpToken = userToken.token;
+
+            yield return StartCoroutine(apiCalls.GetLoginInfo(userId, tmpToken));
+            
+            if (userLogin.statusCode == 200)
             {
-                Debug.Log(webRequest.error);
+                status.text = "Bienvenido " + userLogin.username + "!";
+                status.color = Color.green;
+                savedAccount = new SavedAccount() {
+                    username = username,
+                    password = password,
+                    isLoggedIn = true};
+                Save();
+                SetPlayerCustomPropierties();
+                yield return new WaitForSeconds(2);
+                isConnected = true;
+                SceneManager.LoadScene("Menu");
             }
             else
             {
-                string resp = webRequest.downloadHandler.text;
-                if (!resp.Contains("Error"))
-                {
-                    torneoInfo = JsonUtility.FromJson<TorneoInfo>(resp);
-                    isTorneo = true;
-                }
+                status.text = "Error inesperado, token no válido";
+                status.color = Color.red;
+                offlineButton.interactable = true;
+                ActivateButtons();
             }
-        }
-    }
-
-    public IEnumerator AddResultToUser(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
-    {
-        userInfo.total_partidos += 1;
-        if (isWin)
-        {
-            userInfo.partidos_ganados += 1;
         }
         else
         {
-            userInfo.partidos_perdidos += 1;
-        }
-        userInfo.goles_anotados += golesAnotados;
-        userInfo.goles_atajados += golesAtajados;
-        userInfo.goles_recibidos += golesRecibidos;
-
-        WWWForm form = new WWWForm();
-        form.AddField("id_user", userInfo.id_user);
-        form.AddField("total_partidos", userInfo.total_partidos);
-        form.AddField("partidos_ganados", userInfo.partidos_ganados);
-        form.AddField("partidos_perdidos", userInfo.partidos_perdidos);
-        form.AddField("goles_anotados", userInfo.goles_anotados);
-        form.AddField("goles_atajados", userInfo.goles_atajados);
-        form.AddField("goles_recibidos", userInfo.goles_recibidos);
-
-        using (UnityWebRequest webRequest = UnityWebRequest.Post(resultToUserUri, form))
-        {
-            yield return webRequest.SendWebRequest();
-            if (webRequest.isNetworkError)
+            if (userToken.statusCode == 403)
             {
-                Debug.Log(webRequest.error);
+                status.text = "Usuario o contraseña incorrecta";
             }
             else
             {
-                string resp = webRequest.downloadHandler.text;
-                Debug.Log(resp);
+                status.text = "Error del servidor, intente más tarde";
             }
+            status.color = Color.red;
+            offlineButton.interactable = true;
+            ActivateButtons();
         }
     }
 
-    public IEnumerator SignTorneo(Button registerButton, Button backButton, TextMeshProUGUI signStatus)
+    public void AddLocalMatchResult(bool isWin, int goles_anotados, int goles_atajados, int goles_recibidos)
     {
-        registerButton.interactable = false;
-        backButton.interactable = false;
-
-        WWWForm form = new WWWForm();
-        form.AddField("id_usuario", userInfo.id_user);
-        form.AddField("id_torneo", torneoInfo.id_torneo);
-
-        using (UnityWebRequest webRequest = UnityWebRequest.Post(signTorneoUri, form))
+        userLogin.total_partidos += 1;
+        if(isWin)
         {
-            yield return webRequest.SendWebRequest();
-            if (webRequest.isNetworkError)
-            {
-                Debug.Log(webRequest.error);
-                signStatus.text = webRequest.error;
-                signStatus.color = Color.red;
-            }
-            else
-            {
-                string resp = webRequest.downloadHandler.text;
-                Debug.Log(resp);
-                signStatus.text = resp;
-                if (!resp.Contains("Error"))
-                {
-                    signStatus.color = Color.green;
-                }
-                else
-                {
-                    signStatus.color = Color.red;
-                }
-
-
-            }
+            userLogin.partidos_ganados += 1;
         }
-        registerButton.interactable = true;
-        backButton.interactable = true;
+        else
+        {
+            userLogin.partidos_perdidos += 1;
+        }
+
+        userLogin.goles_anotados += goles_anotados;
+        userLogin.goles_atajados += goles_atajados;
+        userLogin.goles_recibidos += goles_recibidos;
     }
+
+    public IEnumerator AddMatchResultsToServer(bool isWin)
+    {
+        Player tmpPlayer = PhotonNetwork.LocalPlayer;
+
+        int id = userToken.id;
+        string token = userToken.token;
+        int goles_anotados = (int)tmpPlayer.CustomProperties["Goals"];
+        int goles_atajados = (int)tmpPlayer.CustomProperties["SavedGoals"];
+        int goles_recibidos = (int)tmpPlayer.CustomProperties["FailedGoals"];
+
+        yield return StartCoroutine(apiCalls.AddMatchResultsToPlayer(
+            isWin,
+            id,
+            goles_anotados,
+            goles_atajados,
+            goles_recibidos,
+            token
+            ));
+    }
+
+
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         base.OnDisconnected(cause);
-    }
-
-    public void OnUpdateUserInfo(int golesAnotados, int golesRecibidos, int golesAtajados, bool isWin)
-    {
-        StartCoroutine(AddResultToUser(golesAnotados, golesRecibidos, golesAtajados, isWin));
     }
 
     [PunRPC]
@@ -440,60 +373,4 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.orientation = ScreenOrientation.Landscape;
     }
 
-    public class UserInfo
-    {
-        public int id_user;
-        public int id_torneo;
-        public bool isadmin;
-        public string nombre;
-        public string username;
-        public string email;
-        public bool email_verified;
-        public string password;
-        public int total_partidos;
-        public int partidos_ganados;
-        public int partidos_perdidos;
-        public int goles_anotados;
-        public int goles_atajados;
-        public int goles_recibidos;
-        public int posicion_ranking;
-        public bool isLoggedIn;
-
-        public UserInfo()
-        {
-            nombre = "Harta demencia offline";
-            username = "Harta demencia offline";
-            email = "";
-            password = "";
-        }
-    }
-
-    public class TorneoInfo
-    {
-        public int id_torneo;
-        public string nombre_torneo;
-        public DateTime fecha_inicio;
-        public DateTime fecha_fin;
-        public int num_participantes;
-        public int num_goles;
-        public int tiempo_espera;
-        public int tiempo_patear;
-        public int num_grupos;
-        public int registrados;
-    }
-
-    public class PremioInfo
-    {
-        public int id_premio;
-        public int id_torneo;
-        public string titulo;
-        public string sponsor;
-        public string descripcion;
-        public int posicion;
-    }
-
-    public class PremioInfoList
-    {
-        public List<PremioInfo> premiosInfo;
-    }
 }

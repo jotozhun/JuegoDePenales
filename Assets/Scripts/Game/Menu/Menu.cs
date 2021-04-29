@@ -6,6 +6,7 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using AccountModels;
 
 public class Menu : MonoBehaviourPunCallbacks
 {
@@ -15,7 +16,6 @@ public class Menu : MonoBehaviourPunCallbacks
     public GameObject playerScreen;
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
-    public GameObject resultsScreen;
     public GameObject interfazScreen;
 
     [Header("Game Screen")]
@@ -55,29 +55,29 @@ public class Menu : MonoBehaviourPunCallbacks
     public TextMeshProUGUI signStatus;
 
     public static Menu instance;
+    public NetworkManager networkManager;
+    private void Awake()
+    {
+        if(NetworkManager.instance != null)
+        {
+            networkManager = NetworkManager.instance;
+        }
+    }
 
     private void Start()
     {
-        if (NetworkManager.instance != null && NetworkManager.instance.isConnected)
+        if (networkManager.isConnected)
         {
-            
-            //playername.text = "Bienvenido de vuelta " + NetworkManager.instance.userInfo.username + "!";
-            //playername.text = "Bienvenido de vuelta " + PhotonNetwork.NickName + "!";
-            playername.text = "¿Listo para ganar?\n" + PhotonNetwork.LocalPlayer.NickName;
+            playername.text = "¿Listo para ganar?\n" + networkManager.userLogin.username;
             tournamentButton.interactable = true;
-            if(NetworkManager.instance.userInfo.isadmin)
-            {
-                spectateButton.SetActive(true);
-            }
             ResetGoalProperties();
         }
-        else if(NetworkManager.instance != null && !NetworkManager.instance.isConnected)
+        else
         {
-            playername.text = "Bienvenido " + NetworkManager.instance.userInfo.username;
+            playername.text = "Bienvenido " + networkManager.userLogin.username;
             playGameButton.interactable = false;
             tournamentButton.interactable = false;
             estadisticsButton.interactable = false;
-            
         }
         SetScreen(playerScreen);
     }
@@ -89,7 +89,6 @@ public class Menu : MonoBehaviourPunCallbacks
         playerScreen.SetActive(false);
         estadisticsScreen.SetActive(false);
         tournamentScreen.SetActive(false);
-        resultsScreen.SetActive(false);
         interfazScreen.SetActive(false);
 
         screen.SetActive(true);
@@ -100,7 +99,7 @@ public class Menu : MonoBehaviourPunCallbacks
         if (roomName.text != "")
         {
 
-            NetworkManager.instance.CreateRoom(roomName.text);
+            networkManager.CreateRoom(roomName.text);
             playButton.interactable = false;
             
         }
@@ -112,7 +111,7 @@ public class Menu : MonoBehaviourPunCallbacks
         player.CustomProperties["Goals"] = 0;
         player.CustomProperties["SavedGoals"] = 0;
         player.CustomProperties["FailedGoals"] = 0;
-        player.CustomProperties["KicksLeft"] = NetworkManager.instance.numberOfGoals;
+        player.CustomProperties["KicksLeft"] = networkManager.numberOfGoals;
     }
 
     public override void OnCreatedRoom()
@@ -126,18 +125,18 @@ public class Menu : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         int curPlayerCount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
-        if (curPlayerCount == (NetworkManager.instance.maxPlayers - 1))
+        if (curPlayerCount == (networkManager.maxPlayers - 1))
         {
             PhotonNetwork.CurrentRoom.IsOpen = true;
             PhotonNetwork.CurrentRoom.IsVisible = true;
-            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Game");
+            networkManager.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Game");
             gameLogo.SetActive(false);
         }
         
          
-        else if(curPlayerCount > (NetworkManager.instance.maxPlayers - 1))
+        else if(curPlayerCount > (networkManager.maxPlayers - 1))
         {
-            NetworkManager.instance.ChangeScene("Game");
+            networkManager.ChangeScene("Game");
         }
         
     }
@@ -161,7 +160,7 @@ public class Menu : MonoBehaviourPunCallbacks
     // PLAYER SCREEN
     public void OnEstadisticButtonUI()
     {
-        NetworkManager.UserInfo info = NetworkManager.instance.userInfo;
+        UserLogin info = networkManager.userLogin;
         total_partidos.text = info.total_partidos.ToString();
         partidos_ganados.text = info.partidos_ganados.ToString();
         partidos_perdidos.text = info.partidos_perdidos.ToString();
@@ -185,20 +184,6 @@ public class Menu : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("GamePractice");
     }
 
-    public void OnTournamentButton()
-    {
-        playerScreen.SetActive(false);
-        tournamentScreen.SetActive(true);
-
-        NetworkManager.TorneoInfo torneoInfo = NetworkManager.instance.torneoInfo;
-        tournaName.text = torneoInfo.nombre_torneo;
-        reglaUno.text = "Anotar " + torneoInfo.num_goles + " para ganar\n" + torneoInfo.tiempo_patear + " segundos para patear";
-        torneoInicia.text = torneoInfo.fecha_inicio.ToString();
-        torneoFin.text = torneoInfo.fecha_fin.ToString();
-        registrados.text = torneoInfo.registrados + " / " + torneoInfo.num_participantes;
-
-        backTournaButton.interactable = true;
-    }
     public void OnExitButton()
     {
         playerScreen.SetActive(false);
@@ -206,8 +191,8 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnLogoutButton()
     {
-        NetworkManager.instance.SaveLogout();
-        Destroy(NetworkManager.instance.gameObject);
+        networkManager.SaveLogout();
+        Destroy(networkManager.gameObject);
         StartCoroutine(DisconnectAndLoad());
     }
 
@@ -229,11 +214,6 @@ public class Menu : MonoBehaviourPunCallbacks
         playerScreen.SetActive(true);
     }
 
-    public void OnSignTorneoButton()
-    {
-        NetworkManager.instance.SignTorneo(registerButton, backTournaButton, signStatus);
-    }
-
     public void OnBackToPlayerScreen()
     {
         gameScreen.SetActive(false);
@@ -243,13 +223,6 @@ public class Menu : MonoBehaviourPunCallbacks
     public void OnSpectateButton()
     {
 
-    }
-
-    //TESTING
-    //Test Actualizar información de usuario
-    public void TestUpdateUserInfo()
-    {
-        StartCoroutine(NetworkManager.instance.AddResultToUser(4, 3, 1, true));
     }
 
 }

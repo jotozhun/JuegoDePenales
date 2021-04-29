@@ -71,16 +71,9 @@ public class GameManagerPractice : MonoBehaviour
 
     void SpawnPlayers()
     {
-        //Vector3 pos = new Vector3((float)-85.1, (float)-2.85, (float)-79.22);
-        //Vector3 pos2 = new Vector3((float)-87.14, (float)-1.51, (float)-79.22);
-        int indexOfKicker = NetworkManager.instance.kicker_index;
-        //var playerResource = Resources.Load(GameUIPractice.instance.playersPrefabLocation[indexOfKicker]) as GameObject;
-        //var playerObj = Instantiate(playerResource, Vector3.one, Quaternion.identity);
+        int indexOfKicker = NetworkManager.instance.userLogin.player;
         GameObject playerObj = Instantiate(GameUIPractice.instance.playersPrefabLocation[indexOfKicker], Vector3.one, Quaternion.identity);
         
-        //Instantiate(GameUIPractice.instance.stadiumPrefabLocation, pos2, Quaternion.identity);
-        //GameUIPractice.instance.stadiumPrefabLocation.SetActive(true);
-        //Instantiate(GameUIPractice.instance.groundPrefabLocation, pos2, Quaternion.identity);
         PlayerControllerPractice playerScript = playerObj.GetComponent<PlayerControllerPractice>();
         
         //initialize the player

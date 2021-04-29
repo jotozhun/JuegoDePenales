@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool toKick; 
     public bool ballReturned = true;
     public bool playerCanCover;
+    public CapsuleCollider triggerForKick;
 
     public float forceCoeficient;
     [PunRPC]
@@ -165,6 +166,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     starttime = Time.time;
                     firstpos = Input.mousePosition;
                     toKick = true;
+                    triggerForKick.enabled = false;
                 }
             }
             
@@ -284,6 +286,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     IEnumerator GetPlayerSet(Vector3 distance)
     {
+        bool needToRepeatCover = false;
+
         if (Mathf.Abs(distance.x) < 50 && distance.y > 0)
             goalkeeper_anim.SetBool("Jump1", true);
         else if (distance.x < 0 && distance.y > 0)
@@ -294,10 +298,20 @@ public class PlayerController : MonoBehaviourPunCallbacks
             goalkeeper_anim.SetBool("BodyLeft1", true);
         else if (distance.x > 0 && distance.y < 0)
             goalkeeper_anim.SetBool("BodyRight1", true);
-        yield return new WaitForSeconds(0.5f);
+        else
+        {
+            canCover = true;
+            needToRepeatCover = true;
+        }
+
+
         //if (this.isGoalKeeper)
-          //  canCover = true;
-        UncheckAnimBooleans();
+        //  canCover = true;
+        if(!needToRepeatCover)
+        { 
+            yield return new WaitForSeconds(0.5f);
+            UncheckAnimBooleans();
+        }
     }
 
     public void UncheckAnimBooleans()

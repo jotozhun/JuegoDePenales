@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
+using AccountModels;
 
 public class InterfaceManager : MonoBehaviour
 {
@@ -24,17 +25,19 @@ public class InterfaceManager : MonoBehaviour
     public int tmp_indexOfEmblema;
     public bool isInitializing;
     public Button player_applyButton;
-    public Button haircut_applyButton;
-    public Button icon_applyButton;
     public MenuCharacter[] menu_players;
     public Animator[] player_animators;
     public AudioSource applyCharacter;
 
     public static InterfaceManager instance;
+    public UserLogin userLogin;
+    public NetworkManager networkManager;
 
     private void Awake()
     {
         instance = this;
+        networkManager = NetworkManager.instance;
+        userLogin = NetworkManager.instance.userLogin;
         isInitializing = true;
         Initialize();
     }
@@ -42,9 +45,9 @@ public class InterfaceManager : MonoBehaviour
     private void Start()
     {
         player = PhotonNetwork.LocalPlayer;
-        indexOfPlayer = tmp_indexofPlayer = NetworkManager.instance.kicker_index;
-        indexOfHaircut = tmp_indexOfHaircut = NetworkManager.instance.kicker_haircutIndex;
-        indexOfEmblema = tmp_indexOfEmblema = NetworkManager.instance.emblemaIndex;
+        indexOfPlayer = tmp_indexofPlayer = userLogin.player;
+        indexOfHaircut = tmp_indexOfHaircut = userLogin.haircut_player;
+        indexOfEmblema = tmp_indexOfEmblema = userLogin.emblema;
         SelectCharacter(indexOfPlayer);
         SelectHaircut(indexOfHaircut);
         SelectEmblema(indexOfEmblema);
@@ -72,10 +75,12 @@ public class InterfaceManager : MonoBehaviour
             else
                 menu_char.gameObject.SetActive(false);
         }
-        if (indexOfPlayer == tmp_indexofPlayer)
-            player_applyButton.interactable = false;
-        else
-            player_applyButton.interactable = true;
+        player_applyButton.interactable = !checkApplyButton();
+    }
+
+    public bool checkApplyButton()
+    {
+        return tmp_indexOfEmblema == indexOfEmblema && tmp_indexOfHaircut == indexOfHaircut && tmp_indexofPlayer == indexOfPlayer;
     }
 
     public void SelectHaircut(int index)
@@ -85,19 +90,13 @@ public class InterfaceManager : MonoBehaviour
             menu_char.SelectHaircut(index);
         }
         tmp_indexOfHaircut = index;
-        if (indexOfHaircut == tmp_indexOfHaircut)
-            haircut_applyButton.interactable = false;
-        else
-            haircut_applyButton.interactable = true;
+        player_applyButton.interactable = !checkApplyButton();
     }
 
     public void SelectEmblema(int index)
     {
         tmp_indexOfEmblema = index;
-        if (indexOfEmblema == tmp_indexOfEmblema)
-            icon_applyButton.interactable = false;
-        else
-            icon_applyButton.interactable = true;
+        player_applyButton.interactable = !checkApplyButton();
     }
 
     public void DeactivateInterfaceScreens()
@@ -137,39 +136,36 @@ public class InterfaceManager : MonoBehaviour
         }
     }
 
-    public void OnApplyUniformeButton()
+    public void OnApplyInterfazButton()
     {
         player_applyButton.interactable = false;
+
         indexOfPlayer = tmp_indexofPlayer;
-        player_animators[indexOfPlayer].SetBool("applyButton", true);
-        NetworkManager.instance.kicker_index = indexOfPlayer;
-        if (applyCharacter.isPlaying)
-            applyCharacter.Stop();
-        applyCharacter.Play();
-    }
-
-    public void OnApplyPeinadoButton()
-    {
-        haircut_applyButton.interactable = false;
         indexOfHaircut = tmp_indexOfHaircut;
-        player_animators[indexOfPlayer].SetBool("applyButton", true);
-        NetworkManager.instance.kicker_haircutIndex = indexOfHaircut;
-        player.CustomProperties["KickerHaircutIndex"] = indexOfHaircut;
-        if (applyCharacter.isPlaying)
-            applyCharacter.Stop();
-        applyCharacter.Play();
-    }
-
-    public void OnApplyEmblemaButton()
-    {
-        icon_applyButton.interactable = false;
         indexOfEmblema = tmp_indexOfEmblema;
-        NetworkManager.instance.emblemaIndex = indexOfEmblema;
+
+        userLogin.player = indexOfPlayer;
+        userLogin.haircut_player = indexOfHaircut;
+        userLogin.emblema = indexOfEmblema;
+
+        player_animators[indexOfPlayer].SetBool("applyButton", true);
+        player.CustomProperties["KickerHaircutIndex"] = indexOfHaircut;
         player.CustomProperties["EmblemaIndex"] = indexOfEmblema;
+
         if (applyCharacter.isPlaying)
             applyCharacter.Stop();
         applyCharacter.Play();
 
+        if(networkManager.isConnected)
+        {
+            StartCoroutine(NetworkAPICalls.instance.UpdateInterfazData(
+                indexOfEmblema,
+                indexOfHaircut,
+                indexOfPlayer,
+                networkManager.userToken.id,
+                networkManager.userToken.token
+                ));
+        }
     }
 
     public void OnBackButton()
@@ -177,7 +173,6 @@ public class InterfaceManager : MonoBehaviour
         tmp_indexofPlayer = indexOfPlayer;
         SelectCharacter(indexOfPlayer);
         player_applyButton.interactable = false;
-
     }
 
 }

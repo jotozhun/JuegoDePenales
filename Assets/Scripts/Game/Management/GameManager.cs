@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.transform.position = tmpTransf.position;
             player.transform.rotation = tmpTransf.rotation;
         }
-        NetworkManager.instance.ResetPlayerCustomProperties();
+        
         if(PhotonNetwork.LocalPlayer.ActorNumber == winnerPlayer.ActorNumber)
         {
             StartCoroutine(gameUI.ActivateWinnerScreen(winnerScore, loseScore));
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber != 3)
         {
-            int indexOfKicker = NetworkManager.instance.kicker_index;
+            int indexOfKicker = NetworkManager.instance.userLogin.player;
             GameObject playerObj = PhotonNetwork.Instantiate(gameUI.playersPrefabLocation[indexOfKicker], Vector3.one, Quaternion.identity);
             PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
@@ -135,6 +135,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalToPlayer(Player player)
     {
+        if ((bool)player.CustomProperties["hasMarkedAResult"])
+            return;
+        player.CustomProperties["hasMarkedAResult"] = true;
         //markGoal = true;
         int id = player.ActorNumber - 1;
         bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
@@ -159,6 +162,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkSavedGoalToPlayer(Player player)
     {
+        if ((bool)player.CustomProperties["hasMarkedAResult"])
+            return;
+        player.CustomProperties["hasMarkedAResult"] = true;
         int id = player.ActorNumber - 1;
         bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
         int savedGoals = (int)player.CustomProperties["SavedGoals"] + 1;
@@ -180,6 +186,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void MarkGoalMissedToPlayer(Player player)
     {
+        if ((bool)player.CustomProperties["hasMarkedAResult"])
+            return;
+        player.CustomProperties["hasMarkedAResult"] = true;
         //missGoal = true;
         int id = player.ActorNumber - 1;
         bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
@@ -208,7 +217,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (PlayerController player in gameUI.players)
         {
             player.hasToChange = true;
-            if(player.isGoalKeeper)
+            
+            if (player.isGoalKeeper)
             {
                 spawnAsKicker(player);
             }
@@ -235,7 +245,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.canCover = false;
         player.ChangeRol(false);
         player.ballReturned = true;
-        
+        player.triggerForKick.enabled = true;
+        player.photonPlayer.CustomProperties["hasMarkedAResult"] = false;
+
         player.photonPlayer.CustomProperties["isGoalkeeper"] = false;
     }
 

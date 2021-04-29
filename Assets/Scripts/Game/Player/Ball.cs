@@ -21,12 +21,12 @@ public class Ball : MonoBehaviourPun
         if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
           return;
 
-        if (other.CompareTag("GoalBound"))
+        if (other.CompareTag("GoalBound") && !alreadyAGoalResult)
         {
             alreadyAGoalResult = true;
             GameManager.instance.photonView.RPC("MarkGoalToPlayer", RpcTarget.AllBuffered, player.photonPlayer);
         }
-        else if (other.CompareTag("MissedGoalBound"))
+        else if (other.CompareTag("MissedGoalBound") && !alreadyAGoalResult)
         {
             alreadyAGoalResult = true;
             GameManager.instance.photonView.RPC("MarkGoalMissedToPlayer", RpcTarget.All, player.photonPlayer);
@@ -39,7 +39,7 @@ public class Ball : MonoBehaviourPun
         if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
             return;
 
-        if (collision.collider.CompareTag("Goalkeeper") && !touchedByGoalkeeper)
+        if (collision.collider.CompareTag("Goalkeeper") && !touchedByGoalkeeper && !alreadyAGoalResult)
         {
             this.GetComponent<Rigidbody>().velocity = Vector3.zero;
             touchedByGoalkeeper = true;

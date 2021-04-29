@@ -6,6 +6,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
 using UnityEngine.UI;
+using AccountModels;
 
 public class GameUI : MonoBehaviourPunCallbacks
 {
@@ -184,13 +185,15 @@ public class GameUI : MonoBehaviourPunCallbacks
             {
                 //StartCoroutine(ShowWinner(player));
                 //photonView.RPC("OnShowWinner", RpcTarget.All, player);
-                GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
+                //GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
+                GameManager.instance.spawnAsEndMatch(player, otherPlayer, actualGoals, otherGoals);
             }
             else if (otherPlayerWon)
             {
                 //StartCoroutine(ShowWinner(otherPlayer));
                 //photonView.RPC("OnShowWinner", RpcTarget.All, otherPlayer);
-                GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
+                //GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
+                GameManager.instance.spawnAsEndMatch(otherPlayer, player, otherGoals, actualGoals);
             }
         }
     }
@@ -265,13 +268,21 @@ public class GameUI : MonoBehaviourPunCallbacks
 
     public IEnumerator ActivateWinnerScreen(int winnerScore, int loserScore)
     {
+        yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(true));
+        
+        NetworkManager.instance.ResetPlayerGameProperties();
         yield return new WaitForSeconds(2);
         winScreen.SetActive(true);
         winScoreText.text = winnerScore + " - " + loserScore;
+        
     }
 
     public IEnumerator ActivateLoserScreen(int winnerScore, int loserScore)
     {
+
+        yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(false));
+        
+        NetworkManager.instance.ResetPlayerGameProperties();
         yield return new WaitForSeconds(2);
         loseScreen.SetActive(true);
         LoseScoreText.text = winnerScore + " - " + loserScore;

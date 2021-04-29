@@ -2438,13 +2438,12 @@ GameObject:
   - component: {fileID: 4311586602904786011}
   - component: {fileID: 4321503908648157931}
   - component: {fileID: 4201104671077345913}
-  - component: {fileID: 2335594038192923698}
   - component: {fileID: 4300169825070058804}
   - component: {fileID: 4300169825070058805}
   - component: {fileID: 4300169825070058763}
   - component: {fileID: 4300169825070058762}
   - component: {fileID: 4300169825070058765}
-  - component: {fileID: 7049554300625750341}
+  - component: {fileID: 6876973500726707399}
   m_Layer: 0
   m_Name: Soccer_Ball
   m_TagString: Ball
@@ -2525,19 +2524,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.11000001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!135 &2335594038192923698
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4299320291135927935}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.3
-  m_Center: {x: 0, y: -0.00000011920929, z: -0.0000019036233}
 --- !u!54 &4300169825070058804
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2625,18 +2611,19 @@ MonoBehaviour:
   player: {fileID: 4869790497141221621}
   touchedByGoalkeeper: 0
   alreadyAGoalResult: 0
---- !u!135 &7049554300625750341
-SphereCollider:
+--- !u!136 &6876973500726707399
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4299320291135927935}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.11000001
+  m_Radius: 0.5
+  m_Height: 0.96
+  m_Direction: 1
   m_Center: {x: 0, y: -0.00000011920929, z: -0.0000019036233}
 --- !u!1 &4300169824427703728
 GameObject:
@@ -4621,6 +4608,7 @@ MonoBehaviour:
   ballRigBody: {fileID: 4300169825070058804}
   ballReturned: 1
   playerCanCover: 0
+  triggerForKick: {fileID: 6876973500726707399}
   forceCoeficient: 0
 --- !u!114 &4300169824994784939
 MonoBehaviour:
