@@ -3553,18 +3553,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 967405629}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1095082840}
-        m_MethodName: OnRegisterButtonUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &967405629
@@ -3935,9 +3924,55 @@ MonoBehaviour:
   playerPassword: {fileID: 1931715445}
   loginStatusText: {fileID: 747722269}
   apiCalls: {fileID: 1095082842}
+  userToken:
+    username: 
+    token: 
+    id: 0
+    email: 
+  userLogin:
+    id: 0
+    email: 
+    username: Offline User
+    name: Offline User
+    telefono: 
+    total_partidos: 0
+    partidos_ganados: 0
+    partidos_perdidos: 0
+    goles_anotados: 0
+    goles_atajados: 0
+    goles_recibidos: 0
+    posicion_ranking: 0
+    emblema: 0
+    haircut_player: 0
+    haircut_goalkeeper: 0
+    player: 0
+    duelos: []
+  savedAccount:
+    username: 
+    password: 
+    isLoggedIn: 0
+  publicidades:
+    publicidades: []
   maxPlayers: 3
-  isTorneo: 0
   isConnected: 0
+  offlineInfo:
+    id: 0
+    email: 
+    username: Offline User
+    name: Offline User
+    telefono: 
+    total_partidos: 0
+    partidos_ganados: 0
+    partidos_perdidos: 0
+    goles_anotados: 0
+    goles_atajados: 0
+    goles_recibidos: 0
+    posicion_ranking: 0
+    emblema: 0
+    haircut_player: 0
+    haircut_goalkeeper: 0
+    player: 0
+    duelos: []
 --- !u!4 &1095082841
 Transform:
   m_ObjectHideFlags: 0

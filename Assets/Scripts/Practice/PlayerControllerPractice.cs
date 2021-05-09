@@ -102,9 +102,10 @@ public class PlayerControllerPractice : MonoBehaviour
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
             //Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
-            float fixedTime = 0f; 
-            
-            fixedTime = Mathf.Clamp((endtime - starttime), 0.35f, 5f);
+            float fixedTime = 0f;
+
+            //fixedTime = Mathf.Clamp((endtime - starttime), 0.35f, 5f);
+            fixedTime = 0.35f;
             Vector3 force = new Vector3((distance.x / (fixedTime / 0.39f)), (distance.y / (fixedTime / 0.35f)), (distance.z / (fixedTime / 0.37f)));
             
             force *= forceCoeficient;

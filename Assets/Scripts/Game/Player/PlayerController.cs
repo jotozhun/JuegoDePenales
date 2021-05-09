@@ -178,7 +178,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             Vector3 distance = lastpos - firstpos;
             distance.z = distance.magnitude;
-            Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
+            //Vector3 force = new Vector3((distance.x / ((endtime - starttime) / 0.33f)), (distance.y / ((endtime - starttime) / 0.26f)), (distance.z / ((endtime - starttime) / 0.4f)));
+
+            float fixedTime = 0f;
+
+            fixedTime = 0.57f;
+            Vector3 force = new Vector3((distance.x / (fixedTime / 0.39f)), (distance.y / (fixedTime / 0.35f)), (distance.z / (fixedTime / 0.37f)));
 
             force *= forceCoeficient;
             toKick = false;

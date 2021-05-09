@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System.Linq;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -29,8 +26,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("Game Settings")]
     public GameObject[] goalBounds;
     public GameObject[] missedGoalBounds;
-    
-    
+    public GameObject goalScreen;
+    public GameObject failedGoalScreen;
 
     [Header("Animators")]
     public Animator goalAnim;
@@ -56,6 +53,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         gameUI.players = new PlayerController[PhotonNetwork.PlayerList.Length];
         scores = new int[2];
+
         photonView.RPC("ImInGame", RpcTarget.All);
     }
 
@@ -88,13 +86,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.transform.rotation = tmpTransf.rotation;
         }
         
+        if(PhotonNetwork.IsMasterClient)
+        {
+            NetworkManager.instance.CrearDueloNormal(winnerPlayer, loserPlayer);
+        }
+
+
         if(PhotonNetwork.LocalPlayer.ActorNumber == winnerPlayer.ActorNumber)
         {
-            StartCoroutine(gameUI.ActivateWinnerScreen(winnerScore, loseScore));
+            NetworkManager.instance.AddEstadisticasToLocal(true);
+            StartCoroutine(gameUI.ActivateWinnerScreen(winnerScore, loseScore, winnerPlayer, loserPlayer));
         }
         else
         {
-            StartCoroutine(gameUI.ActivateLoserScreen(winnerScore, loseScore));
+            NetworkManager.instance.AddEstadisticasToLocal(false);
+            StartCoroutine(gameUI.ActivateLoserScreen(winnerScore, loseScore, winnerPlayer, loserPlayer));
         }
     }
 
@@ -137,6 +143,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if ((bool)player.CustomProperties["hasMarkedAResult"])
             return;
+
+        if (!(bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
+            ActivateGoalScreen();
+
         player.CustomProperties["hasMarkedAResult"] = true;
         //markGoal = true;
         int id = player.ActorNumber - 1;
@@ -164,6 +174,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if ((bool)player.CustomProperties["hasMarkedAResult"])
             return;
+
+        if (!(bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
+            ActivateFailedGoalScreen();
+
         player.CustomProperties["hasMarkedAResult"] = true;
         int id = player.ActorNumber - 1;
         bool isDeathmatchTime = (bool)player.CustomProperties["isDeathMatchTime"];
@@ -188,6 +202,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if ((bool)player.CustomProperties["hasMarkedAResult"])
             return;
+
+        if (!(bool)PhotonNetwork.LocalPlayer.CustomProperties["isGoalkeeper"])
+            ActivateFailedGoalScreen();
+
         player.CustomProperties["hasMarkedAResult"] = true;
         //missGoal = true;
         int id = player.ActorNumber - 1;
@@ -212,6 +230,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //markGoal = false;
         //missGoal = false;
+        DeactivateGoalScreens();
         if (temporalEndGame == true)
             return;
         foreach (PlayerController player in gameUI.players)
@@ -249,6 +268,22 @@ public class GameManager : MonoBehaviourPunCallbacks
         player.photonPlayer.CustomProperties["hasMarkedAResult"] = false;
 
         player.photonPlayer.CustomProperties["isGoalkeeper"] = false;
+    }
+
+    public void ActivateGoalScreen()
+    {
+        goalScreen.SetActive(true);
+    }
+
+    public void ActivateFailedGoalScreen()
+    {
+        failedGoalScreen.SetActive(true);
+    }
+
+    public void DeactivateGoalScreens()
+    {
+        goalScreen.SetActive(false);
+        failedGoalScreen.SetActive(false);
     }
 
     void DeactivateBounds()

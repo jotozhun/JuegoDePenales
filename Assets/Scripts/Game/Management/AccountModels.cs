@@ -4,22 +4,18 @@ using UnityEngine;
 
 namespace AccountModels
 {
+    [System.Serializable]
     public class UserToken
     {
         public string username;
         public string token;
         public int id;
         public string email;
-        public int statusCode;
 
-        public UserToken(int badCode)
-        {
-            statusCode = badCode;
-        }
 
         public override string ToString()
         {
-            return "Username: " + username + "token: " + token + "status: " + statusCode;
+            return "Username: " + username + "token: " + token;
         }
     }
 
@@ -39,6 +35,25 @@ namespace AccountModels
         public int num_grupos;
     }
 
+    [System.Serializable]
+    public class Duelo
+    {
+        public int id;
+        public Jugador ganador;
+        public Jugador perdedor;
+        public int goles_ganador;
+        public int goles_perdedor;
+        public string fecha;
+    }
+
+    [System.Serializable]
+    public class Jugador
+    {
+        public int id;
+        public string username;
+    }
+
+    [System.Serializable]
     public class UserLogin
     {
         public int id;
@@ -58,7 +73,8 @@ namespace AccountModels
         public int haircut_player;
         public int haircut_goalkeeper;
         public int player;
-        public int statusCode;
+        //public Duelo[] duelos = new Duelo[5];
+        public List<Duelo> duelos;
 
         public UserLogin()
         {
@@ -67,18 +83,38 @@ namespace AccountModels
             email = "";
         }
 
-        public UserLogin(int badCode)
+        public void AddDuelo(Duelo duelo)
         {
-            statusCode = badCode;
+            if (duelos.Count == 5)
+            {
+                ShiftDueloArr(duelo);
+            }
+            else
+            {
+                int tmpIndex = duelos.Count;
+                duelos.Add(duelo);
+                //duelos[tmpIndex] = duelo;
+            }
+        }
+
+        private void ShiftDueloArr(Duelo duelo)
+        {
+            for (int i = 1; i < duelos.Count; i++)
+            {
+                duelos[i - 1] = duelos[i];
+            }
+            duelos[4] = duelo;
         }
     }
 
+    [System.Serializable]
     public class SavedAccount
     {
         public string username;
         public string password;
         public bool isLoggedIn;
     }
+
 
     public class InterfazInfo
     {
@@ -102,4 +138,37 @@ namespace AccountModels
         public int registerCode;
 
     }
+
+    [System.Serializable]
+    public class Imagen
+    {
+        public int id;
+        public string nombre;
+        public Sprite sprite;
+    }
+
+    [System.Serializable]
+    public class Publicidad
+    {
+        public int id;
+        public string marca;
+        public string tipo;
+        public string descripcion;
+        public Imagen[] imagenes;
+
+
+        public override string ToString()
+        {
+            return "id: " + id + " marca: " + marca + " tipo: " + tipo;//+ " Length: " + imagenes.ToString();
+        }
+    }
+
+    [System.Serializable]
+    public class Publicidades
+    {
+        public Publicidad[] publicidades;
+    }
 }
+
+
+

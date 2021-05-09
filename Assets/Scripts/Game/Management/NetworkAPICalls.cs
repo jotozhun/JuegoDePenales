@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using AccountModels;
 using TMPro;
+using System;
 
 public class NetworkAPICalls : MonoBehaviour
 {
@@ -20,12 +21,8 @@ public class NetworkAPICalls : MonoBehaviour
         instance = this;
     }
 
-    public void TokenTest()
-    {
-        StartCoroutine(CallUserToken("Jopoelpe", "admin"));
-    }
 
-    public IEnumerator CallUserToken(string username, string password)
+    public IEnumerator CallUserToken(string username, string password, Action<string> res, Action<int> err)
     {
         string testUri = "https://willymedi.pythonanywhere.com/usuarios/usuario/auth/";
         WWWForm form = new WWWForm();
@@ -36,34 +33,26 @@ public class NetworkAPICalls : MonoBehaviour
         {
             yield return webRequest.SendWebRequest();
 
-            UserToken token = null;
             if (webRequest.isNetworkError)
             {
-                token = new UserToken(600);
+                err(600);
             }
             else
             {
                 if (webRequest.responseCode == 200)
                 {
                     string resp = webRequest.downloadHandler.text;
-                    token = JsonUtility.FromJson<UserToken>(resp);
-                    token.statusCode = 200;
-                }
-                else if (webRequest.responseCode == 403)
-                {
-                     token = new UserToken(403);
-
+                    res(resp);
                 }
                 else
                 {
-                    token = new UserToken((int)webRequest.responseCode);
+                    err((int)webRequest.responseCode);
                 }
             }
-            manager.userToken = token;
         }
     }
 
-    public IEnumerator GetLoginInfo(int id, string token)
+    public IEnumerator GetLoginInfo(int id, string token, Action<string> res, Action<int> err)
     {
         string testUri = "https://willymedi.pythonanywhere.com/usuarios/usuario/" + id;
         using (UnityWebRequest webRequest = UnityWebRequest.Get(testUri))
@@ -73,22 +62,19 @@ public class NetworkAPICalls : MonoBehaviour
             yield return webRequest.SendWebRequest();
             if (webRequest.isNetworkError)
             {
-                Debug.Log("Error en la red, intente mas tarde");
+                err(600);
             }
             else
             {
-                UserLogin userLogin = null;
                 if (webRequest.responseCode == 200)
                 {
                     string resp = webRequest.downloadHandler.text;
-                    userLogin = JsonUtility.FromJson<UserLogin>(resp);
-                    userLogin.statusCode = 200;
+                    res(resp);
                 }
                 else
                 {
-                    userLogin = new UserLogin((int)webRequest.responseCode);
+                    err((int)webRequest.responseCode);
                 }
-                manager.userLogin = userLogin;
             }
         }
     }
@@ -118,7 +104,7 @@ public class NetworkAPICalls : MonoBehaviour
     {
         string testUri = "https://willymedi.pythonanywhere.com/usuarios/usuario/" + id;
 
-        manager.AddLocalMatchResult(isWin, goles_anotados, goles_atajados, goles_recibidos);
+        //manager.AddLocalMatchResult(isWin, goles_anotados, goles_atajados, goles_recibidos);
 
         UserLogin tmpUser = manager.userLogin;
 
@@ -148,7 +134,7 @@ public class NetworkAPICalls : MonoBehaviour
         }
     }
 
-    public IEnumerator RegisterUser(string name, string username, string email, string password)
+    public IEnumerator RegisterUser(string name, string username, string email, string password, Action<string> res, Action<int> err)
     {
         string testUri = "https://willymedi.pythonanywhere.com/usuarios/register/";
 
@@ -160,20 +146,103 @@ public class NetworkAPICalls : MonoBehaviour
 
         using (UnityWebRequest webRequest = UnityWebRequest.Post(testUri, form))
         {
-            
             yield return webRequest.SendWebRequest();
             if(webRequest.isNetworkError)
             {
-                manager.responses.registerCode = 600;
+                Debug.Log("Estoy en un error");
+                err(600);
+            }
+            else
+            {
+                Debug.Log("HOLI");
+                if(webRequest.responseCode == 200)
+                {
+                    res("Usuario Registrado Correctamente!");
+                }
+                else
+                {
+                    err((int)webRequest.responseCode);
+                }
+            }
+
+        }
+    }
+
+    public IEnumerator GetPublicidad(Action<string> res, Action<int> err)
+    {
+        string publicidadUri = "https://willymedi.pythonanywhere.com/publicidad/publicidad/";
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(publicidadUri))
+        {
+            yield return webRequest.SendWebRequest();
+            if(webRequest.isNetworkError)
+            {
+                err(600);
             }
             else
             {
                 if(webRequest.responseCode == 200)
                 {
-                    manager.responses.registerCode = 200;
+                    
+                    string rawResponse = webRequest.downloadHandler.text;
+                    
+                    res(rawResponse);
+                }
+                else
+                {
+                    Debug.Log(webRequest.error);
+                    err((int)webRequest.responseCode);
                 }
             }
-
         }
+    }
+
+    public IEnumerator GetTexture(string url, Action<Texture2D> res, Action<int> err)
+    {
+        using (UnityWebRequest unityWebRequest = UnityWebRequestTexture.GetTexture(url))
+        {
+            yield return unityWebRequest.SendWebRequest();
+
+            if(unityWebRequest.isNetworkError)
+            {
+                err(600);
+            }
+            else
+            {
+                DownloadHandlerTexture downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
+                res(downloadHandlerTexture.texture);
+            }
+        }
+    }
+
+    public IEnumerator CreateDueloNormal(int id_w, int id_l, int goles_w, int goles_l, int goles_atajados_ganador, int goles_atajados_perdedor, int goles_recibidos_ganador, int goles_recibidos_perdedor, Action<string> res, Action<int> respCode)
+    {
+        string testUrl = "https://willymedi.pythonanywhere.com/duelos/duelo_normal/";
+        WWWForm form = new WWWForm();
+        form.AddField("ganador", id_w);
+        form.AddField("perdedor", id_l);
+        form.AddField("goles_ganador", goles_w);
+        form.AddField("goles_perdedor", goles_l);
+        form.AddField("goles_atajados_ganador", goles_atajados_ganador);
+        form.AddField("goles_atajados_perdedor", goles_atajados_perdedor);
+        form.AddField("goles_recibidos_ganador", goles_recibidos_ganador);
+        form.AddField("goles_recibidos_perdedor", goles_recibidos_perdedor);
+        using (UnityWebRequest webRequest = UnityWebRequest.Post(testUrl, form))
+        {
+            yield return webRequest.SendWebRequest();
+            if(webRequest.isNetworkError)
+            {
+                respCode(600);
+            }
+            else
+            {
+                if(webRequest.responseCode == 200)
+                {
+                    string rawDueloCreado = webRequest.downloadHandler.text;
+                    res(rawDueloCreado);
+                }    
+            }
+        }
+
     }
 }

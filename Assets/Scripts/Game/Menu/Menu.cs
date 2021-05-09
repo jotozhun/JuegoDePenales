@@ -17,6 +17,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public GameObject estadisticsScreen;
     public GameObject tournamentScreen;
     public GameObject interfazScreen;
+    public GameObject historialScreen;
 
     [Header("Game Screen")]
     public TMP_InputField roomName;
@@ -90,6 +91,7 @@ public class Menu : MonoBehaviourPunCallbacks
         estadisticsScreen.SetActive(false);
         tournamentScreen.SetActive(false);
         interfazScreen.SetActive(false);
+        historialScreen.SetActive(false);
 
         screen.SetActive(true);
     }

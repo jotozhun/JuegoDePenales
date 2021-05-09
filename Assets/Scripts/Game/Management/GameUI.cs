@@ -183,19 +183,22 @@ public class GameUI : MonoBehaviourPunCallbacks
         {
             if (actualPlayerWon)
             {
-                //StartCoroutine(ShowWinner(player));
-                //photonView.RPC("OnShowWinner", RpcTarget.All, player);
-                //GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, player, otherPlayer, actualGoals, otherGoals);
-                GameManager.instance.spawnAsEndMatch(player, otherPlayer, actualGoals, otherGoals);
+                //GameManager.instance.spawnAsEndMatch(player, otherPlayer, actualGoals, otherGoals);
+                StartCoroutine(SpawnEndMatchCoroutine(player, otherPlayer, actualGoals, otherGoals));
             }
             else if (otherPlayerWon)
             {
-                //StartCoroutine(ShowWinner(otherPlayer));
-                //photonView.RPC("OnShowWinner", RpcTarget.All, otherPlayer);
-                //GameManager.instance.photonView.RPC("spawnAsEndMatch", RpcTarget.All, otherPlayer, player, otherGoals, actualGoals);
-                GameManager.instance.spawnAsEndMatch(otherPlayer, player, otherGoals, actualGoals);
+                StartCoroutine(SpawnEndMatchCoroutine(otherPlayer, player, otherGoals, actualGoals));
+                //GameManager.instance.spawnAsEndMatch(otherPlayer, player, otherGoals, actualGoals);
             }
         }
+    }
+
+    IEnumerator SpawnEndMatchCoroutine(Player winnerPlayer, Player loserPlayer, int winnerScore, int loseScore)
+    {
+        yield return new WaitForSeconds(3);
+
+        GameManager.instance.spawnAsEndMatch(winnerPlayer, loserPlayer, winnerScore, loseScore);
     }
 
     bool calculateDeathMatch(int actualGoals, int actualKicksLeft, int otherGoals, int otherKicksLeft)
@@ -266,10 +269,11 @@ public class GameUI : MonoBehaviourPunCallbacks
         return playerLoseSpawn;
     }
 
-    public IEnumerator ActivateWinnerScreen(int winnerScore, int loserScore)
+    public IEnumerator ActivateWinnerScreen(int winnerScore, int loserScore, Player winnerPlayer, Player losePlayer)
     {
-        yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(true));
-        
+        //yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(true));
+        NetworkManager.instance.AddMatchResultToLocal(winnerPlayer, losePlayer);
+
         NetworkManager.instance.ResetPlayerGameProperties();
         yield return new WaitForSeconds(2);
         winScreen.SetActive(true);
@@ -277,11 +281,12 @@ public class GameUI : MonoBehaviourPunCallbacks
         
     }
 
-    public IEnumerator ActivateLoserScreen(int winnerScore, int loserScore)
+    public IEnumerator ActivateLoserScreen(int winnerScore, int loserScore, Player winnerPlayer, Player losePlayer)
     {
 
-        yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(false));
-        
+        //yield return StartCoroutine(NetworkManager.instance.AddMatchResultsToServer(false));
+        NetworkManager.instance.AddMatchResultToLocal(winnerPlayer, losePlayer);
+
         NetworkManager.instance.ResetPlayerGameProperties();
         yield return new WaitForSeconds(2);
         loseScreen.SetActive(true);

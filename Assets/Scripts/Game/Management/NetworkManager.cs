@@ -51,7 +51,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public UserToken userToken;
     public UserLogin userLogin;
     public SavedAccount savedAccount;
-    public StatusCodes responses = new StatusCodes();
+    public Publicidades publicidades = new Publicidades();
 
     private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
     //public float resolutionCoeficient;
@@ -98,7 +98,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 registerButton.interactable = false;
                 userNameInput.text = savedAccount.username;
                 playerPassword.text = savedAccount.password;
-                StartCoroutine(LoginAuth(savedAccount.username, savedAccount.password, loginStatusText));
+                //StartCoroutine(LoginAuth(savedAccount.username, savedAccount.password, loginStatusText));
+                OnLoginButtonUI();
             }
         }
     }
@@ -124,6 +125,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         _playerCustomProperties["EmblemaIndex"] = emblemaIndex;
         _playerCustomProperties["KickerHaircutIndex"] = kicker_haircutIndex;
+        _playerCustomProperties["id"] = userLogin.id;
+
         ResetPlayerGameProperties();
     }
 
@@ -212,30 +215,32 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            StartCoroutine(Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, registerStatusText));
+            DeactivateButtons();
+            Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, 
+                (string res) => {
+                    Debug.Log(res);
+                    registerStatusText.text = res;
+                    registerStatusText.color = Color.green;
+                    ActivateButtons();
+                }, (int err) => { 
+                if(err == 400)
+                {
+                    registerStatusText.text = "Ya existe un usuario con este username o email";
+                    
+                }
+                else
+                {
+                    registerStatusText.text = "Error inesperado, compruebe su conexión a internet";
+                }
+                registerStatusText.color = Color.red;
+                ActivateButtons();
+            });
         }
     }
 
-    public IEnumerator Register(string name, string username, string email, string password, TextMeshProUGUI status)
+    public void Register(string name, string username, string email, string password, Action<string> res, Action<int> err)
     {
-        DeactivateButtons();
-        yield return StartCoroutine(apiCalls.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text));
-
-        Debug.Log("Code: " + responses.registerCode);
-
-        if(responses.registerCode == 200)
-        {
-            status.text = "Usuario Registrado Correctamente!";
-            status.color = Color.green;
-            yield return new WaitForSeconds(2);
-            SetScreen(loginScreen);
-        }
-        else
-        {
-            status.text = "Error en el servidor, intente más tarde por favor";
-            status.color = Color.red;
-        }
-        ActivateButtons();
+        apiCalls.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, res, err);
     }
 
     bool isFieldEmpty(TMP_InputField field)
@@ -268,64 +273,107 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            StartCoroutine(LoginAuth(userNameInput.text, playerPassword.text, loginStatusText));
-        }
-    }
+            //StartCoroutine(LoginAuth(userNameInput.text, playerPassword.text, loginStatusText));
+            DeactivateButtons();
+            LoginAuth(userNameInput.text, playerPassword.text, 
+                (string res) => {
+                    userToken = JsonUtility.FromJson<UserToken>(res);
+                    Login(userToken.id, userToken.token,
+                        (string loginRes) =>
+                    {
+                        Debug.Log(loginRes);
+                        userLogin = JsonUtility.FromJson<UserLogin>(loginRes);
 
-    public IEnumerator LoginAuth(string username, string password, TextMeshProUGUI status)
-    {
-        DeactivateButtons();
-        yield return StartCoroutine(apiCalls.CallUserToken(username, password));
+                        loginStatusText.text = "Bienvenido " + userLogin.username + "!";
+                        loginStatusText.color = Color.green;
 
-        if (userToken.statusCode == 200)
-        {
-            int userId = userToken.id;
-            string tmpToken = userToken.token;
+                        _playerCustomProperties["username"] = userLogin.username;
 
-            yield return StartCoroutine(apiCalls.GetLoginInfo(userId, tmpToken));
-            
-            if (userLogin.statusCode == 200)
-            {
-                status.text = "Bienvenido " + userLogin.username + "!";
-                status.color = Color.green;
-                savedAccount = new SavedAccount() {
-                    username = username,
-                    password = password,
-                    isLoggedIn = true};
-                Save();
-                SetPlayerCustomPropierties();
-                yield return new WaitForSeconds(2);
-                isConnected = true;
-                SceneManager.LoadScene("Menu");
-            }
-            else
-            {
-                status.text = "Error inesperado, token no válido";
-                status.color = Color.red;
+                        savedAccount = new SavedAccount()
+                        {
+                            username = userNameInput.text,
+                            password = playerPassword.text,
+                            isLoggedIn = true
+                        };
+                        Save();
+                        SetPlayerCustomPropierties();
+                        StartCoroutine(OnLoginSuccess());
+                    }, (int loginErr) =>
+                    {
+                        loginStatusText.text = "Error inesperado, token no válido";
+                        loginStatusText.color = Color.red;
+                        offlineButton.interactable = true;
+                        ActivateButtons();
+                    });
+            },  (int err) => {
+                if(err == 403)
+                {
+                    loginStatusText.text = "Usuario o contraseña incorrecta";
+                }
+                else
+                {
+                    loginStatusText.text = "Error del servidor, intente más tarde.";
+                }
+                loginStatusText.color = Color.red;
                 offlineButton.interactable = true;
                 ActivateButtons();
-            }
-        }
-        else
-        {
-            if (userToken.statusCode == 403)
-            {
-                status.text = "Usuario o contraseña incorrecta";
-            }
-            else
-            {
-                status.text = "Error del servidor, intente más tarde";
-            }
-            status.color = Color.red;
-            offlineButton.interactable = true;
-            ActivateButtons();
+            });
         }
     }
 
-    public void AddLocalMatchResult(bool isWin, int goles_anotados, int goles_atajados, int goles_recibidos)
+    public IEnumerator OnLoginSuccess()
     {
+        yield return StartCoroutine(apiCalls.GetPublicidad(
+            (string res) => {
+                Debug.Log(res);
+                publicidades = JsonUtility.FromJson<Publicidades>(res);
+                StartCoroutine(apiCalls.GetTexture(publicidades.publicidades[0].imagenes[0].nombre, 
+                    (Texture2D texture) => {
+                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+                        Debug.Log("Imagen descargada correctamente!");
+
+                        
+                        publicidades.publicidades[0].imagenes[0].sprite = sprite;
+                    }, (int textError) => {
+                        Debug.Log("No se pudo descargar la imagen!");
+                    }));
+                
+                
+            }, (int err) => {
+                if (err == 600)
+                    Debug.Log("Error en la red, intente más tarde!");
+                else
+                {
+                    Debug.Log("Error inesperado, no se obtuvo respuesta!");
+                }
+            }));
+
+        yield return new WaitForSeconds(2);
+        isConnected = true;
+        SceneManager.LoadScene("Menu");
+    }
+
+    public void LoginAuth(string username, string password, Action<string> res, Action<int> err)
+    {
+        StartCoroutine(apiCalls.CallUserToken(username, password, res, err));
+    }
+
+    public void Login(int id, string token, Action<string> res, Action<int> err)
+    {
+        StartCoroutine(apiCalls.GetLoginInfo(id, token, res, err));
+    }
+    
+
+    public void AddEstadisticasToLocal(bool isWin)
+    {
+        Player tmpPlayer = PhotonNetwork.LocalPlayer;
+
+        int goles_anotados = (int)tmpPlayer.CustomProperties["Goals"];
+        int goles_atajados = (int)tmpPlayer.CustomProperties["SavedGoals"];
+        int goles_recibidos = (int)tmpPlayer.CustomProperties["FailedGoals"];
+
         userLogin.total_partidos += 1;
-        if(isWin)
+        if (isWin)
         {
             userLogin.partidos_ganados += 1;
         }
@@ -339,27 +387,82 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         userLogin.goles_recibidos += goles_recibidos;
     }
 
-    public IEnumerator AddMatchResultsToServer(bool isWin)
+    public void CargarPublicidad(Action<string> res, Action<int> err)
     {
-        Player tmpPlayer = PhotonNetwork.LocalPlayer;
-
-        int id = userToken.id;
-        string token = userToken.token;
-        int goles_anotados = (int)tmpPlayer.CustomProperties["Goals"];
-        int goles_atajados = (int)tmpPlayer.CustomProperties["SavedGoals"];
-        int goles_recibidos = (int)tmpPlayer.CustomProperties["FailedGoals"];
-
-        yield return StartCoroutine(apiCalls.AddMatchResultsToPlayer(
-            isWin,
-            id,
-            goles_anotados,
-            goles_atajados,
-            goles_recibidos,
-            token
-            ));
+        StartCoroutine(apiCalls.GetPublicidad(res, err));
     }
 
+    public void CrearDueloNormal(Player winnerPlayer, Player loserPlayer)
+    {
+        int id_w = (int)winnerPlayer.CustomProperties["id"];
+        int id_l = (int)loserPlayer.CustomProperties["id"];
 
+        int goles_w = (int)winnerPlayer.CustomProperties["Goals"];
+        int goles_l = (int)loserPlayer.CustomProperties["Goals"];
+
+        int goles_atajados_ganador = (int)winnerPlayer.CustomProperties["SavedGoals"];
+        int goles_atajados_perdedor = (int)loserPlayer.CustomProperties["SavedGoals"];
+
+        int goles_recibidos_ganador = (int)winnerPlayer.CustomProperties["FailedGoals"];
+        int goles_recibidos_perdedor = (int)loserPlayer.CustomProperties["FailedGoals"];
+
+        StartCoroutine(apiCalls.CreateDueloNormal(
+            id_w, 
+            id_l, 
+            goles_w, 
+            goles_l, 
+            goles_atajados_ganador,
+            goles_atajados_perdedor,
+            goles_recibidos_ganador,
+            goles_recibidos_perdedor,
+            (string res) => 
+            {
+                Debug.Log("Duelo creado correctamente!");        
+            }, (int err) => 
+            {
+                Debug.Log("Duelo no se pudo crear!");                                  
+            })
+        );
+    }
+    
+    public void AddMatchResultToLocal(Player winner, Player loser)
+    {
+        int id_w = (int)winner.CustomProperties["id"];
+        int id_l = (int)loser.CustomProperties["id"];
+
+        string username_w = (string)winner.CustomProperties["username"];
+        string username_l = (string)loser.CustomProperties["username"];
+
+        Jugador player_ganador = new Jugador()
+        {
+            id = id_w,
+            username = username_w
+        };
+
+        Jugador player_perdedor = new Jugador()
+        {
+            id = id_l,
+            username = username_l
+        };
+
+        int goles_w = (int)winner.CustomProperties["Goals"];
+        int goles_l = (int)loser.CustomProperties["Goals"];
+
+        DateTime localDate = DateTime.Now;
+        var fecha = localDate.ToString("yyyy-MM-dd");
+
+        Duelo tmpDuelo = new Duelo() {
+            id = 999,
+            ganador = player_ganador,
+            perdedor = player_perdedor,
+            goles_ganador = goles_w,
+            goles_perdedor = goles_l,
+            fecha = fecha
+        };
+
+        userLogin.AddDuelo(tmpDuelo);
+
+    }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
