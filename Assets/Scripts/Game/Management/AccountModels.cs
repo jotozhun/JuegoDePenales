@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,20 +20,17 @@ namespace AccountModels
         }
     }
 
+    [System.Serializable]
     public class Torneo
     {
         public int id;
         public string nombre_torneo;
+        //public DateTime fecha_inicio;
         public string fecha_inicio;
         public bool is_close;
         public bool is_finish;
+        //public DateTime fecha_fin;
         public string fecha_fin;
-        public int num_maximo;
-        public int num_participantes;
-        public int num_goles;
-        public int tiempo_espera;
-        public int tiempo_patear;
-        public int num_grupos;
     }
 
     [System.Serializable]
@@ -44,6 +42,22 @@ namespace AccountModels
         public int goles_ganador;
         public int goles_perdedor;
         public string fecha;
+        public bool istorneo;
+    }
+
+    [System.Serializable]
+    public class DueloTorneo
+    {
+        public int id;
+        public Jugador ganador;
+        public Jugador perdedor;
+        public int goles_ganador;
+        public int goles_perdedor;
+        public string fecha;
+        public int goles_atajados_ganador;
+        public int goles_atajados_perdedor;
+        public int goles_recibidos_ganador;
+        public int goles_recibidos_perdedor;
     }
 
     [System.Serializable]
@@ -75,12 +89,18 @@ namespace AccountModels
         public int player;
         //public Duelo[] duelos = new Duelo[5];
         public List<Duelo> duelos;
+        public DueloAgendado duelo_agendado;
 
         public UserLogin()
         {
             name = "Offline User";
             username = "Offline User";
             email = "";
+        }
+
+        public bool isFirstLogin()
+        {
+            return (total_partidos == 0) && (emblema == 0) && (haircut_player == 0) && (haircut_goalkeeper == 0) && (player == 0);
         }
 
         public void AddDuelo(Duelo duelo)
@@ -142,18 +162,27 @@ namespace AccountModels
     [System.Serializable]
     public class Imagen
     {
+        [SerializeField]
         public int id;
+        [SerializeField]
         public string nombre;
-        public Sprite sprite;
+        //public Sprite sprite;
     }
 
     [System.Serializable]
     public class Publicidad
     {
+        [SerializeField]
         public int id;
+        [SerializeField]
         public string marca;
+        [SerializeField]
         public string tipo;
+        [SerializeField]
+        public string tipo_imagen;
+        [SerializeField]
         public string descripcion;
+        [SerializeField]
         public Imagen[] imagenes;
 
 
@@ -167,6 +196,104 @@ namespace AccountModels
     public class Publicidades
     {
         public Publicidad[] publicidades;
+    }
+
+    [System.Serializable]
+    public class DueloAgendado
+    {
+        public int id;
+        public Jugador jugador1;
+        public Jugador jugador2;
+        public string fecha_hora_inicio;
+        public string fecha_hora_fin;
+        public int numero_inicial_goles;
+        public int tiempo_patear_segundos;
+        public int tiempo_prorroga;
+        public int ronda;
+        //public Duelo duelo;
+        public int duelo;
+
+        /*
+        public DueloAgendado()
+        {
+            id = 0;
+            jugador1 = new Jugador()
+            {
+                id = 0,
+                username = "player1"
+            };
+
+            jugador2 = new Jugador()
+            {
+                id = 1,
+                username = "player2"
+            };
+            numero_inicial_goles = 3;
+            tiempo_patear_segundos = 7;
+            tiempo_prorroga = 2;
+            ronda = 1;
+            duelo = 1;
+            fecha_hora_inicio = DateTime.Now;//.AddSeconds(30);
+            fecha_hora_fin = fecha_hora_inicio.AddSeconds(15);//AddMinutes(tiempo_prorroga);
+
+        }
+        */
+    }
+    [System.Serializable]
+    public class PublicidadesGame
+    {
+        public List<PublicidadGame> gol = new List<PublicidadGame>();
+        public List<PublicidadGame> vertical = new List<PublicidadGame>();
+        public List<PublicidadGame> horizontal = new List<PublicidadGame>();
+    }
+
+    [System.Serializable]
+    public class PublicidadGame
+    {
+        public int id;
+        public string marca;
+        public string descripcion;
+        public List<ImageGame> imagenes = new List<ImageGame>();
+
+        public PublicidadGame(int _id, string _marca, string _descripcion)
+        {
+            id = _id;
+            marca = _marca;
+            descripcion = _descripcion;
+        }
+        public PublicidadGame()
+        {
+
+        }
+    }
+
+    [System.Serializable]
+    public class ImageGame
+    {
+        [SerializeField]
+        public int id;
+        [SerializeField]
+        public Sprite sprite;
+
+        public ImageGame(int _id, Sprite _sprite)
+        {
+            id = _id;
+            sprite = _sprite;
+        }
+        
+        public ImageGame()
+        {
+
+        }
+    }
+
+
+    [System.Serializable]
+    public class DueloAgendadoRequest
+    {
+        public int duelo;
+        public int ganador;
+        public int perdedor;
     }
 }
 

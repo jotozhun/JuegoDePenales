@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "777547832093",
+    "project_id": "penales-cd499",
+    "storage_bucket": "penales-cd499.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:777547832093:android:418354794c3b7830fadff4",
+        "android_client_info": {
+          "package_name": "com.Hangaroa.Penales"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "777547832093-8i17id5c07mltpk50ku6b6kvjui1pc4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBaG7Ux-eGNLvkxnJ1Q60WtvAH2D5p_oo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "777547832093-8i17id5c07mltpk50ku6b6kvjui1pc4d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

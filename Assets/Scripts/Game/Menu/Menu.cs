@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using AccountModels;
+using System;
 
 public class Menu : MonoBehaviourPunCallbacks
 {
@@ -22,9 +23,11 @@ public class Menu : MonoBehaviourPunCallbacks
     [Header("Game Screen")]
     public TMP_InputField roomName;
     public Button playButton;
+    public Button playAgendadoButton;
     public GameObject spectateButton;
 
     [Header("Waiting Room")]
+    public WaitingTorneo waitingTorneoScript;
     public Button cancelButton;
 
 
@@ -35,6 +38,10 @@ public class Menu : MonoBehaviourPunCallbacks
     public Button tournamentButton;
     public Button estadisticsButton;
     public Button exitButton;
+    public GameObject reconnectScreen;
+    public Button reconnectButton;
+    public Button exitButtonReconnect;
+    public TextMeshProUGUI reconnectText;
 
     [Header("Estadistics Screen")]
     public Button backEstadisticsButton;
@@ -56,22 +63,48 @@ public class Menu : MonoBehaviourPunCallbacks
     public TextMeshProUGUI signStatus;
 
     public static Menu instance;
+    public MenuTutorial tutorialManager;
     public NetworkManager networkManager;
+    private DateTime fecha_inicio;
+    private DateTime fecha_fin;
+    private bool isTimeForAgenda;
+    private bool blockedForTorneo;
+    private GameObject startScreen;
+    private DueloAgendado duelo_agendado;
+    private bool isTorneo = false;
     private void Awake()
     {
-        if(NetworkManager.instance != null)
+        if (NetworkManager.instance != null)
         {
             networkManager = NetworkManager.instance;
+            duelo_agendado = networkManager.userLogin.duelo_agendado;
         }
+        instance = this;
     }
 
     private void Start()
     {
+        startScreen = playerScreen;
         if (networkManager.isConnected)
         {
             playername.text = "¿Listo para ganar?\n" + networkManager.userLogin.username;
             tournamentButton.interactable = true;
             ResetGoalProperties();
+
+            if (duelo_agendado.id != 0)
+            {
+                fecha_inicio = DateTime.Parse(duelo_agendado.fecha_hora_inicio);
+                fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_fin);
+                Debug.Log("Initialize a las: " + fecha_fin);
+                InitializeAgendado();
+            }
+            /*
+            if (networkManager.userLogin.isFirstLogin())
+            {
+                startScreen = interfazScreen;
+                //tutorialManager.Initialize();
+            }
+            */
         }
         else
         {
@@ -80,7 +113,51 @@ public class Menu : MonoBehaviourPunCallbacks
             tournamentButton.interactable = false;
             estadisticsButton.interactable = false;
         }
-        SetScreen(playerScreen);
+        SetScreen(startScreen);
+        TestingPublicidad.instance.Initialize();
+    }
+
+    private void Update()
+    {
+        if (blockedForTorneo)
+        {
+            if (playAgendadoButton.interactable)
+            {
+                playAgendadoButton.interactable = false;
+            }
+            return;
+        }
+        isTimeForAgenda = checkForAgendamiento();
+        if (isTimeForAgenda)
+        {
+            if (!playAgendadoButton.interactable)
+            {
+                playAgendadoButton.interactable = true;
+            }
+        }
+        else
+        {
+            if (DateTime.Now >= fecha_fin)
+            {
+                Debug.Log("Se acabo la hora para entrar!");
+                blockedForTorneo = true;
+            }
+        }
+    }
+
+    private void InitializeAgendado()
+    {
+        if (DateTime.Now >= fecha_fin)
+        {
+            blockedForTorneo = true;
+        }
+        isTimeForAgenda = checkForAgendamiento();
+
+    }
+
+    private bool checkForAgendamiento()
+    {
+        return DateTime.Now >= fecha_inicio && DateTime.Now <= fecha_fin;
     }
 
     public void SetScreen(GameObject screen)
@@ -98,13 +175,24 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void OnPlayButton()
     {
+        /*
         if (roomName.text != "")
         {
-
-            networkManager.CreateRoom(roomName.text);
+            //networkManager.CreateRoom(roomName.text);
+            networkManager.CreateRoom(PhotonNetwork.LocalPlayer.NickName);
             playButton.interactable = false;
             
         }
+        */
+        //networkManager.CreateRoom(PhotonNetwork.LocalPlayer.NickName);
+        PhotonNetwork.JoinRandomRoom();
+        playButton.interactable = false;
+    }
+
+    public void OnPlayTorneoButton()
+    {
+        networkManager.CreateRoom("torneo" + duelo_agendado.jugador1.username + duelo_agendado.jugador2.username);
+        isTorneo = true;
     }
 
     public void ResetGoalProperties()
@@ -122,25 +210,32 @@ public class Menu : MonoBehaviourPunCallbacks
         gameScreen.SetActive(false);
         waitingScreen.SetActive(true);
         gameLogo.SetActive(false);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ExitGames.Client.Photon.Hashtable _roomCustomProperties = new ExitGames.Client.Photon.Hashtable();
+            _roomCustomProperties.Add("isTorneo", isTorneo);
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(_roomCustomProperties);
+        }
     }
 
     public override void OnJoinedRoom()
     {
         int curPlayerCount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
-        if (curPlayerCount == (networkManager.maxPlayers - 1))
+        if (curPlayerCount == (networkManager.maxPlayers))
         {
             PhotonNetwork.CurrentRoom.IsOpen = true;
             PhotonNetwork.CurrentRoom.IsVisible = true;
             networkManager.photonView.RPC("ChangeScene", RpcTarget.AllBuffered, "Game");
             gameLogo.SetActive(false);
         }
-        
-         
-        else if(curPlayerCount > (networkManager.maxPlayers - 1))
-        {
-            networkManager.ChangeScene("Game");
-        }
-        
+
+        /*
+       else if(curPlayerCount > (networkManager.maxPlayers - 1))
+       {
+           networkManager.ChangeScene("Game");
+       }
+       */
     }
 
     // WAITING SCREEN
@@ -156,6 +251,10 @@ public class Menu : MonoBehaviourPunCallbacks
         while (PhotonNetwork.InRoom)
             yield return null;
         cancelButton.interactable = true;
+        if (waitingTorneoScript.enabled)
+        {
+            waitingTorneoScript.enabled = false;
+        }
         SetScreen(gameScreen);
     }
 
@@ -227,4 +326,87 @@ public class Menu : MonoBehaviourPunCallbacks
 
     }
 
+
+    public void OnReconnect()
+    {
+        reconnectScreen.SetActive(true);
+        reconnectButton.interactable = true;
+        exitButtonReconnect.interactable = true;
+        reconnectText.text = "Se ha perdido la conexión con el servidor";
+        reconnectText.color = Color.white;
+    }
+
+    public void OnReconnectButton()
+    {
+        networkManager.ConnectToPhotonServer();
+        reconnectButton.interactable = false;
+        exitButtonReconnect.interactable = false;
+    }
+
+    public IEnumerator OnReconnectSuccess()
+    {
+        reconnectText.text = "Conexión establecida correctamente";
+        reconnectText.color = Color.green;
+        yield return new WaitForSeconds(1.5f);
+        reconnectScreen.SetActive(false);
+        reconnectText.text = "Se ha perdido la conexión con el servidor";
+        reconnectText.color = Color.white;
+        reconnectButton.interactable = true;
+        exitButtonReconnect.interactable = true;
+    }
+
+    public void TestingCoroutine()
+    {
+        int id1 = 9;
+        int id2 = 10;
+
+        int goles_w = 5;
+        int goles_l = 3;
+
+        int isTorneo = 1;
+
+        int atajados_w = 1;
+        int atajados_l = 0;
+
+        int recibidos_w = 0;
+        int recibidos_l = 1;
+
+        StartCoroutine(NetworkAPICalls.instance.CreateDueloNormal(
+            id1,
+            id2,
+            goles_w,
+            goles_l,
+            isTorneo,
+            atajados_w,
+            atajados_l,
+            recibidos_w,
+            recibidos_l,
+            (string res) =>
+            {
+                DueloTorneo dueloTorneo = JsonUtility.FromJson<DueloTorneo>(res);
+                int idDuelo = dueloTorneo.id;
+                int idGanador = dueloTorneo.ganador.id;
+                int idPerdedor = dueloTorneo.perdedor.id;
+
+                StartCoroutine(NetworkAPICalls.instance.SetPlayedDueloAgendado(idDuelo,
+                    idGanador,
+                    idPerdedor,
+                    (int resp) =>
+                    {
+                        Debug.Log("CORRECTO MI PEX " + resp);
+                    }, (int error) => { 
+                    
+                    }
+                    ));
+
+            }, (int err) => 
+            { 
+            
+            }));
+    }
+
+    public void OnBannerButton()
+    {
+        Application.OpenURL("https://frontedpenales2021.herokuapp.com/login");
+    }
 }

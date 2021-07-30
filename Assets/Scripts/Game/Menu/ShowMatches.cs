@@ -29,7 +29,11 @@ public class ShowMatches : MonoBehaviour
     {
         foreach(Duelo tmpDuelo in duelos)
         {
-            GameObject tmpElement = Instantiate<GameObject>(matchResultPrefab);
+            GameObject tmpElement;
+            if (tmpDuelo.istorneo)
+                tmpElement = Instantiate<GameObject>(matchTorneoPrefab);
+            else
+                tmpElement = Instantiate<GameObject>(matchResultPrefab);
             bool isWin = false;
             if(tmpDuelo.ganador.id == playerId)
             {

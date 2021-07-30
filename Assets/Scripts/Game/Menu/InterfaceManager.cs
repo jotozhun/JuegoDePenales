@@ -8,6 +8,9 @@ using AccountModels;
 
 public class InterfaceManager : MonoBehaviour
 {
+    [SerializeField]
+    private Image[] emblemas;
+
     [Header("Interfaz Screens")]
     public GameObject uniformeScreen;
     public GameObject peinadosScreen;
@@ -96,6 +99,11 @@ public class InterfaceManager : MonoBehaviour
     public void SelectEmblema(int index)
     {
         tmp_indexOfEmblema = index;
+        foreach(Image emblema in emblemas)
+        {
+            emblema.color = Color.white;
+        }
+        emblemas[index].color = Color.yellow;
         player_applyButton.interactable = !checkApplyButton();
     }
 

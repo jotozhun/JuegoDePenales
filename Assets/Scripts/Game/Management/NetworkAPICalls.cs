@@ -8,11 +8,6 @@ using System;
 
 public class NetworkAPICalls : MonoBehaviour
 {
-    [Header("UI elements")]
-    public TextMeshProUGUI loginStatus;
-    public TextMeshProUGUI registerStatus;
-
-    
     public NetworkManager manager;
     public static NetworkAPICalls instance;
 
@@ -210,19 +205,22 @@ public class NetworkAPICalls : MonoBehaviour
             else
             {
                 DownloadHandlerTexture downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
+                //Debug.Log("Imagen Descargada correctamente!");
                 res(downloadHandlerTexture.texture);
+                
             }
         }
     }
 
-    public IEnumerator CreateDueloNormal(int id_w, int id_l, int goles_w, int goles_l, int goles_atajados_ganador, int goles_atajados_perdedor, int goles_recibidos_ganador, int goles_recibidos_perdedor, Action<string> res, Action<int> respCode)
+    public IEnumerator CreateDueloNormal(int id_w, int id_l, int goles_w, int goles_l, int isTorneo, int goles_atajados_ganador, int goles_atajados_perdedor, int goles_recibidos_ganador, int goles_recibidos_perdedor, Action<string> res, Action<int> respCode)
     {
-        string testUrl = "https://willymedi.pythonanywhere.com/duelos/duelo_normal/";
+        string testUrl = "https://willymedi.pythonanywhere.com/duelos/duelo/";
         WWWForm form = new WWWForm();
         form.AddField("ganador", id_w);
         form.AddField("perdedor", id_l);
         form.AddField("goles_ganador", goles_w);
         form.AddField("goles_perdedor", goles_l);
+        form.AddField("istorneo", isTorneo);
         form.AddField("goles_atajados_ganador", goles_atajados_ganador);
         form.AddField("goles_atajados_perdedor", goles_atajados_perdedor);
         form.AddField("goles_recibidos_ganador", goles_recibidos_ganador);
@@ -245,4 +243,69 @@ public class NetworkAPICalls : MonoBehaviour
         }
 
     }
+
+    public IEnumerator SetPlayedDueloAgendado(int duelo, int ganador, int perdedor, Action<int> res, Action<int> err)
+    {
+        string dueloAgendadoUri = "https://willymedi.pythonanywhere.com/duelos/duelo_agendado/" + manager.userLogin.duelo_agendado.id;
+
+        Debug.Log(dueloAgendadoUri);
+
+        DueloAgendadoRequest dueloAgendado = new DueloAgendadoRequest()
+        {
+            duelo = duelo,
+            ganador = ganador,
+            perdedor = perdedor
+        };
+
+        string rawAgendado = JsonUtility.ToJson(dueloAgendado);
+
+        using(UnityWebRequest webRequest = UnityWebRequest.Put(dueloAgendadoUri, System.Text.Encoding.UTF8.GetBytes(rawAgendado)))
+        {
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+            yield return webRequest.SendWebRequest();
+            if(webRequest.isNetworkError)
+            {
+                err(600);
+            }else
+            {
+                res((int) webRequest.responseCode);
+            }
+        }
+    }
+
+    /*
+     public IEnumerator AddMatchResultsToPlayer(bool isWin, int id, int goles_anotados, int goles_atajados, int goles_recibidos, string token)
+    {
+        string testUri = "https://willymedi.pythonanywhere.com/usuarios/usuario/" + id;
+
+        //manager.AddLocalMatchResult(isWin, goles_anotados, goles_atajados, goles_recibidos);
+
+        UserLogin tmpUser = manager.userLogin;
+
+        MatchResult matchResult = new MatchResult() {
+            total_partidos = tmpUser.total_partidos,
+            partidos_ganados = tmpUser.partidos_ganados,
+            partidos_perdidos = tmpUser.partidos_perdidos,
+            goles_anotados = tmpUser.goles_anotados,
+            goles_atajados = tmpUser.goles_atajados,
+            goles_recibidos = tmpUser.goles_recibidos
+        };
+
+        string rawMatchResult = JsonUtility.ToJson(matchResult);
+        using (UnityWebRequest webRequest = UnityWebRequest.Put(testUri, System.Text.Encoding.UTF8.GetBytes(rawMatchResult)))
+        {
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+            webRequest.SetRequestHeader("Authorization", "Bearer " + token);
+            yield return webRequest.SendWebRequest();
+            if (webRequest.isNetworkError)
+            {
+
+            }
+            else
+            {
+                Debug.Log(webRequest.downloadHandler.text);
+            }
+        }
+    }
+     */
 }

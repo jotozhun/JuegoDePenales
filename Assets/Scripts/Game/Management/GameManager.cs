@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -88,7 +89,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         
         if(PhotonNetwork.IsMasterClient)
         {
-            NetworkManager.instance.CrearDueloNormal(winnerPlayer, loserPlayer);
+            bool isTorneo = (bool) PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"];
+            NetworkManager.instance.CrearDueloNormal(winnerPlayer, loserPlayer, Convert.ToInt32(isTorneo));
         }
 
 
@@ -166,7 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             gameUI.MarkGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateGoalBounds());
         DeactivateBounds();
-        goalAnim.SetTrigger("goal");
+        //goalAnim.SetTrigger("goal");
     }
 
     [PunRPC]
@@ -222,7 +224,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             gameUI.MarkFailedGoalUI(player, kicksLeft);
         //StartCoroutine(DeactivateMissedGoalBounds());
         DeactivateBounds();
-        missedGoalAnim.SetTrigger("missedgoal");
+        //missedGoalAnim.SetTrigger("missedgoal");
     }
 
     [PunRPC]

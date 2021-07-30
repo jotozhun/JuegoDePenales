@@ -45,6 +45,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField userNameInput;
     public TMP_InputField playerPassword;
     public TextMeshProUGUI loginStatusText;
+    [SerializeField]
+    private Button reconnectButton;
+    [SerializeField]
+    private GameObject reconnectObj;
 
     public NetworkAPICalls apiCalls;
     [HideInInspector]
@@ -52,12 +56,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public UserLogin userLogin;
     public SavedAccount savedAccount;
     public Publicidades publicidades = new Publicidades();
+    public PublicidadesGame publicidadesGame;
 
     private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
     //public float resolutionCoeficient;
     public static NetworkManager instance;
     public int maxPlayers;
-
 
     [Header("Connected Settings")]
     public bool isConnected;
@@ -68,7 +72,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Initialize();
             offlineInfo = new UserLogin();
-            
         }
         else
         {
@@ -79,6 +82,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void Save()
     {
         PlayerPrefs.SetString("saved", Helper.Serialize<SavedAccount>(savedAccount));
+    }
+
+    public void SavePublicidad()
+    {
+        PlayerPrefs.SetString("publicidades", Helper.Serialize<PublicidadesGame>(publicidadesGame));
     }
 
     public void SaveLogout()
@@ -102,13 +110,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 OnLoginButtonUI();
             }
         }
+        /*
+        if(PlayerPrefs.HasKey("publicidades"))
+        {
+            publicidadesGame = Helper.Deserialize<PublicidadesGame>(PlayerPrefs.GetString("publicidades"));
+        }
+        */
     }
 
 
     void Initialize()
     {
         Debug.Log(photonView.ViewID);
-        maxPlayers = 3;
+        maxPlayers = 2;
         instance = this;
         Screen.orientation = ScreenOrientation.Portrait;
         DontDestroyOnLoad(this);
@@ -152,11 +166,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.InLobby)
         {
             PhotonNetwork.JoinLobby();
-            if (loginButton != null)
-                loginButton.interactable = true;
+            //if (loginButton != null)
+            //  loginButton.interactable = true;
         }
         if (SceneManager.GetActiveScene().name == "GameAccount")
+        {
             Load(); //Carga informacion del usuario si es que esta existe
+            reconnectObj.SetActive(false);
+            ActivateButtons(true);
+            loginStatusText.text = "Conexión exitosa al servidor!";
+            loginStatusText.color = Color.green;
+        } else if (SceneManager.GetActiveScene().name == "Menu")
+        {
+            StartCoroutine(Menu.instance.OnReconnectSuccess());
+        }
     }
 
     public void OnOfflineButton()
@@ -164,6 +187,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         isConnected = false;
         userLogin = offlineInfo;
         SceneManager.LoadScene("Menu");
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        CreateRoom(userLogin.username);
     }
 
     public void CreateRoom(string roomName)
@@ -177,21 +205,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
 
 
-    void ActivateButtons()
+    void ActivateButtons(bool noConexButton)
     {
         loginButton.interactable = true;
         toLoginButton.interactable = true;
         registerButton.interactable = true;
         toRegisterButton.interactable = true;
+        if(noConexButton)
+            offlineButton.interactable = true;
     }
 
-    void DeactivateButtons()
+    void DeactivateButtons(bool noConexButton)
     {
         loginButton.interactable = false;
         toLoginButton.interactable = false;
         registerButton.interactable = false;
         toRegisterButton.interactable = false;
-        offlineButton.interactable = false;
+        if(noConexButton)
+            offlineButton.interactable = false;
     }
 
     public void OnPLayerNameChanged()
@@ -215,13 +246,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            DeactivateButtons();
+            DeactivateButtons(true);
             Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, 
                 (string res) => {
                     Debug.Log(res);
                     registerStatusText.text = res;
                     registerStatusText.color = Color.green;
-                    ActivateButtons();
+                    ActivateButtons(true);
                 }, (int err) => { 
                 if(err == 400)
                 {
@@ -233,14 +264,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     registerStatusText.text = "Error inesperado, compruebe su conexión a internet";
                 }
                 registerStatusText.color = Color.red;
-                ActivateButtons();
+                ActivateButtons(true);
             });
         }
     }
 
     public void Register(string name, string username, string email, string password, Action<string> res, Action<int> err)
     {
-        apiCalls.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, res, err);
+        StartCoroutine(apiCalls.RegisterUser(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, res, err));
     }
 
     bool isFieldEmpty(TMP_InputField field)
@@ -274,7 +305,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         else
         {
             //StartCoroutine(LoginAuth(userNameInput.text, playerPassword.text, loginStatusText));
-            DeactivateButtons();
+            DeactivateButtons(true);
             LoginAuth(userNameInput.text, playerPassword.text, 
                 (string res) => {
                     userToken = JsonUtility.FromJson<UserToken>(res);
@@ -302,8 +333,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     {
                         loginStatusText.text = "Error inesperado, token no válido";
                         loginStatusText.color = Color.red;
-                        offlineButton.interactable = true;
-                        ActivateButtons();
+                        //offlineButton.interactable = true;
+                        ActivateButtons(true);
                     });
             },  (int err) => {
                 if(err == 403)
@@ -315,8 +346,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                     loginStatusText.text = "Error del servidor, intente más tarde.";
                 }
                 loginStatusText.color = Color.red;
-                offlineButton.interactable = true;
-                ActivateButtons();
+                //offlineButton.interactable = true;
+                ActivateButtons(true);
             });
         }
     }
@@ -327,18 +358,35 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             (string res) => {
                 Debug.Log(res);
                 publicidades = JsonUtility.FromJson<Publicidades>(res);
-                StartCoroutine(apiCalls.GetTexture(publicidades.publicidades[0].imagenes[0].nombre, 
-                    (Texture2D texture) => {
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
-                        Debug.Log("Imagen descargada correctamente!");
-
-                        
-                        publicidades.publicidades[0].imagenes[0].sprite = sprite;
-                    }, (int textError) => {
-                        Debug.Log("No se pudo descargar la imagen!");
-                    }));
-                
-                
+                foreach (Publicidad _publicidad in publicidades.publicidades)
+                {
+                    if (_publicidad.tipo_imagen.Equals("gol"))
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.gol))
+                        {
+                            DownloadPublicidad(publicidadesGame.gol, _publicidad);
+                        }
+                        else
+                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                    }
+                    else if(_publicidad.tipo_imagen.Equals("banner horizontal"))
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.horizontal))
+                            DownloadPublicidad(publicidadesGame.horizontal, _publicidad);
+                        else
+                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                    }
+                    else
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.vertical))
+                        {
+                            DownloadPublicidad(publicidadesGame.vertical, _publicidad);
+                        }
+                        else
+                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                    }
+                }
+                //SavePublicidad();
             }, (int err) => {
                 if (err == 600)
                     Debug.Log("Error en la red, intente más tarde!");
@@ -351,6 +399,76 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2);
         isConnected = true;
         SceneManager.LoadScene("Menu");
+    }
+
+    private bool CheckPublicidadId(int id1, List<PublicidadGame> publicidadGame)
+    {
+        bool result = false;
+        if(publicidadGame.Count > 0)
+        {
+            foreach(PublicidadGame _publicidadGame in publicidadGame)
+            {
+                if(_publicidadGame.id == id1)
+                {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    private void DownloadImagesPublicidad(List<PublicidadGame> _publicidadGameList, Publicidad _publicidad)
+    {
+        foreach(PublicidadGame _publicidadGame in _publicidadGameList)
+        {
+            if(_publicidadGame.id == _publicidad.id)
+            {
+                
+                foreach(Imagen _imagen in _publicidad.imagenes)
+                {
+                    bool downloadImage = true;
+                    foreach(ImageGame _imageGame in _publicidadGame.imagenes)
+                    {
+                        if (_imageGame.id == _imagen.id)
+                            downloadImage = false;
+                    }
+                    if(downloadImage)
+                    {
+                        StartCoroutine(apiCalls.GetTexture(_imagen.nombre,
+                        (Texture2D texture) =>
+                        {
+                            Sprite tmpSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+                            _publicidadGame.imagenes.Add(new ImageGame(_imagen.id, tmpSprite));
+                        }, (int textError) =>
+                        {
+                            Debug.Log("No se pudo descargar la imagen!");
+                        }));
+                    }
+                }
+            }
+        }
+    }
+
+    private void DownloadPublicidad(List<PublicidadGame> _publicidadGame, Publicidad _publicidad)
+    {
+        PublicidadGame tmpPublicidadGame = new PublicidadGame(
+                                _publicidad.id,
+                                _publicidad.marca,
+                                _publicidad.descripcion
+                                );
+        _publicidadGame.Add(tmpPublicidadGame);
+        foreach (Imagen imagen in _publicidad.imagenes)
+        {
+            StartCoroutine(apiCalls.GetTexture(imagen.nombre,
+                (Texture2D texture) =>
+                {
+                    Sprite tmpSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+                    tmpPublicidadGame.imagenes.Add(new ImageGame(imagen.id, tmpSprite));
+                }, (int textError) =>
+                {
+                    Debug.Log("No se pudo descargar la imagen!");
+                }));
+        }
     }
 
     public void LoginAuth(string username, string password, Action<string> res, Action<int> err)
@@ -392,7 +510,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         StartCoroutine(apiCalls.GetPublicidad(res, err));
     }
 
-    public void CrearDueloNormal(Player winnerPlayer, Player loserPlayer)
+    public void CrearDueloNormal(Player winnerPlayer, Player loserPlayer, int isTorneo)
     {
         int id_w = (int)winnerPlayer.CustomProperties["id"];
         int id_l = (int)loserPlayer.CustomProperties["id"];
@@ -410,7 +528,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             id_w, 
             id_l, 
             goles_w, 
-            goles_l, 
+            goles_l,
+            isTorneo,
             goles_atajados_ganador,
             goles_atajados_perdedor,
             goles_recibidos_ganador,
@@ -464,9 +583,32 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     }
 
+    public void SetDueloAgendadoResult(int duelo, int ganador, int perdedor)
+    {
+        StartCoroutine(apiCalls.SetPlayedDueloAgendado(duelo, ganador, perdedor, 
+            (int res) => {
+                if(res == 200)
+                    Debug.Log("Información actualizada correctamente!");
+            }, 
+            (int err) => {
+                if (err == 600)
+                    Debug.Log("Ha ocurrido un error en el servidor");    
+            }
+        ));
+    }
+
     public override void OnDisconnected(DisconnectCause cause)
     {
-        base.OnDisconnected(cause);
+        this.isConnected = false;
+        switch (SceneManager.GetActiveScene().name)
+        {       
+            case "GameAccount":
+                OnReconnect();
+                break;
+            case "Menu":
+                Menu.instance.OnReconnect();
+                break;
+        }
     }
 
     [PunRPC]
@@ -476,4 +618,42 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.orientation = ScreenOrientation.Landscape;
     }
 
+    public void ConnectToPhotonServer()
+    {
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
+    public void OnReconnect()
+    {
+        loginStatusText.text = "No ha sido posible reconectarse";
+        loginStatusText.color = Color.red;
+        SetScreen(loginScreen);
+        reconnectButton.interactable = true;
+        reconnectObj.SetActive(true);
+        DeactivateButtons(false);
+    }
+
+    public void OnReconnectButton()
+    {
+        ConnectToPhotonServer();
+        reconnectButton.interactable = false;
+    }
+    /*
+    private void Update()
+    {
+        if(!PhotonNetwork.IsConnected && this.isConnected)
+        {
+            this.isConnected = false;
+            switch (SceneManager.GetActiveScene().name)
+            {
+                case "GameAccount":
+                    OnReconnect();
+                    break;
+                case "Menu":
+                    Menu.instance.OnReconnect();
+                    break;
+            }
+        }
+    }
+    */
 }

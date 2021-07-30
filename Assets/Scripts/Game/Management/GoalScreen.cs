@@ -18,7 +18,7 @@ public class GoalScreen : MonoBehaviour
     void Start()
     {
         description.text = publicidad.descripcion;
-        publicity.sprite = publicidad.imagenes[0].sprite;
+        //publicity.sprite = publicidad.imagenes[0].sprite;
     }
 
 }
