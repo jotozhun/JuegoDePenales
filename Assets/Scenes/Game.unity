@@ -947,8 +947,10 @@ MonoBehaviour:
   spectatorCanvas: {fileID: 189860501}
   winScreen: {fileID: 1665268693}
   winScoreText: {fileID: 538372066}
+  winExitButton: {fileID: 477026978}
   loseScreen: {fileID: 1795615120}
   LoseScoreText: {fileID: 1835593218}
+  loseExitButton: {fileID: 1816572838}
   isSuddenDeath: 0
   surrenderButton: {fileID: 1828777954}
   surrenderScreen: {fileID: 413297843}
@@ -2482,7 +2484,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 477026979}
   m_OnClick:
     m_PersistentCalls:
@@ -10737,7 +10739,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1816572839}
   m_OnClick:
     m_PersistentCalls:

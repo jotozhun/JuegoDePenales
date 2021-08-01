@@ -138,6 +138,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             gameUI.spawnAsSpectator();
         }
     }
+    
 
     //Goal and missed Goals
     [PunRPC]

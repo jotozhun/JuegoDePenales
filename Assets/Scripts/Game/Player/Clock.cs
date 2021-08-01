@@ -20,7 +20,10 @@ public class Clock : MonoBehaviourPunCallbacks
     private void Awake()
     {
         instance = this;
-        secondsToKick = NetworkManager.instance.secondsToKick;
+        if ((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+            secondsToKick = NetworkManager.instance.userLogin.duelo_agendado.tiempo_patear_segundos;
+        else
+            secondsToKick = NetworkManager.instance.secondsToKick;
         photonPlayer = PhotonNetwork.LocalPlayer;
     }
     

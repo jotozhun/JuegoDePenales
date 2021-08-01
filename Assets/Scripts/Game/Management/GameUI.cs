@@ -49,10 +49,12 @@ public class GameUI : MonoBehaviourPunCallbacks
     [Header("Win Game Screen")]
     public GameObject winScreen;
     public TextMeshProUGUI winScoreText;
+    public Button winExitButton;
 
     [Header("Lose Game Screen")]
     public GameObject loseScreen;
     public TextMeshProUGUI LoseScoreText;
+    public Button loseExitButton;
     
     //Score logic
     private int[] goalScores = { 0, 0};
@@ -81,7 +83,15 @@ public class GameUI : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeGoalContainers(int id)
     {
-        numberOfGoals = NetworkManager.instance.numberOfGoals;
+        if((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+        {
+            numberOfGoals = NetworkManager.instance.userLogin.duelo_agendado.numero_inicial_goles;
+        }
+        else
+        {
+            numberOfGoals = NetworkManager.instance.numberOfGoals;
+        }
+        
         if (id == 0)
         {
             kicksLeft[0] = numberOfGoals;
@@ -278,7 +288,12 @@ public class GameUI : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2);
         winScreen.SetActive(true);
         winScoreText.text = winnerScore + " - " + loserScore;
-        
+        yield return new WaitForSeconds(3);
+        winExitButton.interactable = true;
+        if ((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+        {
+            NetworkManager.instance.userLogin.duelo_agendado.id = 0;
+        }
     }
 
     public IEnumerator ActivateLoserScreen(int winnerScore, int loserScore, Player winnerPlayer, Player losePlayer)
@@ -291,7 +306,24 @@ public class GameUI : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2);
         loseScreen.SetActive(true);
         LoseScoreText.text = winnerScore + " - " + loserScore;
+        yield return new WaitForSeconds(3);
+        loseExitButton.interactable = true;
+        if ((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+        {
+            NetworkManager.instance.userLogin.duelo_agendado.id = 0;
+        }
     }
 
-    
+    public void SuccessOnDueloAgendadoRequest()
+    {
+        photonView.RPC("ActivateExitButtons", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void ActivateExitButtons()
+    {
+        NetworkManager.instance.userLogin.duelo_agendado.id = 0;
+        winExitButton.interactable = true;
+        loseExitButton.interactable = true;
+    }
 }

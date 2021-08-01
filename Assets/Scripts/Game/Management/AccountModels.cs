@@ -106,6 +106,14 @@ namespace AccountModels
         public void AddDuelo(Duelo duelo)
         {
             if (duelos.Count == 5)
+                duelos.RemoveAt(4);
+            duelos.Insert(0, duelo);
+            
+        }
+        /*
+        public void AddDuelo(Duelo duelo)
+        {
+            if (duelos.Count == 5)
             {
                 ShiftDueloArr(duelo);
             }
@@ -125,6 +133,7 @@ namespace AccountModels
             }
             duelos[4] = duelo;
         }
+        */
     }
 
     [System.Serializable]

@@ -536,13 +536,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             goles_recibidos_perdedor,
             (string res) => 
             {
-                Debug.Log("Duelo creado correctamente!");        
+                if(isTorneo == 1)
+                {
+                    Duelo tmpDuelo = JsonUtility.FromJson<Duelo>(res);
+                    StartCoroutine(apiCalls.SetPlayedDueloAgendado(
+                                    tmpDuelo.id,
+                                    tmpDuelo.ganador.id,
+                                    tmpDuelo.perdedor.id,
+                                    (int resCode) => {
+                                        //GameUI.instance.SuccessOnDueloAgendadoRequest();
+                                    },(int errCode) => {
+                                        Debug.Log("Ha ocurrido un error con el duelo agendado :C");
+                                    }));
+                }else
+                {
+                    //GameUI.instance.SuccessOnDueloAgendadoRequest();
+                }
+                //userLogin.AddDuelo(tmpDuelo);
             }, (int err) => 
             {
                 Debug.Log("Duelo no se pudo crear!");                                  
             })
         );
     }
+    
     
     public void AddMatchResultToLocal(Player winner, Player loser)
     {
@@ -582,6 +599,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         userLogin.AddDuelo(tmpDuelo);
 
     }
+    
 
     public void SetDueloAgendadoResult(int duelo, int ganador, int perdedor)
     {

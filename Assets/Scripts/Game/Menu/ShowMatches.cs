@@ -20,27 +20,33 @@ public class ShowMatches : MonoBehaviour
         playerId = manager.userLogin.id;
     }
     // Start is called before the first frame update
+    /*
     void Start()
     {
         LoadMatches();
     }
+    */
 
-    void LoadMatches()
+    public void LoadMatches()
     {
-        foreach(Duelo tmpDuelo in duelos)
-        {
-            GameObject tmpElement;
-            if (tmpDuelo.istorneo)
-                tmpElement = Instantiate<GameObject>(matchTorneoPrefab);
-            else
-                tmpElement = Instantiate<GameObject>(matchResultPrefab);
-            bool isWin = false;
-            if(tmpDuelo.ganador.id == playerId)
+        duelos = manager.userLogin.duelos;
+        if (container.childCount == 0 && duelos.Count > 0)
+        { 
+            foreach(Duelo tmpDuelo in duelos)
             {
-                isWin = true;
+                GameObject tmpElement;
+                if (tmpDuelo.istorneo)
+                    tmpElement = Instantiate<GameObject>(matchTorneoPrefab);
+                else
+                    tmpElement = Instantiate<GameObject>(matchResultPrefab);
+                bool isWin = false;
+                if(tmpDuelo.ganador.id == playerId)
+                {
+                    isWin = true;
+                }
+                tmpElement.GetComponent<MatchController>().Initialize(tmpDuelo, isWin);
+                tmpElement.transform.SetParent(container);
             }
-            tmpElement.GetComponent<MatchController>().Initialize(tmpDuelo, isWin);
-            tmpElement.transform.SetParent(container);
         }
     }
 

@@ -114,7 +114,7 @@ public class Menu : MonoBehaviourPunCallbacks
             estadisticsButton.interactable = false;
         }
         SetScreen(startScreen);
-        TestingPublicidad.instance.Initialize();
+        //TestingPublicidad.instance.Initialize();
     }
 
     private void Update()

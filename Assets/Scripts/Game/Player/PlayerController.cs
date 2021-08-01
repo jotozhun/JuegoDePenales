@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (gameManager.temporalEndGame == true)
             return;
-        if (!isSpectator)
+        if (hasToChange)
         {
             if (!isGoalKeeper)
             {
@@ -173,6 +173,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         if (Input.GetMouseButtonUp(0) && toKick)
         {
+            hasToChange = false;
             endtime = Time.time;
             lastpos = Input.mousePosition;
 
@@ -278,6 +279,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         if (Input.GetMouseButtonUp(0) && canJump)
         {
+            hasToChange = false;
             canCover = false;
             canJump = false;
             lastCoverPos = Input.mousePosition;
