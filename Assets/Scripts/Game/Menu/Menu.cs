@@ -84,6 +84,10 @@ public class Menu : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if(Screen.orientation != ScreenOrientation.Portrait)
+        {
+            Screen.orientation = ScreenOrientation.Portrait;
+        }
         startScreen = playerScreen;
         if (networkManager.isConnected)
         {
@@ -94,7 +98,8 @@ public class Menu : MonoBehaviourPunCallbacks
             if (duelo_agendado.id != 0)
             {
                 fecha_inicio = DateTime.Parse(duelo_agendado.fecha_hora_inicio);
-                fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_fin);
+                fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_inicio).AddSeconds(duelo_agendado.tiempo_prorroga);
+                //fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_fin);
                 Debug.Log("Initialize a las: " + fecha_fin);
                 InitializeAgendado();
             }
@@ -185,14 +190,18 @@ public class Menu : MonoBehaviourPunCallbacks
         }
         */
         //networkManager.CreateRoom(PhotonNetwork.LocalPlayer.NickName);
+        networkManager.SetNormalGoals();
         PhotonNetwork.JoinRandomRoom();
         playButton.interactable = false;
+        isTorneo = false;
     }
 
     public void OnPlayTorneoButton()
     {
+        networkManager.SetTorneoGoals();
         networkManager.CreateRoom("torneo" + duelo_agendado.jugador1.username + duelo_agendado.jugador2.username);
         isTorneo = true;
+        playAgendadoButton.interactable = false;
     }
 
     public void ResetGoalProperties()
@@ -212,9 +221,14 @@ public class Menu : MonoBehaviourPunCallbacks
         gameLogo.SetActive(false);
         if (PhotonNetwork.IsMasterClient)
         {
-            ExitGames.Client.Photon.Hashtable _roomCustomProperties = new ExitGames.Client.Photon.Hashtable();
+            ExitGames.Client.Photon.Hashtable _roomCustomProperties = networkManager._playerCustomProperties;//new ExitGames.Client.Photon.Hashtable();
+            if (isTorneo)
+            {
+                DueloAgendado agendados = networkManager.userLogin.duelo_agendado;
+                string[] expectedUsers = {agendados.jugador1.username, agendados.jugador2.username};
+                PhotonNetwork.CurrentRoom.SetExpectedUsers(expectedUsers);
+            }
             _roomCustomProperties.Add("isTorneo", isTorneo);
-
             PhotonNetwork.CurrentRoom.SetCustomProperties(_roomCustomProperties);
         }
     }
@@ -222,6 +236,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         int curPlayerCount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
+        
         if (curPlayerCount == (networkManager.maxPlayers))
         {
             PhotonNetwork.CurrentRoom.IsOpen = true;
@@ -256,6 +271,7 @@ public class Menu : MonoBehaviourPunCallbacks
             waitingTorneoScript.enabled = false;
         }
         SetScreen(gameScreen);
+
     }
 
     // PLAYER SCREEN

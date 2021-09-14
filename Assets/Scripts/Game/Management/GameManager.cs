@@ -49,10 +49,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         temporalEndGame = false;
         instance = this;
+        if((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+        {
+            NetworkManager.instance.SetTorneoGoals();
+        }
     }
     private void Start()
     {
-        gameUI.players = new PlayerController[PhotonNetwork.PlayerList.Length];
+        int playerLength = PhotonNetwork.PlayerList.Length;
+        gameUI.players = new PlayerController[playerLength];
         scores = new int[2];
 
         photonView.RPC("ImInGame", RpcTarget.All);
@@ -90,6 +95,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient)
         {
             bool isTorneo = (bool) PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"];
+            Debug.Log("Es torneo? :" + isTorneo);
             NetworkManager.instance.CrearDueloNormal(winnerPlayer, loserPlayer, Convert.ToInt32(isTorneo));
         }
 
@@ -113,6 +119,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if(PhotonNetwork.IsMasterClient && playersInGame == PhotonNetwork.PlayerList.Length)
         {
+            PhotonNetwork.CurrentRoom.PlayerTtl = 1000;
             photonView.RPC("SpawnPlayers", RpcTarget.All);
         }
     }
@@ -127,7 +134,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
             //initialize the player
-
+            
             playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
 
             gameUI.photonView.RPC("InitializeGoalContainers", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber - 1);

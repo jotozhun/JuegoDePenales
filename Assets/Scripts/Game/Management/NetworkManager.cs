@@ -57,8 +57,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public SavedAccount savedAccount;
     public Publicidades publicidades = new Publicidades();
     public PublicidadesGame publicidadesGame;
+    public PublicidadesGame publicidadesGameTmp;
 
-    private ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
+    public ExitGames.Client.Photon.Hashtable _playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
     //public float resolutionCoeficient;
     public static NetworkManager instance;
     public int maxPlayers;
@@ -93,6 +94,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         savedAccount.isLoggedIn = false;
         Save();
+    }
+
+    public void LoadPublicidad()
+    {
+        if(PlayerPrefs.HasKey("publicidades"))
+        {
+            publicidadesGameTmp = Helper.Deserialize<PublicidadesGame>(PlayerPrefs.GetString("publicidades"));
+        }
     }
 
     public void Load()
@@ -211,7 +220,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         toLoginButton.interactable = true;
         registerButton.interactable = true;
         toRegisterButton.interactable = true;
-        if(noConexButton)
+        if (noConexButton)
             offlineButton.interactable = true;
     }
 
@@ -221,7 +230,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         toLoginButton.interactable = false;
         registerButton.interactable = false;
         toRegisterButton.interactable = false;
-        if(noConexButton)
+        if (noConexButton)
             offlineButton.interactable = false;
     }
 
@@ -247,25 +256,25 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         else
         {
             DeactivateButtons(true);
-            Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text, 
+            Register(registerNameInput.text, registerUsernameInput.text, registerEmailInput.text, registerPasswordInput.text,
                 (string res) => {
                     Debug.Log(res);
                     registerStatusText.text = res;
                     registerStatusText.color = Color.green;
                     ActivateButtons(true);
-                }, (int err) => { 
-                if(err == 400)
-                {
-                    registerStatusText.text = "Ya existe un usuario con este username o email";
-                    
-                }
-                else
-                {
-                    registerStatusText.text = "Error inesperado, compruebe su conexión a internet";
-                }
-                registerStatusText.color = Color.red;
-                ActivateButtons(true);
-            });
+                }, (int err) => {
+                    if (err == 400)
+                    {
+                        registerStatusText.text = "Ya existe un usuario con este username o email";
+
+                    }
+                    else
+                    {
+                        registerStatusText.text = "Error inesperado, compruebe su conexión a internet";
+                    }
+                    registerStatusText.color = Color.red;
+                    ActivateButtons(true);
+                });
         }
     }
 
@@ -306,7 +315,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             //StartCoroutine(LoginAuth(userNameInput.text, playerPassword.text, loginStatusText));
             DeactivateButtons(true);
-            LoginAuth(userNameInput.text, playerPassword.text, 
+            LoginAuth(userNameInput.text, playerPassword.text,
                 (string res) => {
                     userToken = JsonUtility.FromJson<UserToken>(res);
                     Login(userToken.id, userToken.token,
@@ -336,57 +345,65 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                         //offlineButton.interactable = true;
                         ActivateButtons(true);
                     });
-            },  (int err) => {
-                if(err == 403)
-                {
-                    loginStatusText.text = "Usuario o contraseña incorrecta";
-                }
-                else
-                {
-                    loginStatusText.text = "Error del servidor, intente más tarde.";
-                }
-                loginStatusText.color = Color.red;
-                //offlineButton.interactable = true;
-                ActivateButtons(true);
-            });
-        }
-    }
-
-    public IEnumerator OnLoginSuccess()
-    {
-        yield return StartCoroutine(apiCalls.GetPublicidad(
-            (string res) => {
-                Debug.Log(res);
-                publicidades = JsonUtility.FromJson<Publicidades>(res);
-                foreach (Publicidad _publicidad in publicidades.publicidades)
-                {
-                    if (_publicidad.tipo_imagen.Equals("gol"))
+                }, (int err) => {
+                    if (err == 403)
                     {
-                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.gol))
-                        {
-                            DownloadPublicidad(publicidadesGame.gol, _publicidad);
-                        }
-                        else
-                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
-                    }
-                    else if(_publicidad.tipo_imagen.Equals("banner horizontal"))
-                    {
-                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.horizontal))
-                            DownloadPublicidad(publicidadesGame.horizontal, _publicidad);
-                        else
-                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                        loginStatusText.text = "Usuario o contraseña incorrecta";
                     }
                     else
                     {
-                        if (!CheckPublicidadId(_publicidad.id, publicidadesGame.vertical))
+                        loginStatusText.text = "Error del servidor, intente más tarde.";
+                    }
+                    loginStatusText.color = Color.red;
+                    //offlineButton.interactable = true;
+                    ActivateButtons(true);
+                });
+        }
+    }
+
+    public int publicidadesDescargadas = 0;
+
+    public IEnumerator OnLoginSuccess()
+    {
+        LoadPublicidad();
+        yield return StartCoroutine(apiCalls.GetPublicidad(
+            (string res) => {
+                Debug.Log(res);                
+                publicidades = JsonUtility.FromJson<Publicidades>(res);
+                foreach (Publicidad _publicidad in publicidades.publicidades)
+                {
+                    Debug.Log("Publicidades descargadas: " + publicidadesDescargadas);
+                    if (_publicidad.tipo_imagen.Equals("gol"))
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGameTmp.gol))
                         {
-                            DownloadPublicidad(publicidadesGame.vertical, _publicidad);
-                        }
+                            DownloadPublicidad(publicidadesGame.gol, _publicidad);
+                        }/*
                         else
                             DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                        */
+                    }
+                    else if (_publicidad.tipo_imagen.Equals("banner horizontal"))
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGameTmp.horizontal))
+                            DownloadPublicidad(publicidadesGame.horizontal, _publicidad);
+                        /*
+                        else
+                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                        */
+                    }
+                    else
+                    {
+                        if (!CheckPublicidadId(_publicidad.id, publicidadesGameTmp.vertical))
+                        {
+                            DownloadPublicidad(publicidadesGame.vertical, _publicidad);
+                        }/*
+                        else
+                            DownloadImagesPublicidad(publicidadesGame.horizontal, _publicidad);
+                        */
                     }
                 }
-                //SavePublicidad();
+                SavePublicidad();
             }, (int err) => {
                 if (err == 600)
                     Debug.Log("Error en la red, intente más tarde!");
@@ -404,11 +421,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private bool CheckPublicidadId(int id1, List<PublicidadGame> publicidadGame)
     {
         bool result = false;
-        if(publicidadGame.Count > 0)
+        if (publicidadGame.Count > 0)
         {
-            foreach(PublicidadGame _publicidadGame in publicidadGame)
+            foreach (PublicidadGame _publicidadGame in publicidadGame)
             {
-                if(_publicidadGame.id == id1)
+                if (_publicidadGame.id == id1)
                 {
                     result = true;
                 }
@@ -419,20 +436,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void DownloadImagesPublicidad(List<PublicidadGame> _publicidadGameList, Publicidad _publicidad)
     {
-        foreach(PublicidadGame _publicidadGame in _publicidadGameList)
+        foreach (PublicidadGame _publicidadGame in _publicidadGameList)
         {
-            if(_publicidadGame.id == _publicidad.id)
+            if (_publicidadGame.id == _publicidad.id)
             {
-                
-                foreach(Imagen _imagen in _publicidad.imagenes)
+
+                foreach (Imagen _imagen in _publicidad.imagenes)
                 {
                     bool downloadImage = true;
-                    foreach(ImageGame _imageGame in _publicidadGame.imagenes)
+                    foreach (ImageGame _imageGame in _publicidadGame.imagenes)
                     {
                         if (_imageGame.id == _imagen.id)
                             downloadImage = false;
                     }
-                    if(downloadImage)
+                    if (downloadImage)
                     {
                         StartCoroutine(apiCalls.GetTexture(_imagen.nombre,
                         (Texture2D texture) =>
@@ -451,6 +468,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void DownloadPublicidad(List<PublicidadGame> _publicidadGame, Publicidad _publicidad)
     {
+        publicidadesDescargadas++;
         PublicidadGame tmpPublicidadGame = new PublicidadGame(
                                 _publicidad.id,
                                 _publicidad.marca,
@@ -480,7 +498,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         StartCoroutine(apiCalls.GetLoginInfo(id, token, res, err));
     }
-    
+
 
     public void AddEstadisticasToLocal(bool isWin)
     {
@@ -510,6 +528,38 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         StartCoroutine(apiCalls.GetPublicidad(res, err));
     }
 
+    public void CrearDueloNormal(int winnerId, int loserId, int isTorneo)
+    {
+        StartCoroutine(apiCalls.CreateDueloNormal(
+            winnerId,
+            loserId,
+            1,
+            0,
+            isTorneo,
+            0,
+            0,
+            0,
+            0,
+            (string res) => {
+                if (isTorneo == 1)
+                {
+                    Duelo tmpDuelo = JsonUtility.FromJson<Duelo>(res);
+                    StartCoroutine(apiCalls.SetPlayedDueloAgendado(
+                                    tmpDuelo.id,
+                                    tmpDuelo.ganador.id,
+                                    tmpDuelo.perdedor.id,
+                                    (int resCode) => {
+                                        //GameUI.instance.SuccessOnDueloAgendadoRequest();
+                                    }, (int errCode) => {
+                                        Debug.Log("Ha ocurrido un error con el duelo agendado :C");
+                                    }));
+                }
+            }, (int err) => {
+                Debug.Log("Ha ocurrido un error al enviar el duelo");  
+                }
+            ));
+    }
+
     public void CrearDueloNormal(Player winnerPlayer, Player loserPlayer, int isTorneo)
     {
         int id_w = (int)winnerPlayer.CustomProperties["id"];
@@ -524,19 +574,22 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         int goles_recibidos_ganador = (int)winnerPlayer.CustomProperties["FailedGoals"];
         int goles_recibidos_perdedor = (int)loserPlayer.CustomProperties["FailedGoals"];
 
+
+
         StartCoroutine(apiCalls.CreateDueloNormal(
-            id_w, 
-            id_l, 
-            goles_w, 
+            id_w,
+            id_l,
+            goles_w,
             goles_l,
             isTorneo,
             goles_atajados_ganador,
             goles_atajados_perdedor,
             goles_recibidos_ganador,
             goles_recibidos_perdedor,
-            (string res) => 
+            (string res) =>
             {
-                if(isTorneo == 1)
+                Debug.Log("Es torneo?: " + isTorneo);
+                if (isTorneo == 1)
                 {
                     Duelo tmpDuelo = JsonUtility.FromJson<Duelo>(res);
                     StartCoroutine(apiCalls.SetPlayedDueloAgendado(
@@ -545,22 +598,22 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                                     tmpDuelo.perdedor.id,
                                     (int resCode) => {
                                         //GameUI.instance.SuccessOnDueloAgendadoRequest();
-                                    },(int errCode) => {
+                                    }, (int errCode) => {
                                         Debug.Log("Ha ocurrido un error con el duelo agendado :C");
                                     }));
-                }else
+                } else
                 {
                     //GameUI.instance.SuccessOnDueloAgendadoRequest();
                 }
                 //userLogin.AddDuelo(tmpDuelo);
-            }, (int err) => 
+            }, (int err) =>
             {
-                Debug.Log("Duelo no se pudo crear!");                                  
+                Debug.Log("Duelo no se pudo crear!");
             })
         );
     }
-    
-    
+
+
     public void AddMatchResultToLocal(Player winner, Player loser)
     {
         int id_w = (int)winner.CustomProperties["id"];
@@ -599,18 +652,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         userLogin.AddDuelo(tmpDuelo);
 
     }
-    
+
 
     public void SetDueloAgendadoResult(int duelo, int ganador, int perdedor)
     {
-        StartCoroutine(apiCalls.SetPlayedDueloAgendado(duelo, ganador, perdedor, 
+        StartCoroutine(apiCalls.SetPlayedDueloAgendado(duelo, ganador, perdedor,
             (int res) => {
-                if(res == 200)
+                if (res == 200)
                     Debug.Log("Información actualizada correctamente!");
-            }, 
+            },
             (int err) => {
                 if (err == 600)
-                    Debug.Log("Ha ocurrido un error en el servidor");    
+                    Debug.Log("Ha ocurrido un error en el servidor");
             }
         ));
     }
@@ -619,15 +672,56 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         this.isConnected = false;
         switch (SceneManager.GetActiveScene().name)
-        {       
+        {
             case "GameAccount":
                 OnReconnect();
                 break;
             case "Menu":
                 Menu.instance.OnReconnect();
                 break;
+            case "Game":
+                /*
+                if (this.CanRecoverFromDisconnect(cause))
+                {
+                    this.Recover();
+                }*/
+                GameUI.instance.OnLoseGameDisconnectedFromGame();
+                break;
+                
         }
     }
+
+    private bool CanRecoverFromDisconnect(DisconnectCause cause)
+    {
+        switch(cause)
+        {
+            case DisconnectCause.Exception:
+            case DisconnectCause.ServerTimeout:
+            case DisconnectCause.ClientTimeout:
+            case DisconnectCause.DisconnectByServerLogic:
+            case DisconnectCause.DisconnectByServerReasonUnknown:
+                return true;
+        }
+        return false;
+    }
+
+    private void Recover()
+    {
+        if (!PhotonNetwork.ReconnectAndRejoin())
+        {
+            
+            Debug.LogError("ReconnectAndRejoin failed, trying Reconnect");
+            if (!PhotonNetwork.Reconnect())
+            {
+                Debug.LogError("Reconnect failed, trying ConnectUsingSettings");
+                if (!PhotonNetwork.ConnectUsingSettings())
+                {
+                    Debug.LogError("ConnectUsingSettings failed");
+                }
+            }
+        }
+    }
+
 
     [PunRPC]
     public void ChangeScene(string sceneName)
@@ -655,6 +749,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         ConnectToPhotonServer();
         reconnectButton.interactable = false;
+    }
+
+    public void SetTorneoGoals()
+    {
+        numberOfGoals = userLogin.duelo_agendado.numero_inicial_goles;
+        PhotonNetwork.LocalPlayer.CustomProperties["KicksLeft"] = numberOfGoals;
+    }
+
+    public void SetNormalGoals()
+    {
+        numberOfGoals = 5;
+        PhotonNetwork.LocalPlayer.CustomProperties["KicksLeft"] = numberOfGoals;
     }
     /*
     private void Update()

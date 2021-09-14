@@ -15,7 +15,7 @@ public class WaitingTorneo : MonoBehaviour
     {
         network_manager = NetworkManager.instance;
         duelo_agendado = network_manager.userLogin.duelo_agendado;
-        fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_fin);
+        fecha_fin = DateTime.Parse(duelo_agendado.fecha_hora_inicio).AddSeconds(duelo_agendado.tiempo_prorroga);//DateTime.Parse(duelo_agendado.fecha_hora_fin);
     }
 
     // Update is called once per frame

@@ -234,11 +234,11 @@ public class NetworkAPICalls : MonoBehaviour
             }
             else
             {
-                if(webRequest.responseCode == 200)
-                {
+                //if(webRequest.responseCode == 200)
+                //{
                     string rawDueloCreado = webRequest.downloadHandler.text;
                     res(rawDueloCreado);
-                }    
+                //}    
             }
         }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using AccountModels;
+using System;
 
 public class MatchController : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class MatchController : MonoBehaviour
             rivalUser.text = duelo.ganador.username;
             rivalGoals.text = duelo.goles_ganador.ToString();
         }
-        fecha.text = duelo.fecha;
+        //fecha.text = duelo.fecha;
+        DateTime tmpFecha = DateTime.Parse(duelo.fecha);
+        fecha.text = tmpFecha.ToString("yyyy-MM-dd") + "\n" + tmpFecha.ToString("hh:mm tt");
     }
 }

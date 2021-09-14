@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using Photon.Pun;
@@ -7,6 +8,7 @@ using Photon.Realtime;
 using System.Linq;
 using UnityEngine.UI;
 using AccountModels;
+using UnityEngine.SceneManagement;
 
 public class GameUI : MonoBehaviourPunCallbacks
 {
@@ -55,7 +57,15 @@ public class GameUI : MonoBehaviourPunCallbacks
     public GameObject loseScreen;
     public TextMeshProUGUI LoseScoreText;
     public Button loseExitButton;
-    
+
+    [Header("Disconnect Game Screens")]
+    [SerializeField]
+    private GameObject winGameByDisconnectScreen;
+    [SerializeField]
+    private Button winnerByDisconnectExitButton;
+    [SerializeField]
+    private GameObject loseGameByDisconnectScreen;
+    public bool isReconnecting;
     //Score logic
     private int[] goalScores = { 0, 0};
     private int[] savedScores = { 0, 0 };
@@ -83,15 +93,10 @@ public class GameUI : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeGoalContainers(int id)
     {
-        if((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
-        {
-            numberOfGoals = NetworkManager.instance.userLogin.duelo_agendado.numero_inicial_goles;
-        }
-        else
-        {
-            numberOfGoals = NetworkManager.instance.numberOfGoals;
-        }
-        
+
+        //numberOfGoals = NetworkManager.instance.numberOfGoals;
+        numberOfGoals = (int)PhotonNetwork.LocalPlayer.CustomProperties["KicksLeft"];
+        Debug.Log("Number of goals: " + numberOfGoals);
         if (id == 0)
         {
             kicksLeft[0] = numberOfGoals;
@@ -240,6 +245,12 @@ public class GameUI : MonoBehaviourPunCallbacks
         photonView.RPC("OnEndGame", RpcTarget.All);
     }
 
+    public void OnDisconnectedExitButton()
+    {
+        SceneManager.LoadScene("GameAccount");
+    }
+
+
     [PunRPC]
     public void OnShowWinner(Player player)
     {
@@ -277,6 +288,42 @@ public class GameUI : MonoBehaviourPunCallbacks
         if (didWin)
             return playerWinSpawn;
         return playerLoseSpawn;
+    }
+
+    public void OnLoseGameDisconnectedFromGame()
+    {
+        Clock.instance.StopTimer();
+        NetworkManager.instance.ResetPlayerGameProperties();
+        loseGameByDisconnectScreen.SetActive(true);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        OnWinGameByDisconnectGame((int)otherPlayer.CustomProperties["id"]);
+        NetworkManager.instance.AddMatchResultToLocal(PhotonNetwork.LocalPlayer, otherPlayer);
+        NetworkManager.instance.ResetPlayerGameProperties();
+        StartCoroutine(EndGameForDisconnection());
+    }
+
+    public void OnWinGameByDisconnectGame(int loserId)
+    {
+        Clock.instance.StopTimer();
+        
+        int winnerId = (int)PhotonNetwork.LocalPlayer.CustomProperties["id"];
+        bool isTorneo = (bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"];
+        NetworkManager.instance.CrearDueloNormal(winnerId, loserId, Convert.ToInt32(isTorneo));
+    }
+
+
+    private IEnumerator EndGameForDisconnection()
+    {
+        winGameByDisconnectScreen.SetActive(true);
+        yield return new WaitForSeconds(4);
+        winnerByDisconnectExitButton.interactable = true;
+        if ((bool)PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"])
+        {
+            NetworkManager.instance.userLogin.duelo_agendado.id = 0;
+        }
     }
 
     public IEnumerator ActivateWinnerScreen(int winnerScore, int loserScore, Player winnerPlayer, Player losePlayer)
