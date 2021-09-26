@@ -680,12 +680,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 Menu.instance.OnReconnect();
                 break;
             case "Game":
-                /*
-                if (this.CanRecoverFromDisconnect(cause))
-                {
-                    this.Recover();
-                }*/
-                GameUI.instance.OnLoseGameDisconnectedFromGame();
+                if(!(bool)PhotonNetwork.CurrentRoom.CustomProperties["gameEnded"])
+                    GameUI.instance.OnLoseGameDisconnectedFromGame();
                 break;
                 
         }

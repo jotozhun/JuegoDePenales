@@ -228,7 +228,9 @@ public class Menu : MonoBehaviourPunCallbacks
                 string[] expectedUsers = {agendados.jugador1.username, agendados.jugador2.username};
                 PhotonNetwork.CurrentRoom.SetExpectedUsers(expectedUsers);
             }
-            _roomCustomProperties.Add("isTorneo", isTorneo);
+            //_roomCustomProperties.Add("isTorneo", isTorneo);
+            _roomCustomProperties["isTorneo"] = isTorneo;
+            _roomCustomProperties["gameEnded"] = false;
             PhotonNetwork.CurrentRoom.SetCustomProperties(_roomCustomProperties);
         }
     }

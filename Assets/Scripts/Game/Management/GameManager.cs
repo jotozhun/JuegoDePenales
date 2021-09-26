@@ -91,7 +91,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.transform.position = tmpTransf.position;
             player.transform.rotation = tmpTransf.rotation;
         }
-        
+
+        PhotonNetwork.CurrentRoom.CustomProperties["gameEnded"] = true;
+
         if(PhotonNetwork.IsMasterClient)
         {
             bool isTorneo = (bool) PhotonNetwork.CurrentRoom.CustomProperties["isTorneo"];

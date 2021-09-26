@@ -299,10 +299,12 @@ public class GameUI : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        OnWinGameByDisconnectGame((int)otherPlayer.CustomProperties["id"]);
-        NetworkManager.instance.AddMatchResultToLocal(PhotonNetwork.LocalPlayer, otherPlayer);
-        NetworkManager.instance.ResetPlayerGameProperties();
-        StartCoroutine(EndGameForDisconnection());
+        if (!(bool)PhotonNetwork.CurrentRoom.CustomProperties["gameEnded"]) { 
+            OnWinGameByDisconnectGame((int)otherPlayer.CustomProperties["id"]);
+            NetworkManager.instance.AddMatchResultToLocal(PhotonNetwork.LocalPlayer, otherPlayer);
+            NetworkManager.instance.ResetPlayerGameProperties();
+            StartCoroutine(EndGameForDisconnection());
+        }
     }
 
     public void OnWinGameByDisconnectGame(int loserId)

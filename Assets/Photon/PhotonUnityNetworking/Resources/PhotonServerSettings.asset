@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AppSettings:
     AppIdRealtime: 10fa83a7-58aa-4f3d-a85d-9f437dd485a1
+    AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
@@ -32,7 +33,37 @@ MonoBehaviour:
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
-  RpcList: []
+  RpcList:
+  - ActivateExitButtons
+  - ChangeScene
+  - ClickRpc
+  - DecreaseKicks
+  - DestroyRpc
+  - DestroySpaceship
+  - FailedGoalRPC
+  - Fire
+  - ImInGame
+  - Initialize
+  - InitializeGoalContainers
+  - keeperCanCover
+  - Kick
+  - MarkGoalMissedToPlayer
+  - MarkGoalToPlayer
+  - MarkSavedGoalToPlayer
+  - OnEndGame
+  - OnShowWinner
+  - R
+  - RespawnSpaceship
+  - RestartKicks
+  - RestartTime
+  - spawnAsEndMatch
+  - SpawnPlayers
+  - Start
+  - StartTime
+  - StopTime
+  - StopTimer
+  - SwitchPositions
+  - TryCover
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
+  ShowSettings: 0
   DevRegionSetOnce: 1
